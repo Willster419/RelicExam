@@ -7,7 +7,12 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Net;
 using System.IO;
+using System.IO.Compression;
+using System.Reflection;
+using Microsoft.Win32;
+using System.Threading;
 using System.Xml;
 
 namespace RelicExam
