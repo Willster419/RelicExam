@@ -32,6 +32,8 @@
             this.relicExamWelcome = new System.Windows.Forms.Label();
             this.selectTestType = new System.Windows.Forms.ComboBox();
             this.BeginTestButton = new System.Windows.Forms.Button();
+            this.selectNumQuestions = new System.Windows.Forms.ComboBox();
+            this.numQuestionsLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // ServiceModeButton
@@ -64,18 +66,42 @@
             // 
             // BeginTestButton
             // 
-            this.BeginTestButton.Location = new System.Drawing.Point(142, 25);
+            this.BeginTestButton.Location = new System.Drawing.Point(184, 52);
             this.BeginTestButton.Name = "BeginTestButton";
             this.BeginTestButton.Size = new System.Drawing.Size(75, 23);
             this.BeginTestButton.TabIndex = 3;
             this.BeginTestButton.Text = "Begin!";
             this.BeginTestButton.UseVisualStyleBackColor = true;
             // 
+            // selectNumQuestions
+            // 
+            this.selectNumQuestions.FormattingEnabled = true;
+            this.selectNumQuestions.Items.AddRange(new object[] {
+            "10",
+            "20",
+            "25",
+            "50"});
+            this.selectNumQuestions.Location = new System.Drawing.Point(143, 25);
+            this.selectNumQuestions.Name = "selectNumQuestions";
+            this.selectNumQuestions.Size = new System.Drawing.Size(45, 21);
+            this.selectNumQuestions.TabIndex = 4;
+            // 
+            // numQuestionsLabel
+            // 
+            this.numQuestionsLabel.AutoSize = true;
+            this.numQuestionsLabel.Location = new System.Drawing.Point(194, 28);
+            this.numQuestionsLabel.Name = "numQuestionsLabel";
+            this.numQuestionsLabel.Size = new System.Drawing.Size(54, 13);
+            this.numQuestionsLabel.TabIndex = 5;
+            this.numQuestionsLabel.Text = "Questions";
+            // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(280, 80);
+            this.Controls.Add(this.numQuestionsLabel);
+            this.Controls.Add(this.selectNumQuestions);
             this.Controls.Add(this.BeginTestButton);
             this.Controls.Add(this.selectTestType);
             this.Controls.Add(this.relicExamWelcome);
@@ -94,6 +120,8 @@
         private System.Windows.Forms.Label relicExamWelcome;
         private System.Windows.Forms.ComboBox selectTestType;
         private System.Windows.Forms.Button BeginTestButton;
+        private System.Windows.Forms.ComboBox selectNumQuestions;
+        private System.Windows.Forms.Label numQuestionsLabel;
     }
 }
 
