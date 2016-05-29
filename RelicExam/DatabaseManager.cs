@@ -39,8 +39,8 @@ namespace RelicExam
         private PleaseWait wait;
         private string[] sampleCatagories;
         private string[] sampleMaps;
-        private ArrayList catagories;
-        private ArrayList maps;
+        //private ArrayList catagories;
+        //private ArrayList maps;
         private ArrayList questionReaderList;
         private ArrayList playerReaderList;
         private string questionPrefix = "question";
@@ -50,6 +50,8 @@ namespace RelicExam
         private int playerNumber = 0;
         private List<Player> playerList;
         private List<Question> questionList;
+        private List<Map> mapList;
+        private List<Catagory> catagoryList;
 
         public DatabaseManager()
         {
@@ -58,6 +60,16 @@ namespace RelicExam
 
         private void DatabaseManager_Load(object sender, EventArgs e)
         {
+            //display a loading window and load the database
+            wait = new PleaseWait();
+            Application.DoEvents();
+            wait.Show();
+            Application.DoEvents();
+            //do all intensive code here
+
+            //write a file saying someone is editing the questionList to DropBox
+
+
             //parse all file paths
             appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
@@ -66,17 +78,16 @@ namespace RelicExam
             playerPath = dataBasePath + "\\players";
             questionBase = "questionBase.xml";
             playerBase = "playerBase.xml";
-            
-            //declare all private classes
+
+            //declare all temp objects
             tempQuestion = new Question();
             tempPlayer = new Player();
 
-            //display a loading window and load the database
-            wait = new PleaseWait();
-            Application.DoEvents();
-            wait.Show();
-            Application.DoEvents();
+            //update gui
             System.Threading.Thread.Sleep(100);
+            this.answerCEnable_CheckedChanged(null, null);
+            this.answerDEnable_CheckedChanged(null, null);
+            currentModeLabel.Visible = false;
             //this.loadDataBase();
             wait.Close();
         }
@@ -301,12 +312,14 @@ namespace RelicExam
         private void button4_Click(object sender, EventArgs e)
         {
             //new up everything
-            catagories = new ArrayList();
-            maps = new ArrayList();
+            //catagories = new ArrayList();
+            //maps = new ArrayList();
             tempQuestion = new Question();
             tempPlayer = new Player();
             questionList = new List<Question>();
             playerList = new List<Player>();
+            mapList = new List<Map>();
+            catagoryList = new List<Catagory>();
             playerBaseReader = new XmlTextReader(playerPath + "\\" + playerBase);
             questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
             playerReaderList = new ArrayList();
@@ -320,10 +333,10 @@ namespace RelicExam
                     switch (questionBaseReader.Name)
                     {
                         case "catagory":
-                            catagories.Add(questionBaseReader.ReadString());
+                            catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
                             break;
                         case "map":
-                            maps.Add(questionBaseReader.ReadString());
+                            mapList.Add(new Map(questionBaseReader.ReadString()));
                             break;
                         case "question":
                             questionReaderList.Add(questionBaseReader.ReadString());
@@ -409,12 +422,23 @@ namespace RelicExam
                 }
                 questionList.Add(tempQuestion);
             }
-            this.parseDataBaseToGUI();
+            this.parsetoComboBoxes();
         }
 
-        private void parseDataBaseToGUI()
+        private void parsetoComboBoxes()
         {
-            questionComboBox.Items.Add(questionList[0]);
+            foreach (Question q in questionList)
+            {
+                questionComboBox.Items.Add(q);
+            }
+            foreach (Map m in mapList)
+            {
+                mapComboBox.Items.Add(m);
+            }
+            foreach (Catagory c in catagoryList)
+            {
+                catagoryComboBox.Items.Add(c);
+            }
         }
 
         private void answerCEnable_CheckedChanged(object sender, EventArgs e)
@@ -422,10 +446,12 @@ namespace RelicExam
             if (answerCEnable.Checked)
             {
                 responseCTextBox.ReadOnly = false;
+                answerMarkC.Enabled = true;
             }
             else
             {
                 responseCTextBox.ReadOnly = true;
+                answerMarkC.Enabled = false;
             }
         }
 
@@ -434,11 +460,88 @@ namespace RelicExam
             if (answerDEnable.Checked)
             {
                 responseDTextBox.ReadOnly = false;
+                answerMarkD.Enabled = true;
             }
             else
             {
                 responseDTextBox.ReadOnly = true;
+                answerMarkD.Enabled = false;
             }
+        }
+
+        private void questionComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //determine if a new question is being made or if one is being updated
+            if (questionComboBox.SelectedIndex == 0)
+            {
+                //warn the user this is "new question mode"
+                currentModeLabel.Text = "CREATE";
+                currentModeLabel.Visible = true;
+                saveButton.Text = "create";
+            }
+            else
+            {
+                currentModeLabel.Text = "UPDATE";
+                currentModeLabel.Visible = true;
+                saveButton.Text = "update";
+                //load the selected question
+                int questionIndex = questionComboBox.SelectedIndex;
+                questionIndex--;
+                Question q2Load = questionList[questionIndex];
+                questionTextBox.Text = q2Load.theQuestion;
+                responseATextBox.Text = q2Load.responseA;
+                responseBTextBox.Text = q2Load.responseB;
+                if (q2Load.responseCEnabled)
+                {
+                    answerCEnable.Checked = q2Load.responseCEnabled;
+                    responseCTextBox.Text = q2Load.responseC;
+                }
+                if (q2Load.responseDEnabled)
+                {
+                    answerDEnable.Checked = q2Load.responseDEnabled;
+                    responseDTextBox.Text = q2Load.responseD;
+                }
+                if (q2Load.answer.Equals("a"))
+                {
+                    answerMarkA.Checked = true;
+                }
+                if (q2Load.answer.Equals("b"))
+                {
+                    answerMarkB.Checked = true;
+                }
+                if (q2Load.answer.Equals("c"))
+                {
+                    answerMarkC.Checked = true;
+                }
+                if (q2Load.answer.Equals("d"))
+                {
+                    answerMarkD.Checked = true;
+                }
+                expTextBox.Text = q2Load.explanationOfAnswer;
+                theQuestionTitle.Text = q2Load.title;
+                timeToAnswerTextBox.Text = "" + q2Load.timeToAnswer;
+                string questionCatagoryTemp = q2Load.catagory;
+                string questionMapTemp = q2Load.map;
+                //for catagory and map, find the match in the List using for loop
+                //use that int as the index set for the comboBox
+                for (int i = 0; i < catagoryList.Count; i++)
+                {
+                    if (questionCatagoryTemp.Equals(catagoryList[i].getCatagory()))
+                    {
+                        catagoryComboBox.SelectedIndex = i;
+                        break;
+                    }
+                }
+                for (int i = 0; i < mapList.Count; i++)
+                {
+                    if (questionMapTemp.Equals(mapList[i].getMap()))
+                    {
+                        mapComboBox.SelectedIndex = ++i;
+                        break;
+                    }
+                }
+            }
+
         }
     }
 }

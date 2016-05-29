@@ -38,45 +38,55 @@
             this.answerDEnable = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.AnswerMarkD = new System.Windows.Forms.RadioButton();
-            this.AnswerMarkC = new System.Windows.Forms.RadioButton();
+            this.answerMarkD = new System.Windows.Forms.RadioButton();
+            this.answerMarkC = new System.Windows.Forms.RadioButton();
             this.answerMarkB = new System.Windows.Forms.RadioButton();
             this.answerMarkA = new System.Windows.Forms.RadioButton();
             this.panel3 = new System.Windows.Forms.Panel();
             this.questionTextBox = new System.Windows.Forms.RichTextBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.secondsLabel = new System.Windows.Forms.Label();
+            this.timeToAnswerTextBox = new System.Windows.Forms.TextBox();
+            this.timeToAnswerLabel = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.mapChoiceLabel = new System.Windows.Forms.Label();
+            this.mapComboBox = new System.Windows.Forms.ComboBox();
+            this.saveButton = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.clearForm = new System.Windows.Forms.Button();
+            this.catagoryComboBox = new System.Windows.Forms.ComboBox();
+            this.catagoryLabel = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.explanationEnabled = new System.Windows.Forms.CheckBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.explanationLabel = new System.Windows.Forms.Label();
+            this.expTextBox = new System.Windows.Forms.RichTextBox();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.theQuestionTitle = new System.Windows.Forms.TextBox();
+            this.questionTitle = new System.Windows.Forms.Label();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.currentModeLabel = new System.Windows.Forms.Label();
+            this.currentModeHeader = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.panel7.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.panel9.SuspendLayout();
             this.SuspendLayout();
             // 
             // questionComboBox
             // 
             this.questionComboBox.FormattingEnabled = true;
+            this.questionComboBox.Items.AddRange(new object[] {
+            "-no selection / new question -"});
             this.questionComboBox.Location = new System.Drawing.Point(3, 17);
             this.questionComboBox.Name = "questionComboBox";
             this.questionComboBox.Size = new System.Drawing.Size(436, 21);
             this.questionComboBox.TabIndex = 0;
+            this.questionComboBox.SelectedIndexChanged += new System.EventHandler(this.questionComboBox_SelectedIndexChanged);
             // 
             // selectQuestion
             // 
@@ -148,8 +158,8 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.AnswerMarkD);
-            this.panel2.Controls.Add(this.AnswerMarkC);
+            this.panel2.Controls.Add(this.answerMarkD);
+            this.panel2.Controls.Add(this.answerMarkC);
             this.panel2.Controls.Add(this.responseATextBox);
             this.panel2.Controls.Add(this.answerMarkB);
             this.panel2.Controls.Add(this.responseDTextBox);
@@ -158,32 +168,32 @@
             this.panel2.Controls.Add(this.responseBTextBox);
             this.panel2.Controls.Add(this.responseCTextBox);
             this.panel2.Controls.Add(this.answerCEnable);
-            this.panel2.Location = new System.Drawing.Point(12, 116);
+            this.panel2.Location = new System.Drawing.Point(12, 141);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(445, 100);
             this.panel2.TabIndex = 11;
             // 
-            // AnswerMarkD
+            // answerMarkD
             // 
-            this.AnswerMarkD.AutoSize = true;
-            this.AnswerMarkD.Location = new System.Drawing.Point(357, 73);
-            this.AnswerMarkD.Name = "AnswerMarkD";
-            this.AnswerMarkD.Size = new System.Drawing.Size(60, 17);
-            this.AnswerMarkD.TabIndex = 4;
-            this.AnswerMarkD.TabStop = true;
-            this.AnswerMarkD.Text = "Answer";
-            this.AnswerMarkD.UseVisualStyleBackColor = true;
+            this.answerMarkD.AutoSize = true;
+            this.answerMarkD.Location = new System.Drawing.Point(357, 73);
+            this.answerMarkD.Name = "answerMarkD";
+            this.answerMarkD.Size = new System.Drawing.Size(60, 17);
+            this.answerMarkD.TabIndex = 4;
+            this.answerMarkD.TabStop = true;
+            this.answerMarkD.Text = "Answer";
+            this.answerMarkD.UseVisualStyleBackColor = true;
             // 
-            // AnswerMarkC
+            // answerMarkC
             // 
-            this.AnswerMarkC.AutoSize = true;
-            this.AnswerMarkC.Location = new System.Drawing.Point(357, 50);
-            this.AnswerMarkC.Name = "AnswerMarkC";
-            this.AnswerMarkC.Size = new System.Drawing.Size(60, 17);
-            this.AnswerMarkC.TabIndex = 3;
-            this.AnswerMarkC.TabStop = true;
-            this.AnswerMarkC.Text = "Answer";
-            this.AnswerMarkC.UseVisualStyleBackColor = true;
+            this.answerMarkC.AutoSize = true;
+            this.answerMarkC.Location = new System.Drawing.Point(357, 50);
+            this.answerMarkC.Name = "answerMarkC";
+            this.answerMarkC.Size = new System.Drawing.Size(60, 17);
+            this.answerMarkC.TabIndex = 3;
+            this.answerMarkC.TabStop = true;
+            this.answerMarkC.Text = "Answer";
+            this.answerMarkC.UseVisualStyleBackColor = true;
             // 
             // answerMarkB
             // 
@@ -210,7 +220,7 @@
             // panel3
             // 
             this.panel3.Controls.Add(this.questionTextBox);
-            this.panel3.Location = new System.Drawing.Point(12, 60);
+            this.panel3.Location = new System.Drawing.Point(12, 85);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(445, 50);
             this.panel3.TabIndex = 12;
@@ -225,68 +235,79 @@
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.checkBox5);
-            this.panel4.Controls.Add(this.label3);
-            this.panel4.Controls.Add(this.textBox5);
-            this.panel4.Controls.Add(this.label2);
-            this.panel4.Location = new System.Drawing.Point(12, 274);
+            this.panel4.Controls.Add(this.secondsLabel);
+            this.panel4.Controls.Add(this.timeToAnswerTextBox);
+            this.panel4.Controls.Add(this.timeToAnswerLabel);
+            this.panel4.Location = new System.Drawing.Point(12, 299);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(445, 30);
+            this.panel4.Size = new System.Drawing.Size(207, 30);
             this.panel4.TabIndex = 13;
             // 
-            // checkBox5
+            // secondsLabel
             // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(193, 6);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(65, 17);
-            this.checkBox5.TabIndex = 3;
-            this.checkBox5.Text = "Enabled";
-            this.checkBox5.UseVisualStyleBackColor = true;
+            this.secondsLabel.AutoSize = true;
+            this.secondsLabel.Location = new System.Drawing.Point(152, 7);
+            this.secondsLabel.Name = "secondsLabel";
+            this.secondsLabel.Size = new System.Drawing.Size(49, 13);
+            this.secondsLabel.TabIndex = 2;
+            this.secondsLabel.Text = "Seconds";
             // 
-            // label3
+            // timeToAnswerTextBox
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(151, 4);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "label3";
+            this.timeToAnswerTextBox.Location = new System.Drawing.Point(94, 4);
+            this.timeToAnswerTextBox.Name = "timeToAnswerTextBox";
+            this.timeToAnswerTextBox.Size = new System.Drawing.Size(52, 20);
+            this.timeToAnswerTextBox.TabIndex = 1;
             // 
-            // textBox5
+            // timeToAnswerLabel
             // 
-            this.textBox5.Location = new System.Drawing.Point(45, 4);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
-            this.textBox5.TabIndex = 1;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(4, 4);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "label2";
+            this.timeToAnswerLabel.AutoSize = true;
+            this.timeToAnswerLabel.Location = new System.Drawing.Point(4, 4);
+            this.timeToAnswerLabel.Name = "timeToAnswerLabel";
+            this.timeToAnswerLabel.Size = new System.Drawing.Size(84, 13);
+            this.timeToAnswerLabel.TabIndex = 0;
+            this.timeToAnswerLabel.Text = "Time To Answer";
             // 
             // panel5
             // 
-            this.panel5.Controls.Add(this.button4);
-            this.panel5.Controls.Add(this.button3);
-            this.panel5.Controls.Add(this.button2);
-            this.panel5.Controls.Add(this.textBox6);
-            this.panel5.Controls.Add(this.button1);
-            this.panel5.Controls.Add(this.comboBox3);
-            this.panel5.Controls.Add(this.comboBox2);
-            this.panel5.Controls.Add(this.label4);
-            this.panel5.Location = new System.Drawing.Point(12, 310);
+            this.panel5.Controls.Add(this.mapChoiceLabel);
+            this.panel5.Controls.Add(this.mapComboBox);
+            this.panel5.Location = new System.Drawing.Point(12, 335);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(445, 89);
+            this.panel5.Size = new System.Drawing.Size(243, 31);
             this.panel5.TabIndex = 14;
+            // 
+            // mapChoiceLabel
+            // 
+            this.mapChoiceLabel.AutoSize = true;
+            this.mapChoiceLabel.Location = new System.Drawing.Point(7, 10);
+            this.mapChoiceLabel.Name = "mapChoiceLabel";
+            this.mapChoiceLabel.Size = new System.Drawing.Size(88, 13);
+            this.mapChoiceLabel.TabIndex = 17;
+            this.mapChoiceLabel.Text = "is specific to map";
+            // 
+            // mapComboBox
+            // 
+            this.mapComboBox.FormattingEnabled = true;
+            this.mapComboBox.Items.AddRange(new object[] {
+            "NONE"});
+            this.mapComboBox.Location = new System.Drawing.Point(101, 3);
+            this.mapComboBox.Name = "mapComboBox";
+            this.mapComboBox.Size = new System.Drawing.Size(121, 21);
+            this.mapComboBox.TabIndex = 16;
+            // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(3, 22);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 23);
+            this.saveButton.TabIndex = 19;
+            this.saveButton.Text = "update";
+            this.saveButton.UseVisualStyleBackColor = true;
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(300, 40);
+            this.button4.Location = new System.Drawing.Point(308, 434);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 21;
@@ -296,7 +317,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(218, 41);
+            this.button3.Location = new System.Drawing.Point(48, 434);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 20;
@@ -304,98 +325,124 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // button2
+            // clearForm
             // 
-            this.button2.Location = new System.Drawing.Point(3, 39);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 19;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
+            this.clearForm.Location = new System.Drawing.Point(299, 0);
+            this.clearForm.Name = "clearForm";
+            this.clearForm.Size = new System.Drawing.Size(140, 23);
+            this.clearForm.TabIndex = 17;
+            this.clearForm.Text = "ClearQuestion";
+            this.clearForm.UseVisualStyleBackColor = true;
             // 
-            // textBox6
+            // catagoryComboBox
             // 
-            this.textBox6.Location = new System.Drawing.Point(84, 41);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(100, 20);
-            this.textBox6.TabIndex = 18;
+            this.catagoryComboBox.FormattingEnabled = true;
+            this.catagoryComboBox.Location = new System.Drawing.Point(79, 6);
+            this.catagoryComboBox.Name = "catagoryComboBox";
+            this.catagoryComboBox.Size = new System.Drawing.Size(121, 21);
+            this.catagoryComboBox.TabIndex = 15;
             // 
-            // button1
+            // catagoryLabel
             // 
-            this.button1.Location = new System.Drawing.Point(299, 11);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 17;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(172, 11);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(121, 21);
-            this.comboBox3.TabIndex = 16;
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(45, 11);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(121, 21);
-            this.comboBox2.TabIndex = 15;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 11);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(35, 13);
-            this.label4.TabIndex = 15;
-            this.label4.Text = "label4";
+            this.catagoryLabel.AutoSize = true;
+            this.catagoryLabel.Location = new System.Drawing.Point(3, 7);
+            this.catagoryLabel.Name = "catagoryLabel";
+            this.catagoryLabel.Size = new System.Drawing.Size(70, 13);
+            this.catagoryLabel.TabIndex = 15;
+            this.catagoryLabel.Text = "is of catagory";
             // 
             // panel6
             // 
-            this.panel6.Controls.Add(this.explanationEnabled);
-            this.panel6.Controls.Add(this.richTextBox1);
-            this.panel6.Controls.Add(this.explanationLabel);
-            this.panel6.Location = new System.Drawing.Point(12, 222);
+            this.panel6.Controls.Add(this.expTextBox);
+            this.panel6.Location = new System.Drawing.Point(12, 247);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(445, 46);
             this.panel6.TabIndex = 15;
             // 
-            // explanationEnabled
+            // expTextBox
             // 
-            this.explanationEnabled.AutoSize = true;
-            this.explanationEnabled.Location = new System.Drawing.Point(3, 26);
-            this.explanationEnabled.Name = "explanationEnabled";
-            this.explanationEnabled.Size = new System.Drawing.Size(65, 17);
-            this.explanationEnabled.TabIndex = 22;
-            this.explanationEnabled.Text = "Enabled";
-            this.explanationEnabled.UseVisualStyleBackColor = true;
+            this.expTextBox.Location = new System.Drawing.Point(6, 3);
+            this.expTextBox.Name = "expTextBox";
+            this.expTextBox.Size = new System.Drawing.Size(433, 40);
+            this.expTextBox.TabIndex = 1;
+            this.expTextBox.Text = "Explanation of Answer...";
             // 
-            // richTextBox1
+            // panel7
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(71, 3);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(368, 40);
-            this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = "";
+            this.panel7.Controls.Add(this.theQuestionTitle);
+            this.panel7.Controls.Add(this.questionTitle);
+            this.panel7.Controls.Add(this.clearForm);
+            this.panel7.Location = new System.Drawing.Point(12, 56);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(445, 27);
+            this.panel7.TabIndex = 16;
             // 
-            // explanationLabel
+            // theQuestionTitle
             // 
-            this.explanationLabel.AutoSize = true;
-            this.explanationLabel.Location = new System.Drawing.Point(3, 3);
-            this.explanationLabel.Name = "explanationLabel";
-            this.explanationLabel.Size = new System.Drawing.Size(62, 13);
-            this.explanationLabel.TabIndex = 0;
-            this.explanationLabel.Text = "Explanation";
+            this.theQuestionTitle.Location = new System.Drawing.Point(36, 3);
+            this.theQuestionTitle.Name = "theQuestionTitle";
+            this.theQuestionTitle.Size = new System.Drawing.Size(257, 20);
+            this.theQuestionTitle.TabIndex = 1;
+            // 
+            // questionTitle
+            // 
+            this.questionTitle.AutoSize = true;
+            this.questionTitle.Location = new System.Drawing.Point(3, 1);
+            this.questionTitle.Name = "questionTitle";
+            this.questionTitle.Size = new System.Drawing.Size(27, 13);
+            this.questionTitle.TabIndex = 0;
+            this.questionTitle.Text = "Title";
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.catagoryLabel);
+            this.panel8.Controls.Add(this.catagoryComboBox);
+            this.panel8.Location = new System.Drawing.Point(229, 299);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(228, 30);
+            this.panel8.TabIndex = 20;
+            // 
+            // panel9
+            // 
+            this.panel9.Controls.Add(this.currentModeLabel);
+            this.panel9.Controls.Add(this.saveButton);
+            this.panel9.Controls.Add(this.currentModeHeader);
+            this.panel9.Location = new System.Drawing.Point(261, 335);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(196, 50);
+            this.panel9.TabIndex = 22;
+            // 
+            // currentModeLabel
+            // 
+            this.currentModeLabel.AutoSize = true;
+            this.currentModeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.currentModeLabel.ForeColor = System.Drawing.Color.Crimson;
+            this.currentModeLabel.Location = new System.Drawing.Point(105, 10);
+            this.currentModeLabel.Name = "currentModeLabel";
+            this.currentModeLabel.Size = new System.Drawing.Size(63, 25);
+            this.currentModeLabel.TabIndex = 1;
+            this.currentModeLabel.Text = "EDIT";
+            this.currentModeLabel.Visible = false;
+            // 
+            // currentModeHeader
+            // 
+            this.currentModeHeader.AutoSize = true;
+            this.currentModeHeader.Location = new System.Drawing.Point(3, 6);
+            this.currentModeHeader.Name = "currentModeHeader";
+            this.currentModeHeader.Size = new System.Drawing.Size(72, 13);
+            this.currentModeHeader.TabIndex = 0;
+            this.currentModeHeader.Text = "current mode:";
             // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 411);
+            this.ClientSize = new System.Drawing.Size(469, 469);
+            this.Controls.Add(this.panel9);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.panel8);
+            this.Controls.Add(this.panel7);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
@@ -415,7 +462,12 @@
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
+            this.panel9.ResumeLayout(false);
+            this.panel9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -432,29 +484,33 @@
         private System.Windows.Forms.CheckBox answerDEnable;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.RadioButton AnswerMarkD;
-        private System.Windows.Forms.RadioButton AnswerMarkC;
+        private System.Windows.Forms.RadioButton answerMarkD;
+        private System.Windows.Forms.RadioButton answerMarkC;
         private System.Windows.Forms.RadioButton answerMarkB;
         private System.Windows.Forms.RadioButton answerMarkA;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.RichTextBox questionTextBox;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.CheckBox checkBox5;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label secondsLabel;
+        private System.Windows.Forms.TextBox timeToAnswerTextBox;
+        private System.Windows.Forms.Label timeToAnswerLabel;
         private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ComboBox mapComboBox;
+        private System.Windows.Forms.ComboBox catagoryComboBox;
+        private System.Windows.Forms.Label catagoryLabel;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button clearForm;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.CheckBox explanationEnabled;
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Label explanationLabel;
+        private System.Windows.Forms.RichTextBox expTextBox;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.TextBox theQuestionTitle;
+        private System.Windows.Forms.Label questionTitle;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.Label currentModeHeader;
+        private System.Windows.Forms.Label currentModeLabel;
+        private System.Windows.Forms.Label mapChoiceLabel;
     }
 }

@@ -25,7 +25,7 @@ namespace RelicExam
         public Question(){}
         public override string ToString()
         {
-            return title + " - " + theQuestion.Substring(0, 20);
+            return title + " - " + theQuestion;
         }
     }
 }
