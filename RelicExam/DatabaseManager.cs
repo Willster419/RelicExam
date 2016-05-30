@@ -90,8 +90,30 @@ namespace RelicExam
             this.answerDEnable_CheckedChanged(null, null);
             currentModeLabel.Visible = false;
             removeButton.Enabled = false;
-            //this.loadDataBase();
-            //this.resetGUI();
+            //check if the database is blank
+            if (!File.Exists(questionPath + "\\" + questionBase))
+            {
+                this.createDataBase();
+                //new up everything
+                tempQuestion = new Question();
+                tempPlayer = new Player();
+                questionList = new List<Question>();
+                playerList = new List<Player>();
+                mapList = new List<Map>();
+                catagoryList = new List<Catagory>();
+                playerBaseReader = new XmlTextReader(playerPath + "\\" + playerBase);
+                questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
+                playerReaderList = new ArrayList();
+                questionReaderList = new ArrayList();
+                //MessageBox.Show("Database is blank");
+                //clearForm_Click(null, null);
+                //return;
+            }
+            else
+            {
+                this.loadDataBase();
+            }
+            this.resetGUI();
             wait.Close();
         }
 
@@ -297,7 +319,7 @@ namespace RelicExam
             {
                 if (Directory.Exists(dataBasePath)) Directory.Delete(dataBasePath, true);
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 MessageBox.Show("get out of my database");
             }
@@ -529,6 +551,7 @@ namespace RelicExam
             }
             else
             {
+                mapComboBox.SelectedIndex = 0;
                 currentModeLabel.Text = "UPDATE";
                 currentModeLabel.Visible = true;
                 saveButton.Text = "update";
@@ -591,6 +614,8 @@ namespace RelicExam
                     //if it gets to here it means that the map is NONE
                     mapComboBox.SelectedIndex = 0;
                 }
+                //this entry point is the only one where the first NONE from a blank database is from
+                
             }
 
         }
@@ -607,6 +632,12 @@ namespace RelicExam
             //reload the entire database to memory
             //update the gui
             //////////////////////////////////////////////////////////////////
+            //but first make sure everything is selected
+            if (theQuestionTitle.Text.Equals("") || questionTextBox.Text.Equals("") || responseATextBox.Text.Equals("") || responseBTextBox.Text.Equals("") || timeToAnswerTextBox.Text.Equals("0") || (answerCEnable.Checked && responseCTextBox.Text.Equals("")) || (answerDEnable.Checked && responseDTextBox.Text.Equals("")) || (catagoryComboBox.Text.Equals("") && catagoryComboBox.SelectedIndex == -1) || (mapComboBox.Text.Equals("") && mapComboBox.SelectedIndex == -1) || (!answerMarkA.Checked && !answerMarkB.Checked && !answerMarkC.Checked && !answerMarkD.Checked))
+            {
+                MessageBox.Show("please make sure everything is filled out properly before continuing!");
+                return;
+            }
             if (questionComboBox.SelectedIndex == 0)
             {
                 //ask if the user is sure they would like to create this question
@@ -683,6 +714,17 @@ namespace RelicExam
                     {
                         newQ.m.setMap(mapList[mapInt].getMap());
                     }
+                    //Determine if first entry in the database
+                    if (catagoryList == null)
+                    {
+                        //First Entry of catagory
+                        catagoryList = new List<Catagory>();
+                    }
+                    if (mapList == null)
+                    {
+                        //First Entry of catagory
+                        mapList = new List<Map>();
+                    }
                     //CATAGORY
                     //determine if it needs to create another entry for a new catagory
                     int numHits = 0;
@@ -707,10 +749,19 @@ namespace RelicExam
                     //if it's 0 hits then add it
                     if (numHits == 0)
                     {
-                        mapList.Add(new Map(newQ.m.getMap()));
+                        if(!newQ.m.getMap().Equals("NONE"))
+                        {
+                            mapList.Add(new Map(newQ.m.getMap()));
+                        }
                     }
                     //and add the question
+                    if (questionList == null)
+                    {
+                        //FIRST ENTRY
+                        questionList = new List<Question>();
+                    }
                     questionList.Add(newQ);
+                    this.cleanupCatagories();
                     this.createDataBase();
                     this.setupQuestionBase();
                     this.setupQuestions();
@@ -873,6 +924,7 @@ namespace RelicExam
                             mapList.Add(new Map(q2Edit.m.getMap()));
                         }
                     }
+                    this.cleanupCatagories();
                     this.createDataBase();
                     this.setupQuestionBase();
                     this.setupQuestions();
@@ -880,6 +932,7 @@ namespace RelicExam
                     this.resetGUI();
                 }
             }
+            this.saveButton.Enabled = false;
         }
 
         private void removeButton_Click(object sender, EventArgs e)
@@ -953,11 +1006,13 @@ namespace RelicExam
                 }
                 //and remove the question
                 questionList.RemoveAt(indexToRemove-1);
+                this.cleanupCatagories();
                 this.createDataBase();
                 this.setupQuestionBase();
                 this.setupQuestions();
                 this.loadDataBase();
                 this.resetGUI();
+                removeButton.Enabled = false;
             }
         }
 
@@ -1062,13 +1117,24 @@ namespace RelicExam
 
         private void timeToAnswerTextBox_Leave(object sender, EventArgs e)
         {
+            int temp = 0;
             try
             {
-                int temp = int.Parse(timeToAnswerTextBox.Text);
+                if (timeToAnswerTextBox.Text.Equals(""))
+                {
+                    timeToAnswerTextBox.Text = "0";
+                    return;
+                }
+                temp = int.Parse(timeToAnswerTextBox.Text);
             }
             catch (FormatException)
             {
-                MessageBox.Show("This must be a whole number");
+                MessageBox.Show("This must be a positive whole number");
+                timeToAnswerTextBox.Text = "" + lastNumber;
+            }
+            if (temp < 0)
+            {
+                MessageBox.Show("This must be a positive whole number");
                 timeToAnswerTextBox.Text = "" + lastNumber;
             }
         }
@@ -1110,6 +1176,39 @@ namespace RelicExam
             theQuestionTitle.Text = "";
             timeToAnswerTextBox.Text = "" + "";
             currentModeLabel.Visible = false;
+        }
+        private void cleanupCatagories()
+        {
+            //for each catagory
+            //for each question
+            //run through the list and see if it is still in use
+            //CATAGORY
+            int catagoryHits;
+            string catagory;
+            for (int i = 0; i < catagoryList.Count; i++)
+            {
+                catagoryHits = 0;
+                catagory = catagoryList[i].getCatagory();
+                for (int j = 0; j < questionList.Count; j++)
+                {
+                    if (questionList[j].cat.getCatagory().Equals(catagory)) catagoryHits++;
+                }
+                if (catagoryHits == 0) catagoryList.RemoveAt(i);
+            }
+            //MAP
+            //(remember to exclude index 0 (NONE)
+            int mapHits;
+            string map;
+            for (int i = 0; i < mapList.Count; i++)
+            {
+                mapHits = 0;
+                map = mapList[i].getMap();
+                for (int j = 0; j < questionList.Count; j++)
+                {
+                    if (questionList[j].m.getMap().Equals(map)) mapHits++;
+                }
+                if (mapHits == 0) mapList.RemoveAt(i);
+            }
         }
     }
 }

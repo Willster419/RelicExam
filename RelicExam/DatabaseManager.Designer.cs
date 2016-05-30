@@ -69,6 +69,7 @@
             this.removeButton = new System.Windows.Forms.Button();
             this.panel10 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -107,21 +108,21 @@
             this.responseATextBox.Location = new System.Drawing.Point(90, 3);
             this.responseATextBox.Name = "responseATextBox";
             this.responseATextBox.Size = new System.Drawing.Size(258, 20);
-            this.responseATextBox.TabIndex = 3;
+            this.responseATextBox.TabIndex = 4;
             // 
             // responseBTextBox
             // 
             this.responseBTextBox.Location = new System.Drawing.Point(90, 26);
             this.responseBTextBox.Name = "responseBTextBox";
             this.responseBTextBox.Size = new System.Drawing.Size(258, 20);
-            this.responseBTextBox.TabIndex = 5;
+            this.responseBTextBox.TabIndex = 6;
             // 
             // responseCTextBox
             // 
             this.responseCTextBox.Location = new System.Drawing.Point(90, 49);
             this.responseCTextBox.Name = "responseCTextBox";
             this.responseCTextBox.Size = new System.Drawing.Size(258, 20);
-            this.responseCTextBox.TabIndex = 7;
+            this.responseCTextBox.TabIndex = 9;
             // 
             // answerCEnable
             // 
@@ -129,7 +130,7 @@
             this.answerCEnable.Location = new System.Drawing.Point(3, 49);
             this.answerCEnable.Name = "answerCEnable";
             this.answerCEnable.Size = new System.Drawing.Size(65, 17);
-            this.answerCEnable.TabIndex = 6;
+            this.answerCEnable.TabIndex = 8;
             this.answerCEnable.Text = "Enabled";
             this.answerCEnable.UseVisualStyleBackColor = true;
             this.answerCEnable.CheckedChanged += new System.EventHandler(this.answerCEnable_CheckedChanged);
@@ -139,7 +140,7 @@
             this.responseDTextBox.Location = new System.Drawing.Point(90, 72);
             this.responseDTextBox.Name = "responseDTextBox";
             this.responseDTextBox.Size = new System.Drawing.Size(258, 20);
-            this.responseDTextBox.TabIndex = 9;
+            this.responseDTextBox.TabIndex = 12;
             // 
             // answerDEnable
             // 
@@ -147,7 +148,7 @@
             this.answerDEnable.Location = new System.Drawing.Point(3, 72);
             this.answerDEnable.Name = "answerDEnable";
             this.answerDEnable.Size = new System.Drawing.Size(65, 17);
-            this.answerDEnable.TabIndex = 8;
+            this.answerDEnable.TabIndex = 11;
             this.answerDEnable.Text = "Enabled";
             this.answerDEnable.UseVisualStyleBackColor = true;
             this.answerDEnable.CheckedChanged += new System.EventHandler(this.answerDEnable_CheckedChanged);
@@ -159,7 +160,7 @@
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(445, 42);
-            this.panel1.TabIndex = 10;
+            this.panel1.TabIndex = 0;
             // 
             // panel2
             // 
@@ -176,7 +177,7 @@
             this.panel2.Location = new System.Drawing.Point(12, 141);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(445, 100);
-            this.panel2.TabIndex = 11;
+            this.panel2.TabIndex = 4;
             // 
             // answerMarkD
             // 
@@ -184,7 +185,7 @@
             this.answerMarkD.Location = new System.Drawing.Point(357, 73);
             this.answerMarkD.Name = "answerMarkD";
             this.answerMarkD.Size = new System.Drawing.Size(60, 17);
-            this.answerMarkD.TabIndex = 4;
+            this.answerMarkD.TabIndex = 13;
             this.answerMarkD.TabStop = true;
             this.answerMarkD.Text = "Answer";
             this.answerMarkD.UseVisualStyleBackColor = true;
@@ -195,7 +196,7 @@
             this.answerMarkC.Location = new System.Drawing.Point(357, 50);
             this.answerMarkC.Name = "answerMarkC";
             this.answerMarkC.Size = new System.Drawing.Size(60, 17);
-            this.answerMarkC.TabIndex = 3;
+            this.answerMarkC.TabIndex = 10;
             this.answerMarkC.TabStop = true;
             this.answerMarkC.Text = "Answer";
             this.answerMarkC.UseVisualStyleBackColor = true;
@@ -206,7 +207,7 @@
             this.answerMarkB.Location = new System.Drawing.Point(357, 29);
             this.answerMarkB.Name = "answerMarkB";
             this.answerMarkB.Size = new System.Drawing.Size(60, 17);
-            this.answerMarkB.TabIndex = 2;
+            this.answerMarkB.TabIndex = 7;
             this.answerMarkB.TabStop = true;
             this.answerMarkB.Text = "Answer";
             this.answerMarkB.UseVisualStyleBackColor = true;
@@ -217,7 +218,7 @@
             this.answerMarkA.Location = new System.Drawing.Point(357, 6);
             this.answerMarkA.Name = "answerMarkA";
             this.answerMarkA.Size = new System.Drawing.Size(60, 17);
-            this.answerMarkA.TabIndex = 1;
+            this.answerMarkA.TabIndex = 5;
             this.answerMarkA.TabStop = true;
             this.answerMarkA.Text = "Answer";
             this.answerMarkA.UseVisualStyleBackColor = true;
@@ -228,14 +229,14 @@
             this.panel3.Location = new System.Drawing.Point(12, 85);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(445, 50);
-            this.panel3.TabIndex = 12;
+            this.panel3.TabIndex = 3;
             // 
             // questionTextBox
             // 
             this.questionTextBox.Location = new System.Drawing.Point(6, 4);
             this.questionTextBox.Name = "questionTextBox";
             this.questionTextBox.Size = new System.Drawing.Size(436, 43);
-            this.questionTextBox.TabIndex = 0;
+            this.questionTextBox.TabIndex = 3;
             this.questionTextBox.Text = "";
             // 
             // panel4
@@ -246,7 +247,7 @@
             this.panel4.Location = new System.Drawing.Point(12, 299);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(207, 30);
-            this.panel4.TabIndex = 13;
+            this.panel4.TabIndex = 6;
             // 
             // secondsLabel
             // 
@@ -262,7 +263,7 @@
             this.timeToAnswerTextBox.Location = new System.Drawing.Point(94, 4);
             this.timeToAnswerTextBox.Name = "timeToAnswerTextBox";
             this.timeToAnswerTextBox.Size = new System.Drawing.Size(52, 20);
-            this.timeToAnswerTextBox.TabIndex = 1;
+            this.timeToAnswerTextBox.TabIndex = 14;
             this.timeToAnswerTextBox.Enter += new System.EventHandler(this.timeToAnswerTextBox_Enter);
             this.timeToAnswerTextBox.Leave += new System.EventHandler(this.timeToAnswerTextBox_Leave);
             this.timeToAnswerTextBox.MouseLeave += new System.EventHandler(this.timeToAnswerTextBox_MouseLeave);
@@ -283,7 +284,7 @@
             this.panel5.Location = new System.Drawing.Point(12, 335);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(231, 50);
-            this.panel5.TabIndex = 14;
+            this.panel5.TabIndex = 9;
             // 
             // mapChoiceLabel
             // 
@@ -309,14 +310,14 @@
             this.saveButton.Location = new System.Drawing.Point(20, 2);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
-            this.saveButton.TabIndex = 19;
+            this.saveButton.TabIndex = 17;
             this.saveButton.Text = "update";
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(308, 391);
+            this.button4.Location = new System.Drawing.Point(311, 413);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 21;
@@ -326,10 +327,10 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(48, 391);
+            this.button3.Location = new System.Drawing.Point(48, 413);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 20;
+            this.button3.TabIndex = 19;
             this.button3.Text = "test write";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
@@ -339,7 +340,7 @@
             this.clearForm.Location = new System.Drawing.Point(299, 0);
             this.clearForm.Name = "clearForm";
             this.clearForm.Size = new System.Drawing.Size(140, 23);
-            this.clearForm.TabIndex = 17;
+            this.clearForm.TabIndex = 2;
             this.clearForm.Text = "reset GUI";
             this.clearForm.UseVisualStyleBackColor = true;
             this.clearForm.Click += new System.EventHandler(this.clearForm_Click);
@@ -367,7 +368,7 @@
             this.panel6.Location = new System.Drawing.Point(12, 247);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(445, 46);
-            this.panel6.TabIndex = 15;
+            this.panel6.TabIndex = 5;
             // 
             // expTextBox
             // 
@@ -385,7 +386,7 @@
             this.panel7.Location = new System.Drawing.Point(12, 56);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(445, 27);
-            this.panel7.TabIndex = 16;
+            this.panel7.TabIndex = 1;
             // 
             // theQuestionTitle
             // 
@@ -410,7 +411,7 @@
             this.panel8.Location = new System.Drawing.Point(229, 299);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(228, 30);
-            this.panel8.TabIndex = 20;
+            this.panel8.TabIndex = 8;
             // 
             // panel9
             // 
@@ -447,7 +448,7 @@
             this.removeButton.Location = new System.Drawing.Point(20, 25);
             this.removeButton.Name = "removeButton";
             this.removeButton.Size = new System.Drawing.Size(75, 23);
-            this.removeButton.TabIndex = 20;
+            this.removeButton.TabIndex = 18;
             this.removeButton.Text = "remove";
             this.removeButton.UseVisualStyleBackColor = true;
             this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
@@ -459,23 +460,33 @@
             this.panel10.Location = new System.Drawing.Point(353, 335);
             this.panel10.Name = "panel10";
             this.panel10.Size = new System.Drawing.Size(104, 50);
-            this.panel10.TabIndex = 23;
+            this.panel10.TabIndex = 10;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(176, 391);
+            this.button1.Location = new System.Drawing.Point(176, 413);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(88, 23);
-            this.button1.TabIndex = 24;
+            this.button1.TabIndex = 20;
             this.button1.Text = "Create Blank";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(173, 388);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(98, 13);
+            this.label1.TabIndex = 23;
+            this.label1.Text = "Dev Options Below";
             // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 419);
+            this.ClientSize = new System.Drawing.Size(469, 407);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel10);
             this.Controls.Add(this.panel9);
@@ -510,6 +521,7 @@
             this.panel9.PerformLayout();
             this.panel10.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -556,5 +568,6 @@
         private System.Windows.Forms.Button removeButton;
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label1;
     }
 }
