@@ -10,7 +10,7 @@ namespace RelicExam
     {
         //all parameters we will need in this class
         public string title;
-        public string catagory;
+        public Catagory cat;
         public string theQuestion;
         public string responseA;
         public string responseB;
@@ -21,8 +21,11 @@ namespace RelicExam
         public string answer;
         public int timeToAnswer;
         public string explanationOfAnswer;
-        public string map;
-        public Question(){}
+        public Map m;
+        public Question(){
+            cat = new Catagory();
+            m = new Map();
+        }
         public override string ToString()
         {
             return title + " - " + theQuestion;

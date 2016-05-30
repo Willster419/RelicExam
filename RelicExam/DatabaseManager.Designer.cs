@@ -66,6 +66,8 @@
             this.panel9 = new System.Windows.Forms.Panel();
             this.currentModeLabel = new System.Windows.Forms.Label();
             this.currentModeHeader = new System.Windows.Forms.Label();
+            this.removeButton = new System.Windows.Forms.Button();
+            this.panel10 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -75,6 +77,7 @@
             this.panel7.SuspendLayout();
             this.panel8.SuspendLayout();
             this.panel9.SuspendLayout();
+            this.panel10.SuspendLayout();
             this.SuspendLayout();
             // 
             // questionComboBox
@@ -258,6 +261,9 @@
             this.timeToAnswerTextBox.Name = "timeToAnswerTextBox";
             this.timeToAnswerTextBox.Size = new System.Drawing.Size(52, 20);
             this.timeToAnswerTextBox.TabIndex = 1;
+            this.timeToAnswerTextBox.Enter += new System.EventHandler(this.timeToAnswerTextBox_Enter);
+            this.timeToAnswerTextBox.Leave += new System.EventHandler(this.timeToAnswerTextBox_Leave);
+            this.timeToAnswerTextBox.MouseLeave += new System.EventHandler(this.timeToAnswerTextBox_MouseLeave);
             // 
             // timeToAnswerLabel
             // 
@@ -274,13 +280,13 @@
             this.panel5.Controls.Add(this.mapComboBox);
             this.panel5.Location = new System.Drawing.Point(12, 335);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(243, 31);
+            this.panel5.Size = new System.Drawing.Size(231, 50);
             this.panel5.TabIndex = 14;
             // 
             // mapChoiceLabel
             // 
             this.mapChoiceLabel.AutoSize = true;
-            this.mapChoiceLabel.Location = new System.Drawing.Point(7, 10);
+            this.mapChoiceLabel.Location = new System.Drawing.Point(4, 19);
             this.mapChoiceLabel.Name = "mapChoiceLabel";
             this.mapChoiceLabel.Size = new System.Drawing.Size(88, 13);
             this.mapChoiceLabel.TabIndex = 17;
@@ -291,23 +297,24 @@
             this.mapComboBox.FormattingEnabled = true;
             this.mapComboBox.Items.AddRange(new object[] {
             "NONE"});
-            this.mapComboBox.Location = new System.Drawing.Point(101, 3);
+            this.mapComboBox.Location = new System.Drawing.Point(107, 16);
             this.mapComboBox.Name = "mapComboBox";
             this.mapComboBox.Size = new System.Drawing.Size(121, 21);
             this.mapComboBox.TabIndex = 16;
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(3, 22);
+            this.saveButton.Location = new System.Drawing.Point(20, 2);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 19;
             this.saveButton.Text = "update";
             this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(308, 434);
+            this.button4.Location = new System.Drawing.Point(308, 391);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 21;
@@ -317,7 +324,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(48, 434);
+            this.button3.Location = new System.Drawing.Point(48, 391);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 20;
@@ -405,11 +412,10 @@
             // panel9
             // 
             this.panel9.Controls.Add(this.currentModeLabel);
-            this.panel9.Controls.Add(this.saveButton);
             this.panel9.Controls.Add(this.currentModeHeader);
-            this.panel9.Location = new System.Drawing.Point(261, 335);
+            this.panel9.Location = new System.Drawing.Point(246, 335);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(196, 50);
+            this.panel9.Size = new System.Drawing.Size(101, 50);
             this.panel9.TabIndex = 22;
             // 
             // currentModeLabel
@@ -417,7 +423,7 @@
             this.currentModeLabel.AutoSize = true;
             this.currentModeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.currentModeLabel.ForeColor = System.Drawing.Color.Crimson;
-            this.currentModeLabel.Location = new System.Drawing.Point(105, 10);
+            this.currentModeLabel.Location = new System.Drawing.Point(3, 19);
             this.currentModeLabel.Name = "currentModeLabel";
             this.currentModeLabel.Size = new System.Drawing.Size(63, 25);
             this.currentModeLabel.TabIndex = 1;
@@ -433,11 +439,31 @@
             this.currentModeHeader.TabIndex = 0;
             this.currentModeHeader.Text = "current mode:";
             // 
+            // removeButton
+            // 
+            this.removeButton.Location = new System.Drawing.Point(20, 25);
+            this.removeButton.Name = "removeButton";
+            this.removeButton.Size = new System.Drawing.Size(75, 23);
+            this.removeButton.TabIndex = 20;
+            this.removeButton.Text = "remove";
+            this.removeButton.UseVisualStyleBackColor = true;
+            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
+            // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this.removeButton);
+            this.panel10.Controls.Add(this.saveButton);
+            this.panel10.Location = new System.Drawing.Point(353, 335);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(104, 50);
+            this.panel10.TabIndex = 23;
+            // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 469);
+            this.ClientSize = new System.Drawing.Size(469, 419);
+            this.Controls.Add(this.panel10);
             this.Controls.Add(this.panel9);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.panel8);
@@ -468,6 +494,7 @@
             this.panel8.PerformLayout();
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
+            this.panel10.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -512,5 +539,7 @@
         private System.Windows.Forms.Label currentModeHeader;
         private System.Windows.Forms.Label currentModeLabel;
         private System.Windows.Forms.Label mapChoiceLabel;
+        private System.Windows.Forms.Button removeButton;
+        private System.Windows.Forms.Panel panel10;
     }
 }
