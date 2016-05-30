@@ -84,6 +84,7 @@ namespace RelicExam
             tempPlayer = new Player();
 
             //update gui
+            
             //System.Threading.Thread.Sleep(100);
             this.answerCEnable_CheckedChanged(null, null);
             this.answerDEnable_CheckedChanged(null, null);
@@ -503,6 +504,13 @@ namespace RelicExam
 
         private void button4_Click(object sender, EventArgs e)
         {
+            //check if the database is blank
+            if (!File.Exists(questionPath + "\\" + questionBase))
+            {
+                MessageBox.Show("Database is blank");
+                clearForm_Click(null, null);
+                return;
+            }
             this.loadDataBase();
             this.resetGUI();
         }
@@ -646,18 +654,37 @@ namespace RelicExam
                     newQ.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
                     int catagoryInt = catagoryComboBox.SelectedIndex;
                     //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
-                    newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
+                    if (catagoryInt == -1)
+                    {
+                        //NEW CATAGORY
+                        //catagoryList.Add(new Catagory(catagoryComboBox.Text));
+                        newQ.cat.setCatagory(catagoryComboBox.Text);
+                        catagoryComboBox.Text = "";
+                    }
+                    else
+                    {
+                        newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
+                    }
+                    //newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
                     int mapInt = mapComboBox.SelectedIndex-1;
                     //newQ.m.setMap(mapComboBox.SelectedText);
                     if (mapInt == -1)
                     {
                         newQ.m.setMap("NONE");
                     }
+                    else if (mapInt == -2)
+                    {
+                        //NEW MAP
+                        // mapList.Add(new Map(mapComboBox.Text));
+                        newQ.m.setMap(mapComboBox.Text);
+                        mapComboBox.Text = "";
+                    }
                     else
                     {
                         newQ.m.setMap(mapList[mapInt].getMap());
                     }
-                    //determine if it needs to create another entry for a new catagory or map
+                    //CATAGORY
+                    //determine if it needs to create another entry for a new catagory
                     int numHits = 0;
                     //run through the catagory list and count number of times the catagory to add shows up
                     foreach (Catagory catTT in catagoryList)
@@ -668,6 +695,19 @@ namespace RelicExam
                     if (numHits == 0)
                     {
                         catagoryList.Add(new Catagory(newQ.cat.getCatagory()));
+                    }
+                    //MAP
+                    //determine if it needs to create another entry for a new map
+                    int numMapHits = 0;
+                    //run through the map list and count number of times the map to add shows up
+                    foreach (Map mapPP in mapList)
+                    {
+                        if (newQ.m.getMap().Equals(mapPP.getMap())) numMapHits++;
+                    }
+                    //if it's 0 hits then add it
+                    if (numHits == 0)
+                    {
+                        mapList.Add(new Map(newQ.m.getMap()));
                     }
                     //and add the question
                     questionList.Add(newQ);
@@ -724,6 +764,7 @@ namespace RelicExam
                     q2Edit.title = theQuestionTitle.Text;
                     q2Edit.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
                     string oldCatagory = q2Edit.cat.getCatagory();
+                    string oldMap = q2Edit.m.getMap();
                     int catagoryInt = catagoryComboBox.SelectedIndex;
                     //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
                     if (catagoryInt == -1)
@@ -754,21 +795,22 @@ namespace RelicExam
                     {
                         q2Edit.m.setMap(mapList[mapInt].getMap());
                     }
-                    //determine if the map or catagory has changed
-                    if (catagoryComboBox.SelectedText.Equals(q2Edit.cat.getCatagory()))
+                    //CATAGORY
+                    //determine if the catagory has changed
+                    if (catagoryComboBox.SelectedItem!=null)
                     {
                         //nothing needs to be done
                     }
                     else
                     {
-                        //if so, determine if old one was the last one of a catagory or map
+                        //if so, determine if old one was the last one of a catagory
                         int numHitsRemove = 0;
                         //run through the catagory list and count number of times the catagory to remove shows up
                         foreach (Catagory cat in catagoryList)
                         {
                             if (cat.Equals(oldCatagory)) numHitsRemove++;
                         }
-                        //and determine if new one needs a new entry for the new catagory or map
+                        //and determine if new one needs a new entry for the new catagory
                         int numHitsAdd = 0;
                         foreach (Catagory cat in catagoryList)
                         {
@@ -790,6 +832,45 @@ namespace RelicExam
                         if (numHitsAdd == 0)
                         {
                             catagoryList.Add(new Catagory(q2Edit.cat.getCatagory()));
+                        }
+                    }
+                    //MAP
+                    //determine if the map has changed
+                    if (mapComboBox.SelectedItem!=null)
+                    {
+                        //nothing needs to be done
+                    }
+                    else
+                    {
+                        //if so, determine if old one was the last one of a map
+                        int numMapHitsRemove = 0;
+                        //run through the map list and count number of times the map to remove shows up
+                        foreach (Map cat in mapList)
+                        {
+                            if (cat.Equals(oldMap)) numMapHitsRemove++;
+                        }
+                        //and determine if new one needs a new entry for the new map
+                        int numMapHitsAdd = 0;
+                        foreach (Map cat in mapList)
+                        {
+                            if (cat.Equals(q2Edit.m.getMap())) numMapHitsAdd++;
+                        }
+                        //if remove is only 1 then remove it
+                        if (numMapHitsRemove == 1)
+                        {
+                            for (int i = 0; i < mapList.Count; i++)
+                            {
+                                string temp = mapList[i].getMap();
+                                if (oldMap.Equals(temp))
+                                {
+                                    mapList.RemoveAt(i);
+                                }
+                            }
+                        }
+                        //if add is 0 then add it
+                        if (numMapHitsAdd == 0)
+                        {
+                            mapList.Add(new Map(q2Edit.m.getMap()));
                         }
                     }
                     this.createDataBase();
@@ -821,17 +902,20 @@ namespace RelicExam
             {
                 //procede...
                 int indexToRemove = questionComboBox.SelectedIndex;
-
-                //determine if it's the last one of a catagory or map
+                Question q2Rem = questionList[indexToRemove - 1];
+                //CATAGORY
+                //determine if it's the last one of a catagory
                 int numHits = 0;
-                Question q2Rem = questionList[indexToRemove-1];
                 Catagory tempCat = q2Rem.cat;
                 string catT = tempCat.getCatagory();
                 //run through the catagory list and count number of times the catagory to remove shows up
-                foreach (Catagory cat in catagoryList)
+                /*foreach (Catagory cat in catagoryList)
                 {
-                    string catListString = cat.getCatagory();
-                    if (catT.Equals(catListString)) numHits++;
+                    if (catT.Equals(cat.getCatagory())) numHits++;
+                }*/
+                foreach (Question q in questionList)
+                {
+                    if (catT.Equals(q.cat.getCatagory())) numHits++;
                 }
                 //if it's only 1 then remove it
                 if (numHits == 1)
@@ -842,6 +926,28 @@ namespace RelicExam
                         if (catT.Equals(catagoryList[i].getCatagory()))
                         {
                             catagoryList.RemoveAt(i);
+                        }
+                    }
+                }
+                //MAP
+                //determine if it's the last one of a map
+                int numMapHits = 0;
+                Map tempMap = q2Rem.m;
+                string MapP = tempMap.getMap();
+                //run through the catagory list and count number of times the catagory to remove shows up
+                foreach (Map mapppp in mapList)
+                {
+                    string mapListString = mapppp.getMap();
+                    if (MapP.Equals(mapListString)) numMapHits++;
+                }
+                //if it's only 1 then remove it
+                if (numHits == 1)
+                {
+                    for (int i = 0; i < mapList.Count; i++)
+                    {
+                        if (MapP.Equals(mapList[i].getMap()))
+                        {
+                            mapList.RemoveAt(i);
                         }
                     }
                 }
@@ -943,7 +1049,7 @@ namespace RelicExam
 
         private void timeToAnswerTextBox_MouseLeave(object sender, EventArgs e)
         {
-            try
+            /*try
             {
                 int temp = int.Parse(timeToAnswerTextBox.Text);
             }
@@ -951,7 +1057,7 @@ namespace RelicExam
             {
                 MessageBox.Show("This must be a whole number");
                 timeToAnswerTextBox.Text = "" + lastNumber;
-            }
+            }*/
         }
 
         private void timeToAnswerTextBox_Leave(object sender, EventArgs e)
@@ -977,6 +1083,33 @@ namespace RelicExam
             {
 
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.createDataBase();
+        }
+
+        private void clearForm_Click(object sender, EventArgs e)
+        {
+            questionComboBox.SelectedIndex = -1;
+            mapComboBox.SelectedIndex = -1;
+            catagoryComboBox.SelectedIndex = -1;
+            questionTextBox.Text = "";
+            responseATextBox.Text = "";
+            responseBTextBox.Text = "";
+            answerCEnable.Checked = false;
+            responseCTextBox.Text = "";
+            answerDEnable.Checked = false;
+            responseDTextBox.Text = "";
+            answerMarkA.Checked = false;
+            answerMarkB.Checked = false;
+            answerMarkC.Checked = false;
+            answerMarkD.Checked = false;
+            expTextBox.Text = "";
+            theQuestionTitle.Text = "";
+            timeToAnswerTextBox.Text = "" + "";
+            currentModeLabel.Visible = false;
         }
     }
 }
