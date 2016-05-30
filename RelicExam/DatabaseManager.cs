@@ -630,8 +630,12 @@ namespace RelicExam
                     newQ.explanationOfAnswer = expTextBox.Text;
                     newQ.title = theQuestionTitle.Text;
                     newQ.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
-                    newQ.cat.setCatagory(catagoryComboBox.SelectedText);
-                    newQ.m.setMap(mapComboBox.SelectedText);
+                    int catagoryInt = catagoryComboBox.SelectedIndex;
+                    //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
+                    newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
+                    int mapInt = mapComboBox.SelectedIndex-1;
+                    //newQ.m.setMap(mapComboBox.SelectedText);
+                    newQ.m.setMap(mapList[mapInt].getMap());
                     //determine if it needs to create another entry for a new catagory or map
                     int numHits = 0;
                     //run through the catagory list and count number of times the catagory to add shows up
@@ -656,7 +660,7 @@ namespace RelicExam
             else
             {
                 //ask if the user is sure they would like to update the selected question
-                DialogResult result = MessageBox.Show("Are you sure you would like to upodate this question?", "Are you Sure", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("Are you sure you would like to update this question?", "Are you Sure", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
                     return;
@@ -699,8 +703,12 @@ namespace RelicExam
                     q2Edit.title = theQuestionTitle.Text;
                     q2Edit.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
                     string oldCatagory = q2Edit.cat.getCatagory();
-                    q2Edit.cat.setCatagory(catagoryComboBox.SelectedText);
-                    q2Edit.m.setMap(mapComboBox.SelectedText);
+                    int catagoryInt = catagoryComboBox.SelectedIndex;
+                    //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
+                    q2Edit.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
+                    int mapInt = mapComboBox.SelectedIndex - 1;
+                    //newQ.m.setMap(mapComboBox.SelectedText);
+                    q2Edit.m.setMap(mapList[mapInt].getMap());
                     //determine if the map or catagory has changed
                     if (catagoryComboBox.SelectedText.Equals(q2Edit.cat.getCatagory()))
                     {
