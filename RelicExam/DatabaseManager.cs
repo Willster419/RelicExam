@@ -252,6 +252,12 @@ namespace RelicExam
 
         private void answerCEnable_CheckedChanged(object sender, EventArgs e)
         {
+            if (answerMarkC.Checked)
+            {
+                MessageBox.Show("Cannot Disable the Answer Question!!");
+                answerCEnable.Checked = true;
+                return;
+            }
             if (answerCEnable.Checked)
             {
                 responseCTextBox.ReadOnly = false;
@@ -266,6 +272,12 @@ namespace RelicExam
 
         private void answerDEnable_CheckedChanged(object sender, EventArgs e)
         {
+            if (answerMarkD.Checked)
+            {
+                MessageBox.Show("Cannot Disable the Answer Question!!");
+                answerDEnable.Checked = true;
+                return;
+            }
             if (answerDEnable.Checked)
             {
                 responseDTextBox.ReadOnly = false;
@@ -568,6 +580,8 @@ namespace RelicExam
                         mapComboBox.SelectedIndex = ++i;
                         break;
                     }
+                    //if it gets to here it means that the map is NONE
+                    mapComboBox.SelectedIndex = 0;
                 }
             }
 
@@ -635,7 +649,14 @@ namespace RelicExam
                     newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
                     int mapInt = mapComboBox.SelectedIndex-1;
                     //newQ.m.setMap(mapComboBox.SelectedText);
-                    newQ.m.setMap(mapList[mapInt].getMap());
+                    if (mapInt == -1)
+                    {
+                        newQ.m.setMap("NONE");
+                    }
+                    else
+                    {
+                        newQ.m.setMap(mapList[mapInt].getMap());
+                    }
                     //determine if it needs to create another entry for a new catagory or map
                     int numHits = 0;
                     //run through the catagory list and count number of times the catagory to add shows up
@@ -705,10 +726,34 @@ namespace RelicExam
                     string oldCatagory = q2Edit.cat.getCatagory();
                     int catagoryInt = catagoryComboBox.SelectedIndex;
                     //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
-                    q2Edit.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
+                    if (catagoryInt == -1)
+                    {
+                        //NEW CATAGORY
+                        //catagoryList.Add(new Catagory(catagoryComboBox.Text));
+                        q2Edit.cat.setCatagory(catagoryComboBox.Text);
+                        catagoryComboBox.Text = "";
+                    }
+                    else
+                    {
+                        q2Edit.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
+                    }
                     int mapInt = mapComboBox.SelectedIndex - 1;
                     //newQ.m.setMap(mapComboBox.SelectedText);
-                    q2Edit.m.setMap(mapList[mapInt].getMap());
+                    if (mapInt == -1)
+                    {
+                        q2Edit.m.setMap("NONE");
+                    }
+                    else if (mapInt == -2)
+                    {
+                        //NEW MAP
+                       // mapList.Add(new Map(mapComboBox.Text));
+                        q2Edit.m.setMap(mapComboBox.Text);
+                        mapComboBox.Text = "";
+                    }
+                    else
+                    {
+                        q2Edit.m.setMap(mapList[mapInt].getMap());
+                    }
                     //determine if the map or catagory has changed
                     if (catagoryComboBox.SelectedText.Equals(q2Edit.cat.getCatagory()))
                     {
