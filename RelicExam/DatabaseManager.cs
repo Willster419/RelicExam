@@ -522,6 +522,7 @@ namespace RelicExam
         {
             this.createDataBase();
             this.setupSampleXmlFiles();
+            button1.Enabled = false;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -1154,6 +1155,7 @@ namespace RelicExam
         private void button1_Click(object sender, EventArgs e)
         {
             this.createDataBase();
+            button3.Enabled = false;
         }
 
         private void clearForm_Click(object sender, EventArgs e)
