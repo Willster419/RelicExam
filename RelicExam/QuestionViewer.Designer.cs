@@ -39,23 +39,24 @@
             this.radioButtonB = new System.Windows.Forms.RadioButton();
             this.radioButtonC = new System.Windows.Forms.RadioButton();
             this.radioButtonD = new System.Windows.Forms.RadioButton();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.theQuestionRichTextBox = new System.Windows.Forms.RichTextBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.correctOrNot = new System.Windows.Forms.Label();
             this.numSecondsLeft = new System.Windows.Forms.Label();
             this.secondsLeftLabel = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.responseD = new System.Windows.Forms.TextBox();
+            this.responseC = new System.Windows.Forms.TextBox();
+            this.responseB = new System.Windows.Forms.TextBox();
+            this.responseA = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.theMap = new System.Windows.Forms.Label();
             this.mapLabel = new System.Windows.Forms.Label();
             this.theCatagory = new System.Windows.Forms.Label();
             this.catagoryLabel = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.outOfTime = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.submitAnswer = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -165,13 +166,13 @@
             this.radioButtonD.Text = "D";
             this.radioButtonD.UseVisualStyleBackColor = true;
             // 
-            // richTextBox1
+            // theQuestionRichTextBox
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(12, 103);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(620, 50);
-            this.richTextBox1.TabIndex = 11;
-            this.richTextBox1.Text = "";
+            this.theQuestionRichTextBox.Location = new System.Drawing.Point(12, 103);
+            this.theQuestionRichTextBox.Name = "theQuestionRichTextBox";
+            this.theQuestionRichTextBox.Size = new System.Drawing.Size(620, 50);
+            this.theQuestionRichTextBox.TabIndex = 11;
+            this.theQuestionRichTextBox.Text = "";
             // 
             // richTextBox2
             // 
@@ -216,10 +217,10 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.textBox1);
-            this.panel1.Controls.Add(this.textBox2);
-            this.panel1.Controls.Add(this.textBox3);
-            this.panel1.Controls.Add(this.textBox4);
+            this.panel1.Controls.Add(this.responseD);
+            this.panel1.Controls.Add(this.responseC);
+            this.panel1.Controls.Add(this.responseB);
+            this.panel1.Controls.Add(this.responseA);
             this.panel1.Controls.Add(this.radioButtonA);
             this.panel1.Controls.Add(this.radioButtonB);
             this.panel1.Controls.Add(this.radioButtonC);
@@ -229,33 +230,33 @@
             this.panel1.Size = new System.Drawing.Size(620, 100);
             this.panel1.TabIndex = 17;
             // 
-            // textBox1
+            // responseD
             // 
-            this.textBox1.Location = new System.Drawing.Point(42, 74);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(570, 20);
-            this.textBox1.TabIndex = 21;
+            this.responseD.Location = new System.Drawing.Point(42, 74);
+            this.responseD.Name = "responseD";
+            this.responseD.Size = new System.Drawing.Size(570, 20);
+            this.responseD.TabIndex = 21;
             // 
-            // textBox2
+            // responseC
             // 
-            this.textBox2.Location = new System.Drawing.Point(42, 48);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(570, 20);
-            this.textBox2.TabIndex = 22;
+            this.responseC.Location = new System.Drawing.Point(42, 48);
+            this.responseC.Name = "responseC";
+            this.responseC.Size = new System.Drawing.Size(570, 20);
+            this.responseC.TabIndex = 22;
             // 
-            // textBox3
+            // responseB
             // 
-            this.textBox3.Location = new System.Drawing.Point(42, 26);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(570, 20);
-            this.textBox3.TabIndex = 23;
+            this.responseB.Location = new System.Drawing.Point(42, 26);
+            this.responseB.Name = "responseB";
+            this.responseB.Size = new System.Drawing.Size(570, 20);
+            this.responseB.TabIndex = 23;
             // 
-            // textBox4
+            // responseA
             // 
-            this.textBox4.Location = new System.Drawing.Point(42, 3);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(570, 20);
-            this.textBox4.TabIndex = 24;
+            this.responseA.Location = new System.Drawing.Point(42, 3);
+            this.responseA.Name = "responseA";
+            this.responseA.Size = new System.Drawing.Size(570, 20);
+            this.responseA.TabIndex = 24;
             // 
             // panel2
             // 
@@ -274,9 +275,9 @@
             // 
             // theMap
             // 
-            this.theMap.Location = new System.Drawing.Point(547, 12);
+            this.theMap.Location = new System.Drawing.Point(534, 12);
             this.theMap.Name = "theMap";
-            this.theMap.Size = new System.Drawing.Size(41, 16);
+            this.theMap.Size = new System.Drawing.Size(83, 16);
             this.theMap.TabIndex = 0;
             this.theMap.Text = "label10";
             // 
@@ -290,15 +291,15 @@
             // 
             // theCatagory
             // 
-            this.theCatagory.Location = new System.Drawing.Point(442, 12);
+            this.theCatagory.Location = new System.Drawing.Point(417, 12);
             this.theCatagory.Name = "theCatagory";
-            this.theCatagory.Size = new System.Drawing.Size(41, 13);
+            this.theCatagory.Size = new System.Drawing.Size(86, 16);
             this.theCatagory.TabIndex = 22;
             this.theCatagory.Text = "label12";
             // 
             // catagoryLabel
             // 
-            this.catagoryLabel.Location = new System.Drawing.Point(385, 12);
+            this.catagoryLabel.Location = new System.Drawing.Point(369, 12);
             this.catagoryLabel.Name = "catagoryLabel";
             this.catagoryLabel.Size = new System.Drawing.Size(51, 13);
             this.catagoryLabel.TabIndex = 21;
@@ -306,6 +307,7 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.outOfTime);
             this.panel3.Controls.Add(this.progressBar1);
             this.panel3.Controls.Add(this.numSecondsLeft);
             this.panel3.Controls.Add(this.secondsLeftLabel);
@@ -313,6 +315,15 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(620, 73);
             this.panel3.TabIndex = 19;
+            // 
+            // outOfTime
+            // 
+            this.outOfTime.AutoSize = true;
+            this.outOfTime.Location = new System.Drawing.Point(369, 14);
+            this.outOfTime.Name = "outOfTime";
+            this.outOfTime.Size = new System.Drawing.Size(67, 13);
+            this.outOfTime.TabIndex = 21;
+            this.outOfTime.Text = "Out Of Time!";
             // 
             // progressBar1
             // 
@@ -374,9 +385,10 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.correctOrNot);
             this.Controls.Add(this.richTextBox2);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.theQuestionRichTextBox);
             this.Name = "QuestionViewer";
             this.Text = "QuestionViewer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.QuestionViewer_FormClosing);
             this.Load += new System.EventHandler(this.QuestionViewer_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -403,17 +415,17 @@
         private System.Windows.Forms.RadioButton radioButtonB;
         private System.Windows.Forms.RadioButton radioButtonC;
         private System.Windows.Forms.RadioButton radioButtonD;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox theQuestionRichTextBox;
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.Label correctOrNot;
         private System.Windows.Forms.Label numSecondsLeft;
         private System.Windows.Forms.Label secondsLeftLabel;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox responseD;
+        private System.Windows.Forms.TextBox responseC;
+        private System.Windows.Forms.TextBox responseB;
+        private System.Windows.Forms.TextBox responseA;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label theMap;
         private System.Windows.Forms.Label mapLabel;
@@ -425,5 +437,6 @@
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Button nextQuestion;
         private System.Windows.Forms.Button rageQuit;
+        private System.Windows.Forms.Label outOfTime;
     }
 }

@@ -21,7 +21,7 @@ namespace RelicExam
     public partial class MainPage : Form
     {
         //All variables that will exist throughout the lifetime of the program
-        private Results resultsViewer;
+        private Results theResults;
         private DatabaseManager dataBaseManager;
         private EnterPassword enterPassword;
         private QuestionViewer questionViewer;
@@ -68,7 +68,6 @@ namespace RelicExam
             questionBase = "questionBase.xml";
 
             //make instances of all the sub forms withen this form
-            resultsViewer = new Results();
             dataBaseManager = new DatabaseManager();
             enterPassword = new EnterPassword();
             //new up the xml reader and stuff
@@ -115,6 +114,7 @@ namespace RelicExam
                 {
                     specifyTypeBox.Items.RemoveAt(0);
                 }
+                specifyTypeBox.Items.Add(new Map("NONE"));
                 foreach (Map m in mapList)
                 {
                     specifyTypeBox.Items.Add(m);
@@ -145,6 +145,11 @@ namespace RelicExam
 
         private void BeginTestButton_Click(object sender, EventArgs e)
         {
+            if ((selectNumQuestions.SelectedIndex == -1 || selectTestType.SelectedIndex == -1) || ((2 > selectTestType.SelectedIndex && selectTestType.SelectedIndex > -1) && specifyTypeBox.SelectedIndex == -1))
+            {
+                MessageBox.Show("Please select all options");
+                return;
+            }
             int numQuestions;
             numQuestions = int.Parse(selectNumQuestions.SelectedItem.ToString());
             if (selectTestType.SelectedIndex == 0)
@@ -153,7 +158,7 @@ namespace RelicExam
                 string selectedType = specifyTypeBox.SelectedItem.ToString();
                 questionViewer = new QuestionViewer(numQuestions, null, selectedType);
                 photoViewer = new PhotoViewer();
-                questionViewer.Show();
+                questionViewer.ShowDialog();
             }
             else if (selectTestType.SelectedIndex == 1)
             {
@@ -161,14 +166,14 @@ namespace RelicExam
                 string selectedType = specifyTypeBox.SelectedItem.ToString();
                 questionViewer = new QuestionViewer(numQuestions,selectedType,null);
                 photoViewer = new PhotoViewer();
-                questionViewer.Show();
+                questionViewer.ShowDialog();
             }
             else if (selectTestType.SelectedIndex == 2)
             {
                 //RANDOM
                 questionViewer = new QuestionViewer(numQuestions,null,null);
                 photoViewer = new PhotoViewer();
-                questionViewer.Show();
+                questionViewer.ShowDialog();
             }
             else { }
         }

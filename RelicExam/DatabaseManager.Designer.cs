@@ -70,6 +70,7 @@
             this.panel10 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.verifyCode = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -317,21 +318,21 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(311, 413);
+            this.button4.Location = new System.Drawing.Point(353, 413);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.Size = new System.Drawing.Size(106, 23);
             this.button4.TabIndex = 21;
-            this.button4.Text = "test read";
+            this.button4.Text = "test read database";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(48, 413);
+            this.button3.Location = new System.Drawing.Point(5, 413);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.Size = new System.Drawing.Size(153, 23);
             this.button3.TabIndex = 19;
-            this.button3.Text = "test write";
+            this.button3.Text = "test write sample database";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -466,9 +467,9 @@
             // 
             this.button1.Location = new System.Drawing.Point(176, 413);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(88, 23);
+            this.button1.Size = new System.Drawing.Size(138, 23);
             this.button1.TabIndex = 20;
-            this.button1.Text = "Create Blank";
+            this.button1.Text = "Create Blank Database";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -481,11 +482,22 @@
             this.label1.TabIndex = 23;
             this.label1.Text = "Dev Options Below";
             // 
+            // verifyCode
+            // 
+            this.verifyCode.Location = new System.Drawing.Point(369, 388);
+            this.verifyCode.Name = "verifyCode";
+            this.verifyCode.Size = new System.Drawing.Size(75, 23);
+            this.verifyCode.TabIndex = 24;
+            this.verifyCode.Text = "Verify Code";
+            this.verifyCode.UseVisualStyleBackColor = true;
+            this.verifyCode.Click += new System.EventHandler(this.verifyCode_Click);
+            // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(469, 442);
+            this.Controls.Add(this.verifyCode);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel10);
@@ -569,5 +581,6 @@
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button verifyCode;
     }
 }

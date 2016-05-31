@@ -28,113 +28,112 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.scoreLabel1 = new System.Windows.Forms.Label();
+            this.totalQuestionsLabel = new System.Windows.Forms.Label();
+            this.scoreLabel2 = new System.Windows.Forms.Label();
+            this.numberCorrectLabel = new System.Windows.Forms.Label();
+            this.percentCorrectLabel = new System.Windows.Forms.Label();
+            this.percentLabel = new System.Windows.Forms.Label();
+            this.verificationCodeLabel = new System.Windows.Forms.Label();
+            this.closeBurron = new System.Windows.Forms.Button();
+            this.vCodeLabel = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // label1
+            // scoreLabel1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "You scored a";
+            this.scoreLabel1.AutoSize = true;
+            this.scoreLabel1.Location = new System.Drawing.Point(12, 19);
+            this.scoreLabel1.Name = "scoreLabel1";
+            this.scoreLabel1.Size = new System.Drawing.Size(70, 13);
+            this.scoreLabel1.TabIndex = 0;
+            this.scoreLabel1.Text = "You scored a";
             // 
-            // label2
+            // totalQuestionsLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(224, 19);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(27, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "total";
+            this.totalQuestionsLabel.AutoSize = true;
+            this.totalQuestionsLabel.Location = new System.Drawing.Point(224, 19);
+            this.totalQuestionsLabel.Name = "totalQuestionsLabel";
+            this.totalQuestionsLabel.Size = new System.Drawing.Size(27, 13);
+            this.totalQuestionsLabel.TabIndex = 1;
+            this.totalQuestionsLabel.Text = "total";
             // 
-            // label3
+            // scoreLabel2
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(134, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(84, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "out of a possible";
+            this.scoreLabel2.AutoSize = true;
+            this.scoreLabel2.Location = new System.Drawing.Point(134, 19);
+            this.scoreLabel2.Name = "scoreLabel2";
+            this.scoreLabel2.Size = new System.Drawing.Size(84, 13);
+            this.scoreLabel2.TabIndex = 2;
+            this.scoreLabel2.Text = "out of a possible";
             // 
-            // label4
+            // numberCorrectLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(88, 19);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "correct";
+            this.numberCorrectLabel.AutoSize = true;
+            this.numberCorrectLabel.Location = new System.Drawing.Point(88, 19);
+            this.numberCorrectLabel.Name = "numberCorrectLabel";
+            this.numberCorrectLabel.Size = new System.Drawing.Size(40, 13);
+            this.numberCorrectLabel.TabIndex = 3;
+            this.numberCorrectLabel.Text = "correct";
             // 
-            // label5
+            // percentCorrectLabel
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(85, 52);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(43, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "percent";
+            this.percentCorrectLabel.AutoSize = true;
+            this.percentCorrectLabel.Location = new System.Drawing.Point(85, 52);
+            this.percentCorrectLabel.Name = "percentCorrectLabel";
+            this.percentCorrectLabel.Size = new System.Drawing.Size(43, 13);
+            this.percentCorrectLabel.TabIndex = 4;
+            this.percentCorrectLabel.Text = "percent";
             // 
-            // label6
+            // percentLabel
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(159, 52);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(15, 13);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "%";
+            this.percentLabel.AutoSize = true;
+            this.percentLabel.Location = new System.Drawing.Point(159, 52);
+            this.percentLabel.Name = "percentLabel";
+            this.percentLabel.Size = new System.Drawing.Size(15, 13);
+            this.percentLabel.TabIndex = 5;
+            this.percentLabel.Text = "%";
             // 
-            // label7
+            // verificationCodeLabel
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 82);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(118, 13);
-            this.label7.TabIndex = 6;
-            this.label7.Text = "your verification code is";
+            this.verificationCodeLabel.AutoSize = true;
+            this.verificationCodeLabel.Location = new System.Drawing.Point(22, 82);
+            this.verificationCodeLabel.Name = "verificationCodeLabel";
+            this.verificationCodeLabel.Size = new System.Drawing.Size(118, 13);
+            this.verificationCodeLabel.TabIndex = 6;
+            this.verificationCodeLabel.Text = "your verification code is";
             // 
-            // label8
+            // closeBurron
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(159, 82);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(67, 13);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "numberCode";
+            this.closeBurron.Location = new System.Drawing.Point(88, 104);
+            this.closeBurron.Name = "closeBurron";
+            this.closeBurron.Size = new System.Drawing.Size(75, 23);
+            this.closeBurron.TabIndex = 8;
+            this.closeBurron.Text = "dismiss";
+            this.closeBurron.UseVisualStyleBackColor = true;
+            this.closeBurron.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button1
+            // vCodeLabel
             // 
-            this.button1.Location = new System.Drawing.Point(88, 104);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "dismiss";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.vCodeLabel.Location = new System.Drawing.Point(146, 79);
+            this.vCodeLabel.Name = "vCodeLabel";
+            this.vCodeLabel.ReadOnly = true;
+            this.vCodeLabel.Size = new System.Drawing.Size(100, 20);
+            this.vCodeLabel.TabIndex = 9;
             // 
             // Results
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(254, 139);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.vCodeLabel);
+            this.Controls.Add(this.closeBurron);
+            this.Controls.Add(this.verificationCodeLabel);
+            this.Controls.Add(this.percentLabel);
+            this.Controls.Add(this.percentCorrectLabel);
+            this.Controls.Add(this.numberCorrectLabel);
+            this.Controls.Add(this.scoreLabel2);
+            this.Controls.Add(this.totalQuestionsLabel);
+            this.Controls.Add(this.scoreLabel1);
             this.Name = "Results";
             this.Text = "Results";
             this.Load += new System.EventHandler(this.Results_Load);
@@ -145,14 +144,14 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label scoreLabel1;
+        private System.Windows.Forms.Label totalQuestionsLabel;
+        private System.Windows.Forms.Label scoreLabel2;
+        private System.Windows.Forms.Label numberCorrectLabel;
+        private System.Windows.Forms.Label percentCorrectLabel;
+        private System.Windows.Forms.Label percentLabel;
+        private System.Windows.Forms.Label verificationCodeLabel;
+        private System.Windows.Forms.Button closeBurron;
+        private System.Windows.Forms.TextBox vCodeLabel;
     }
 }

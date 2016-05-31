@@ -47,6 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Catagory.cs" />
+    <Compile Include="CodeVerify.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CodeVerify.Designer.cs">
+      <DependentUpon>CodeVerify.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseManager.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,6 +100,9 @@
     <Compile Include="Results.Designer.cs">
       <DependentUpon>Results.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CodeVerify.resx">
+      <DependentUpon>CodeVerify.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DatabaseManager.resx">
       <DependentUpon>DatabaseManager.cs</DependentUpon>
     </EmbeddedResource>

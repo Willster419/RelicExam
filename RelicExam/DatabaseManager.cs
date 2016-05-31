@@ -540,6 +540,7 @@ namespace RelicExam
 
         private void questionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            saveButton.Enabled = true;
             if (questionComboBox.SelectedIndex == -1) return;
             //determine if a new question is being made or if one is being updated
             if (questionComboBox.SelectedIndex == 0)
@@ -786,16 +787,27 @@ namespace RelicExam
                     q2Edit.theQuestion = questionTextBox.Text;
                     q2Edit.responseA = responseATextBox.Text;
                     q2Edit.responseB = responseBTextBox.Text;
+
+                    q2Edit.responseCEnabled = answerCEnable.Checked;
                     if (answerCEnable.Checked)
                     {
-                        q2Edit.responseCEnabled = answerCEnable.Checked;
                         q2Edit.responseC = responseCTextBox.Text;
                     }
+                    else
+                    {
+                        q2Edit.responseC = "";
+                    }
+
+                    q2Edit.responseDEnabled = answerDEnable.Checked;
                     if (answerDEnable.Checked)
                     {
-                        q2Edit.responseDEnabled = answerDEnable.Checked;
                         q2Edit.responseD = responseDTextBox.Text;
                     }
+                    else
+                    {
+                        q2Edit.responseD = "";
+                    }
+
                     if (answerMarkA.Checked)
                     {
                         q2Edit.answer = "a";
@@ -1211,6 +1223,12 @@ namespace RelicExam
                 }
                 if (mapHits == 0) mapList.RemoveAt(i);
             }
+        }
+
+        private void verifyCode_Click(object sender, EventArgs e)
+        {
+            CodeVerify v = new CodeVerify();
+            v.ShowDialog();
         }
     }
 }
