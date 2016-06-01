@@ -51,7 +51,6 @@ namespace RelicExam
         private List<Map> mapList;
         private List<Catagory> catagoryList;
         private int lastNumber;
-        private FileStream stream;
 
         public DatabaseManager()
         {
@@ -313,7 +312,7 @@ namespace RelicExam
             }
         }
 
-        private void createDataBase()
+        public void createDataBase()
         {
             try
             {
@@ -328,7 +327,7 @@ namespace RelicExam
             Directory.CreateDirectory(playerPath);
         }
 
-        private void setupSampleXmlFiles()
+        public void setupSampleXmlFiles()
         {
             //setup sample questionBase arrayLists
             sampleCatagories = new string[3];
