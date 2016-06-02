@@ -36,7 +36,7 @@ namespace RelicExam
 
         private void PhotoViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            if(pictureBox1.Image != null) pictureBox1.Image.Dispose();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -48,15 +48,23 @@ namespace RelicExam
         private void button1_Click(object sender, EventArgs e)
         {
             //accept
-
-            cancel = false;
+            //checks for invalid photo names
             if (photoName.Text.Equals(""))
             {
                 MessageBox.Show("Invalid name");
-                cancel = true;
                 return;
             }
+            for (int i = 0; i < thePictureList.Count; i++)
+            {
+                if (thePictureList[i].photoTitle.Equals(photoName.Text))
+                {
+                    MessageBox.Show("Name is already taken");
+                    photoName.Text = oldName;
+                    return;
+                }
+            }
             photoNamee = photoName.Text;
+            cancel = false;
             this.Close();
         }
 
@@ -72,6 +80,7 @@ namespace RelicExam
 
         private void photoName_Leave(object sender, EventArgs e)
         {
+            /*
             //checks for invalid photo names
             if(photoName.Text.Equals(""))
             {
@@ -85,7 +94,7 @@ namespace RelicExam
                     MessageBox.Show("Name is already taken");
                     photoName.Text = oldName;
                 }
-            }
+            }*/
         }
 
         private void photoName_Enter(object sender, EventArgs e)

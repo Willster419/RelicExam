@@ -40,7 +40,7 @@ namespace RelicExam
         public string questionPath;
         public string questionBase;
         private WebClient client = new WebClient();
-        private string version = "Beta2";
+        private string version = "Beta3";
         private PleaseWait wait;
 
         public MainPage()

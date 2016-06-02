@@ -27,6 +27,7 @@ namespace RelicExam
         private List<Question> questionList;
         private List<Map> mapList;
         private List<Catagory> catagoryList;
+        private List<Picture> pictureList;
         private string tempPath;
         private string appPath;
         public string dataBasePath;
@@ -41,6 +42,8 @@ namespace RelicExam
         private Results theResults;
         private int timeLeft;
         bool canSubmit;
+        private PhotoViewer foto;
+        private Point pictureSpawnPoint;
 
         public QuestionViewer()
         {
@@ -107,7 +110,9 @@ namespace RelicExam
             questionReaderList = new ArrayList();
             tempQuestion = new Question();
             questionDisplayList = new List<Question>();
+            pictureList = new List<Picture>();
             rng = new Random();
+            List<string> pictureFileNameList = new List<string>();
 
             //parse questionBase
             while (questionBaseReader.Read())
@@ -119,10 +124,20 @@ namespace RelicExam
                         case "question":
                             questionReaderList.Add(questionBaseReader.ReadString());
                             break;
+                        case "picture":
+                            pictureList.Add(new Picture(questionBaseReader.ReadString()));
+                            break;
+                        case "pictureFilePath":
+                            pictureFileNameList.Add(questionBaseReader.ReadString());
+                            break;
                     }
                 }
             }
             questionBaseReader.Close();
+            for (int i = 0; i < pictureList.Count; i++)
+            {
+                pictureList[i].photoFileName = pictureFileNameList[i];
+            }
 
             //parse questions
             foreach (string q in questionReaderList)
@@ -174,6 +189,17 @@ namespace RelicExam
                                 break;
                             case "map":
                                 tempQuestion.m.setMap(questionReader.ReadString());
+                                break;
+                            case "picture":
+                                string result = questionReader.ReadString();
+                                if (result.Equals("NONE") || result.Equals(""))
+                                {
+                                    tempQuestion.p = new Picture("NONE", "null.jpg");
+                                }
+                                else
+                                {
+                                    tempQuestion.p = pictureList[getPicture(result)];
+                                }
                                 break;
                         }
                     }
@@ -240,6 +266,7 @@ namespace RelicExam
             if (currentQuestion == numQuestions)
             {
                 theResults = new Results(numCorrect,numQuestions);
+                if (foto != null) foto.Close();
                 theResults.ShowDialog();
                 this.Hide();
                 return;
@@ -253,6 +280,7 @@ namespace RelicExam
 
         private void displayNextQuestion()
         {
+            if (foto != null) foto.Close();
             loadedQuestion = questionDisplayList[currentQuestion];
             //display every single UI componet of the question
             currentQuestionNum.Text = "" + (currentQuestion+1);
@@ -286,6 +314,18 @@ namespace RelicExam
             radioButtonB.Checked = false;
             radioButtonC.Checked = false;
             radioButtonD.Checked = false;
+            pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
+            foto = new PhotoViewer(pictureSpawnPoint);
+            foto.Location = pictureSpawnPoint;
+            if (loadedQuestion.p.photoFileName.Equals("null.jpg"))
+            {
+
+            }
+            else
+            {
+                foto.setPicture(loadedQuestion.p.photoFileName);
+            }
+            foto.Show();
             //good for debugging, bad for quizing
             /*
             if (loadedQuestion.answer.Equals("a"))
@@ -364,6 +404,19 @@ namespace RelicExam
                 correctOrNot.Visible = true;
                 richTextBox2.Visible = true;
             }
+        }
+        //gets the index from pictureList of desired picture based on title
+        private int getPicture(string title)
+        {
+            if (title.Equals("NONE")) return 0;
+            for (int i = 0; i < pictureList.Count; i++)
+            {
+                if (title.Equals(pictureList[i].photoTitle))
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }
