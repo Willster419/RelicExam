@@ -29,22 +29,31 @@
         private void InitializeComponent()
         {
             this.databaseLoading = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // databaseLoading
             // 
             this.databaseLoading.AutoSize = true;
-            this.databaseLoading.Location = new System.Drawing.Point(36, 11);
+            this.databaseLoading.Location = new System.Drawing.Point(68, 9);
             this.databaseLoading.Name = "databaseLoading";
-            this.databaseLoading.Size = new System.Drawing.Size(207, 13);
+            this.databaseLoading.Size = new System.Drawing.Size(134, 13);
             this.databaseLoading.TabIndex = 0;
-            this.databaseLoading.Text = "Please wait while the database is loaded...";
+            this.databaseLoading.Text = "Please wait while loading...";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(12, 36);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(260, 23);
+            this.progressBar1.TabIndex = 1;
             // 
             // PleaseWait
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 33);
+            this.ClientSize = new System.Drawing.Size(284, 71);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.databaseLoading);
             this.Name = "PleaseWait";
             this.Text = "PleaseWait";
@@ -56,5 +65,6 @@
         #endregion
 
         private System.Windows.Forms.Label databaseLoading;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }

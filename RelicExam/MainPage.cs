@@ -15,8 +15,6 @@ using Microsoft.Win32;
 using System.Threading;
 using System.Xml;
 using System.Collections;
-using System.Reflection;
-using System.Net;
 using System.Diagnostics;
 using AppLimit.CloudComputing.SharpBox;
 using AppLimit.CloudComputing.SharpBox.StorageProvider.DropBox;
@@ -28,7 +26,6 @@ namespace RelicExam
     public partial class MainPage : Form
     {
         //All variables that will exist throughout the lifetime of the program
-        private Results theResults;
         private DatabaseManager dataBaseManager;
         private EnterPassword enterPassword;
         private QuestionViewer questionViewer;
@@ -43,10 +40,8 @@ namespace RelicExam
         public string questionPath;
         public string questionBase;
         private WebClient client = new WebClient();
-        private string version = "Beta1";
+        private string version = "Beta2";
         private PleaseWait wait;
-        CloudStorage dropBoxStorage;
-        private const string apiKey = "ZX7u4QKL2HkAAAAAAAAPq8qmD2JJfmJjRu9CnIb6RtwpkLlqA3HXqITsvkWpsyl2";
 
         public MainPage()
         {
@@ -66,13 +61,14 @@ namespace RelicExam
             }
             else
             {
-                dataBaseManager.ShowDialog();
+                if (!dataBaseManager.close) dataBaseManager.ShowDialog();
+                else { }
             }
         }
 
         private void MainPage_Load(object sender, EventArgs e)
         {
-            wait = new PleaseWait();
+            wait = new PleaseWait(10,1);
             Application.DoEvents();
             wait.Show();
             Application.DoEvents();
@@ -83,6 +79,11 @@ namespace RelicExam
             dataBasePath = tempPath + "\\relicExamDatabase";
             questionPath = dataBasePath + "\\questions";
             questionBase = "questionBase.xml";
+            
+            //check if dependencies are downloaded
+            if (!File.Exists(appPath + "\\AppLimit.CloudComputing.SharpBox.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/AppLimit.CloudComputing.SharpBox.dll", appPath + "\\AppLimit.CloudComputing.SharpBox.dll");
+            if (!File.Exists(appPath + "\\key.txt")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/key.txt", appPath + "\\key.txt");
+            if (!File.Exists(appPath + "\\Newtonsoft.Json.Net40.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Newtonsoft.Json.Net40.dll",appPath + "\\Newtonsoft.Json.Net40.dll");
 
             //check for updates
             Directory.CreateDirectory(dataBasePath);
@@ -112,6 +113,11 @@ namespace RelicExam
                     this.Close();
                 }
             }
+            wait.setProgress(3);
+            Application.DoEvents();
+            //make instances of all the sub forms withen this form
+            dataBaseManager = new DatabaseManager();
+            enterPassword = new EnterPassword();
             //DEV CODE HERE
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
@@ -122,47 +128,28 @@ namespace RelicExam
                     DatabaseManager m = new DatabaseManager();
                     m.Show();
                     m.Hide();
-                    m.createDataBase();
+                    m.createDataBase(true);
                     m.setupSampleXmlFiles();
                 }
-                else { }
+                else {  }
             }
             //END DEV CODE
 
-            //make instances of all the sub forms withen this form
-            dataBaseManager = new DatabaseManager();
-            enterPassword = new EnterPassword();
+            wait.setProgress(4);
+            Application.DoEvents();
+            
             //new up the xml reader and stuff
             questionList = new List<Question>();
             mapList = new List<Map>();
             catagoryList = new List<Catagory>();
             questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-
+            wait.setProgress(5);
+            Application.DoEvents();
             //Download the Latest QuestionBase
 
-            //WORKING DROPBOX CODE FOR UPLOAD FILES
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            /*File.WriteAllText(dataBasePath + "\\test.txt", "this is a test of the sharpBox api");
-            dropBoxStorage = new CloudStorage();
-            // get the configuration for dropbox
-            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-            // declare an access token
-            ICloudStorageAccessToken accessToken = null;
-            // load a valid security token from file
-            using (FileStream fs = File.Open("C:\\New Text Document.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-            {
-                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-            }
-            // open the connection 
-            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-            // get a specific directory in the cloud storage, e.g. /Public 
-            var publicFolder = dropBoxStorage.GetFolder("/Public");
-            // upload a testfile from temp directory into public folder of DropBox
-            String srcFile = Environment.ExpandEnvironmentVariables(dataBasePath + "\\test.txt");
-            dropBoxStorage.UploadFile(srcFile, publicFolder);
-            dropBoxStorage.Close();*/
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+            wait.setProgress(9);
+            Application.DoEvents();
             //read the catagories and maps
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
@@ -188,6 +175,8 @@ namespace RelicExam
                 }
                 questionBaseReader.Close();
             }
+            wait.setProgress(10);
+            Application.DoEvents();
             wait.Close();
         }
 

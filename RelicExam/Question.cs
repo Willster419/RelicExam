@@ -22,9 +22,11 @@ namespace RelicExam
         public int timeToAnswer;
         public string explanationOfAnswer;
         public Map m;
+        public Picture p;
         public Question(){
             cat = new Catagory();
             m = new Map();
+            p = new Picture();
         }
         public override string ToString()
         {

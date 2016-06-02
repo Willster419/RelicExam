@@ -71,6 +71,12 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.verifyCode = new System.Windows.Forms.Button();
+            this.uploadButton = new System.Windows.Forms.Button();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -81,6 +87,7 @@
             this.panel8.SuspendLayout();
             this.panel9.SuspendLayout();
             this.panel10.SuspendLayout();
+            this.panel11.SuspendLayout();
             this.SuspendLayout();
             // 
             // questionComboBox
@@ -135,6 +142,8 @@
             this.answerCEnable.Text = "Enabled";
             this.answerCEnable.UseVisualStyleBackColor = true;
             this.answerCEnable.CheckedChanged += new System.EventHandler(this.answerCEnable_CheckedChanged);
+            this.answerCEnable.CheckStateChanged += new System.EventHandler(this.answerCEnable_CheckStateChanged);
+            this.answerCEnable.Click += new System.EventHandler(this.answerCEnable_Click);
             // 
             // responseDTextBox
             // 
@@ -308,7 +317,7 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(20, 2);
+            this.saveButton.Location = new System.Drawing.Point(14, 3);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 17;
@@ -318,21 +327,23 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(353, 413);
+            this.button4.Enabled = false;
+            this.button4.Location = new System.Drawing.Point(379, 460);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(106, 23);
+            this.button4.Size = new System.Drawing.Size(87, 23);
             this.button4.TabIndex = 21;
-            this.button4.Text = "test read database";
+            this.button4.Text = "read database";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(5, 413);
+            this.button3.Enabled = false;
+            this.button3.Location = new System.Drawing.Point(3, 460);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(153, 23);
+            this.button3.Size = new System.Drawing.Size(123, 23);
             this.button3.TabIndex = 19;
-            this.button3.Text = "test write sample database";
+            this.button3.Text = "write sample database";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -418,7 +429,7 @@
             // 
             this.panel9.Controls.Add(this.currentModeLabel);
             this.panel9.Controls.Add(this.currentModeHeader);
-            this.panel9.Location = new System.Drawing.Point(246, 335);
+            this.panel9.Location = new System.Drawing.Point(356, 335);
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(101, 50);
             this.panel9.TabIndex = 22;
@@ -446,7 +457,7 @@
             // 
             // removeButton
             // 
-            this.removeButton.Location = new System.Drawing.Point(20, 25);
+            this.removeButton.Location = new System.Drawing.Point(14, 24);
             this.removeButton.Name = "removeButton";
             this.removeButton.Size = new System.Drawing.Size(75, 23);
             this.removeButton.TabIndex = 18;
@@ -458,16 +469,17 @@
             // 
             this.panel10.Controls.Add(this.removeButton);
             this.panel10.Controls.Add(this.saveButton);
-            this.panel10.Location = new System.Drawing.Point(353, 335);
+            this.panel10.Location = new System.Drawing.Point(359, 388);
             this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(104, 50);
+            this.panel10.Size = new System.Drawing.Size(95, 50);
             this.panel10.TabIndex = 10;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(176, 413);
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(132, 460);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(138, 23);
+            this.button1.Size = new System.Drawing.Size(127, 23);
             this.button1.TabIndex = 20;
             this.button1.Text = "Create Blank Database";
             this.button1.UseVisualStyleBackColor = true;
@@ -476,7 +488,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(173, 388);
+            this.label1.Location = new System.Drawing.Point(193, 444);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(98, 13);
             this.label1.TabIndex = 23;
@@ -484,7 +496,7 @@
             // 
             // verifyCode
             // 
-            this.verifyCode.Location = new System.Drawing.Point(369, 388);
+            this.verifyCode.Location = new System.Drawing.Point(265, 344);
             this.verifyCode.Name = "verifyCode";
             this.verifyCode.Size = new System.Drawing.Size(75, 23);
             this.verifyCode.TabIndex = 24;
@@ -492,12 +504,71 @@
             this.verifyCode.UseVisualStyleBackColor = true;
             this.verifyCode.Click += new System.EventHandler(this.verifyCode_Click);
             // 
+            // uploadButton
+            // 
+            this.uploadButton.Enabled = false;
+            this.uploadButton.Location = new System.Drawing.Point(265, 460);
+            this.uploadButton.Name = "uploadButton";
+            this.uploadButton.Size = new System.Drawing.Size(108, 23);
+            this.uploadButton.TabIndex = 25;
+            this.uploadButton.Text = "Upload to Dropbox";
+            this.uploadButton.UseVisualStyleBackColor = true;
+            this.uploadButton.Click += new System.EventHandler(this.uploadButton_Click);
+            // 
+            // panel11
+            // 
+            this.panel11.Controls.Add(this.button2);
+            this.panel11.Controls.Add(this.label2);
+            this.panel11.Controls.Add(this.comboBox1);
+            this.panel11.Location = new System.Drawing.Point(12, 388);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(338, 50);
+            this.panel11.TabIndex = 26;
+            // 
+            // button2
+            // 
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(268, 14);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(67, 23);
+            this.button2.TabIndex = 27;
+            this.button2.Text = "add new...";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 1);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(68, 13);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Select Photo";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "NONE"});
+            this.comboBox1.Location = new System.Drawing.Point(6, 16);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(256, 21);
+            this.comboBox1.TabIndex = 25;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 442);
+            this.ClientSize = new System.Drawing.Size(469, 495);
+            this.Controls.Add(this.panel11);
             this.Controls.Add(this.verifyCode);
+            this.Controls.Add(this.uploadButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel10);
@@ -514,6 +585,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "DatabaseManager";
             this.Text = "DatabaseManager";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DatabaseManager_FormClosing);
             this.Load += new System.EventHandler(this.DatabaseManager_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -532,6 +604,8 @@
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
             this.panel10.ResumeLayout(false);
+            this.panel11.ResumeLayout(false);
+            this.panel11.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -582,5 +656,11 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button verifyCode;
+        private System.Windows.Forms.Button uploadButton;
+        private System.Windows.Forms.Panel panel11;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }

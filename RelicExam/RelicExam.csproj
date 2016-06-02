@@ -101,6 +101,7 @@
     <Compile Include="PhotoViewer.Designer.cs">
       <DependentUpon>PhotoViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Picture.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PleaseWait.cs">
       <SubType>Form</SubType>
@@ -134,6 +135,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainPage.resx">
       <DependentUpon>MainPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PhotoViewer.resx">
+      <DependentUpon>PhotoViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PleaseWait.resx">
       <DependentUpon>PleaseWait.cs</DependentUpon>

@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 using System.Xml;
-using System.Collections;
 using System.IO;
 
 namespace RelicExam
@@ -21,8 +20,6 @@ namespace RelicExam
         private int currentQuestion = 0;
         private Question tempQuestion;
         Question loadedQuestion;
-        Catagory loadedCatagory;
-        Map loadedMap;
         public int numCorrect;
         public bool correct;
         private XmlTextReader questionBaseReader;

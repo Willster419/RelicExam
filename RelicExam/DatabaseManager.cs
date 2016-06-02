@@ -14,6 +14,10 @@ using Microsoft.Win32;
 using System.Threading;
 using System.Xml;
 using System.Collections;
+using System.Diagnostics;
+using AppLimit.CloudComputing.SharpBox;
+using AppLimit.CloudComputing.SharpBox.StorageProvider.DropBox;
+using System.Web;
 
 namespace RelicExam
 {
@@ -51,6 +55,16 @@ namespace RelicExam
         private List<Map> mapList;
         private List<Catagory> catagoryList;
         private int lastNumber;
+        private bool hasMadeChanges;
+        private CloudStorage dropBoxStorage;
+        private WebClient client = new WebClient();
+        public bool close;
+        private string pictureName;
+        private PhotoViewer chooser;
+        private List<Picture> pictureList;
+        private Point pictureSpawnPoint;
+        private string picturePath;
+        private bool actuallyLoad;
 
         public DatabaseManager()
         {
@@ -59,16 +73,17 @@ namespace RelicExam
 
         private void DatabaseManager_Load(object sender, EventArgs e)
         {
+            actuallyLoad = false;
             //display a loading window and load the database
             wait = new PleaseWait();
-            Application.DoEvents();
+            //Application.DoEvents();
             wait.Show();
             Application.DoEvents();
             //do all intensive code here
-
+            
             //write a file saying someone is editing the questionList to DropBox
 
-
+            hasMadeChanges = false;
             //parse all file paths
             appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
@@ -77,11 +92,53 @@ namespace RelicExam
             playerPath = dataBasePath + "\\players";
             questionBase = "questionBase.xml";
             playerBase = "playerBase.xml";
+            picturePath = dataBasePath + "\\pictures";
 
             //declare all temp objects
             tempQuestion = new Question();
             tempPlayer = new Player();
 
+            //check for another user on the system
+            try
+            {
+                //client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/inUse.txt", tempPath + "\\inUse.txt");
+                //MessageBox.Show("Database is currently being edited, try again later");
+                ////this.Close();
+                //wait.Close();
+                //close = true;
+            }
+            catch (WebException)
+            {
+                //if none, you are the user now
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //DISABLE WHEN DEVELOPING
+                /*File.WriteAllText(tempPath + "\\inUse.txt", "the service is in use");
+                dropBoxStorage = new CloudStorage();
+                // get the configuration for dropbox
+                var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+                // declare an access token
+                ICloudStorageAccessToken accessToken = null;
+                // load a valid security token from file
+                using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                }
+                // open the connection 
+                var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+                // get a specific directory in the cloud storage, e.g. /Public 
+                var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
+                String srcFile = Environment.ExpandEnvironmentVariables(tempPath + "\\inUse.txt");
+                dropBoxStorage.UploadFile(srcFile, questionsFolder);
+                dropBoxStorage.Close();*/
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            }
+            if (close)
+            {
+                this.Close();
+                return;
+            }
+
+            wait.Close();
             //update gui
             
             //System.Threading.Thread.Sleep(100);
@@ -92,7 +149,7 @@ namespace RelicExam
             //check if the database is blank
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
-                this.createDataBase();
+                this.createDataBase(true);
                 //new up everything
                 tempQuestion = new Question();
                 tempPlayer = new Player();
@@ -104,6 +161,7 @@ namespace RelicExam
                 questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
                 playerReaderList = new ArrayList();
                 questionReaderList = new ArrayList();
+                pictureList = new List<Picture>();
                 //MessageBox.Show("Database is blank");
                 //clearForm_Click(null, null);
                 //return;
@@ -113,7 +171,7 @@ namespace RelicExam
                 this.loadDataBase();
             }
             this.resetGUI();
-            wait.Close();
+            
         }
 
         private void loadDataBase()
@@ -124,11 +182,29 @@ namespace RelicExam
             questionList = new List<Question>();
             playerList = new List<Player>();
             mapList = new List<Map>();
+            pictureList = new List<Picture>();
             catagoryList = new List<Catagory>();
-            playerBaseReader = new XmlTextReader(playerPath + "\\" + playerBase);
-            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
             playerReaderList = new ArrayList();
             questionReaderList = new ArrayList();
+
+            //download latest questionBase
+            if (File.Exists(questionPath + "\\" + questionBase)) File.Delete(questionPath + "\\" + questionBase);
+            try
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\" + questionBase);
+            }
+            catch (WebException)
+            {
+                MessageBox.Show("404 nooooooooo");
+                this.Close();
+                return;
+                //File.Move(questionPath + "\\questionBase.tmp",questionPath + "\\" + questionBase);
+            }
+
+            //then we can new up the xml readers
+            playerBaseReader = new XmlTextReader(playerPath + "\\" + playerBase);
+            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
+            List<string> pictureFileNameList = new List<string>();
 
             //read question base
             while (questionBaseReader.Read())
@@ -146,10 +222,25 @@ namespace RelicExam
                         case "question":
                             questionReaderList.Add(questionBaseReader.ReadString());
                             break;
+                        case "picture":
+                            pictureList.Add(new Picture(questionBaseReader.ReadString()));
+                            break;
+                        case "pictureFilePath":
+                            pictureFileNameList.Add(questionBaseReader.ReadString());
+                            break;
                     }
                 }
             }
             questionBaseReader.Close();
+            //transfer all the list stuff over
+            for (int i = 0; i < pictureList.Count; i++)
+            {
+                pictureList[i].photoFileName = pictureFileNameList[i];
+            }
+
+            wait = new PleaseWait(questionReaderList.Count, 0);
+            wait.Show();
+            int progg = 0;
             //read player base
             /*while (playerBaseReader.Read())
             {
@@ -166,9 +257,14 @@ namespace RelicExam
             playerBaseReader.Close();
             //parse players (TODO)
             //playerReader.Close();*/
+
             //parse questions
             foreach (string q in questionReaderList)
             {
+                wait.setProgress(progg++);
+                //download them first tho
+                if (File.Exists(questionPath + "\\" + q)) File.Delete(questionPath + "\\" + q);
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/" + q, questionPath + "\\" + q);
                 questionReader = new XmlTextReader(questionPath + "\\" + q);
                 tempQuestion = new Question();
                 while (questionReader.Read())
@@ -217,13 +313,24 @@ namespace RelicExam
                             case "map":
                                 tempQuestion.m.setMap(questionReader.ReadString());
                                 break;
+                            case "picture":
+                                string result = questionReader.ReadString();
+                                if (result.Equals("NONE") || result.Equals(""))
+                                {
+                                    tempQuestion.p = new Picture("NONE", "null.jpg");
+                                }
+                                else
+                                {
+                                    tempQuestion.p = pictureList[getPicture(result)-1];
+                                }
+                                break;
                         }
                     }
                 }
                 questionList.Add(tempQuestion);
                 questionReader.Close();
             }
-
+            wait.Close();
         }
 
         private void resetGUI()
@@ -255,6 +362,14 @@ namespace RelicExam
             {
                 catagoryComboBox.Items.Add(c);
             }
+            while (comboBox1.Items.Count > 1)
+            {
+                comboBox1.Items.RemoveAt(1);
+            }
+            foreach (Picture pp in pictureList)
+            {
+                comboBox1.Items.Add(pp);
+            }
             questionTextBox.Text = "";
             responseATextBox.Text = "";
             responseBTextBox.Text = "";
@@ -270,26 +385,12 @@ namespace RelicExam
             theQuestionTitle.Text = "";
             timeToAnswerTextBox.Text = "" + "";
             currentModeLabel.Visible = false;
+            this.comboBox1_SelectedIndexChanged(null, null);
         }
 
         private void answerCEnable_CheckedChanged(object sender, EventArgs e)
         {
-            if (answerMarkC.Checked)
-            {
-                MessageBox.Show("Cannot Disable the Answer Question!!");
-                answerCEnable.Checked = true;
-                return;
-            }
-            if (answerCEnable.Checked)
-            {
-                responseCTextBox.ReadOnly = false;
-                answerMarkC.Enabled = true;
-            }
-            else
-            {
-                responseCTextBox.ReadOnly = true;
-                answerMarkC.Enabled = false;
-            }
+
         }
 
         private void answerDEnable_CheckedChanged(object sender, EventArgs e)
@@ -312,19 +413,37 @@ namespace RelicExam
             }
         }
 
-        public void createDataBase()
+        public void createDataBase(bool cleanSweep)
         {
-            try
+            if (cleanSweep)
             {
-                if (Directory.Exists(dataBasePath)) Directory.Delete(dataBasePath, true);
+                try
+                {
+                    if (Directory.Exists(dataBasePath)) Directory.Delete(dataBasePath, true);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("get out of my database");
+                }
+                Directory.CreateDirectory(dataBasePath);
+                Directory.CreateDirectory(questionPath);
+                Directory.CreateDirectory(playerPath);
+                Directory.CreateDirectory(picturePath);
             }
-            catch (IOException)
+            else
             {
-                MessageBox.Show("get out of my database");
+                try
+                {
+                    Directory.Delete(playerPath, true);
+                    Directory.Delete(questionPath, true);
+                    Directory.CreateDirectory(playerPath);
+                    Directory.CreateDirectory(questionPath);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("get out of my database");
+                }
             }
-            Directory.CreateDirectory(dataBasePath);
-            Directory.CreateDirectory(questionPath);
-            Directory.CreateDirectory(playerPath);
         }
 
         public void setupSampleXmlFiles()
@@ -519,7 +638,7 @@ namespace RelicExam
 
         private void button3_Click(object sender, EventArgs e)
         {
-            this.createDataBase();
+            this.createDataBase(true);
             this.setupSampleXmlFiles();
             button1.Enabled = false;
         }
@@ -539,6 +658,10 @@ namespace RelicExam
 
         private void questionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if(chooser != null)chooser.Close();
+            actuallyLoad = true;
+            button2.Enabled = true;
+            pictureName = "";
             saveButton.Enabled = true;
             if (questionComboBox.SelectedIndex == -1) return;
             //determine if a new question is being made or if one is being updated
@@ -615,10 +738,31 @@ namespace RelicExam
                     //if it gets to here it means that the map is NONE
                     mapComboBox.SelectedIndex = 0;
                 }
-                //this entry point is the only one where the first NONE from a blank database is from
+                //get the picture selected
+                string tempPictureName = q2Load.p.photoTitle;
+                if (tempPictureName == null)
+                {
+                    comboBox1.SelectedIndex = 0;
+                    return;
+                }
+                if (tempPictureName.Equals("NONE") && tempPictureName !=null )
+                {
+                    comboBox1.SelectedIndex = 0;
+                }
+                else
+                {
+                    for (int i = 0; i < pictureList.Count; i++)
+                    {
+                        if (tempPictureName.Equals(pictureList[i].photoTitle))
+                        {
+                            comboBox1.SelectedIndex = ++i;
+                            break;
+                        }
+                    }
+                }
                 
             }
-
+            //comboBox1_SelectedIndexChanged(null, null);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -631,10 +775,11 @@ namespace RelicExam
             //(same)
             //reflect the update in disk database (delete and re-create)
             //reload the entire database to memory
+            //upload to dropbox
             //update the gui
             //////////////////////////////////////////////////////////////////
             //but first make sure everything is selected
-            if (theQuestionTitle.Text.Equals("") || questionTextBox.Text.Equals("") || responseATextBox.Text.Equals("") || responseBTextBox.Text.Equals("") || timeToAnswerTextBox.Text.Equals("0") || (answerCEnable.Checked && responseCTextBox.Text.Equals("")) || (answerDEnable.Checked && responseDTextBox.Text.Equals("")) || (catagoryComboBox.Text.Equals("") && catagoryComboBox.SelectedIndex == -1) || (mapComboBox.Text.Equals("") && mapComboBox.SelectedIndex == -1) || (!answerMarkA.Checked && !answerMarkB.Checked && !answerMarkC.Checked && !answerMarkD.Checked))
+            if (theQuestionTitle.Text.Equals("") || questionTextBox.Text.Equals("") || responseATextBox.Text.Equals("") || responseBTextBox.Text.Equals("") || timeToAnswerTextBox.Text.Equals("0") || (answerCEnable.Checked && responseCTextBox.Text.Equals("")) || (answerDEnable.Checked && responseDTextBox.Text.Equals("")) || (catagoryComboBox.Text.Equals("") && catagoryComboBox.SelectedIndex == -1) || (mapComboBox.Text.Equals("") && mapComboBox.SelectedIndex == -1) || (!answerMarkA.Checked && !answerMarkB.Checked && !answerMarkC.Checked && !answerMarkD.Checked) || comboBox1.SelectedIndex == -1)
             {
                 MessageBox.Show("please make sure everything is filled out properly before continuing!");
                 return;
@@ -649,6 +794,8 @@ namespace RelicExam
                 }
                 else
                 {
+                    chooser.Close();
+                    hasMadeChanges = true;
                     //procede...
                     //create a new question class with everything from the GUI
                     Question newQ = new Question();
@@ -761,11 +908,22 @@ namespace RelicExam
                         //FIRST ENTRY
                         questionList = new List<Question>();
                     }
+                    //parse new picture
+                    if (comboBox1.SelectedIndex != 0)
+                    {
+                        newQ.p = pictureList[comboBox1.SelectedIndex - 1];
+                    }
+                    else
+                    {
+                       newQ.p = new Picture("NONE","null.jpg");
+                    }
+
                     questionList.Add(newQ);
                     this.cleanupCatagories();
-                    this.createDataBase();
+                    this.createDataBase(false);
                     this.setupQuestionBase();
                     this.setupQuestions();
+                    this.uploadButton_Click(null, null);
                     this.loadDataBase();
                     this.resetGUI();
                 }
@@ -780,6 +938,8 @@ namespace RelicExam
                 }
                 else
                 {
+                    chooser.Close();
+                    hasMadeChanges = true;
                     //procede...
                     //load the question from the question index
                     Question q2Edit = questionList[questionComboBox.SelectedIndex-1];
@@ -936,10 +1096,21 @@ namespace RelicExam
                             mapList.Add(new Map(q2Edit.m.getMap()));
                         }
                     }
+                    //PARSE picture
+                    if (comboBox1.SelectedIndex != 0)
+                    {
+                        q2Edit.p = pictureList[comboBox1.SelectedIndex - 1];
+                    }
+                    else
+                    {
+                        q2Edit.p = new Picture("NONE","null.jpg");
+                    }
+
                     this.cleanupCatagories();
-                    this.createDataBase();
+                    this.createDataBase(false);
                     this.setupQuestionBase();
                     this.setupQuestions();
+                    this.uploadButton_Click(null, null);
                     this.loadDataBase();
                     this.resetGUI();
                 }
@@ -965,6 +1136,7 @@ namespace RelicExam
             }
             else
             {
+                hasMadeChanges = true;
                 //procede...
                 int indexToRemove = questionComboBox.SelectedIndex;
                 Question q2Rem = questionList[indexToRemove - 1];
@@ -1019,9 +1191,10 @@ namespace RelicExam
                 //and remove the question
                 questionList.RemoveAt(indexToRemove-1);
                 this.cleanupCatagories();
-                this.createDataBase();
+                this.createDataBase(false);
                 this.setupQuestionBase();
                 this.setupQuestions();
+                this.uploadButton_Click(null, null);
                 this.loadDataBase();
                 this.resetGUI();
                 removeButton.Enabled = false;
@@ -1072,6 +1245,24 @@ namespace RelicExam
             }
             questionBaseWriter.WriteEndElement();
 
+            questionBaseWriter.WriteComment("Pictures List");
+            questionBaseWriter.WriteStartElement("pictures");
+            foreach (Picture pp in pictureList)
+            {
+                questionBaseWriter.WriteElementString("picture", pp.photoTitle);
+            }
+            questionBaseWriter.WriteEndElement();
+
+            questionBaseWriter.WriteComment("Pictures File Paths");
+            questionBaseWriter.WriteStartElement("pictureFilePaths");
+            foreach (Picture pp in pictureList)
+            {
+                questionBaseWriter.WriteElementString("pictureFilePath", pp.photoFileName);
+            }
+            questionBaseWriter.WriteEndElement();
+
+
+            
             questionBaseWriter.WriteComment("Questions");
             questionBaseWriter.WriteStartElement("questions");
             foreach (Question q in questionList)
@@ -1108,6 +1299,7 @@ namespace RelicExam
                 questionWriter.WriteElementString("timeToAnswer", "" + questionList[i].timeToAnswer);
                 questionWriter.WriteElementString("explanationOfAnswer", "" + questionList[i].explanationOfAnswer);
                 questionWriter.WriteElementString("map", "" + questionList[i].m.getMap());
+                questionWriter.WriteElementString("picture", questionList[i].p.photoTitle);
                 questionWriter.WriteEndElement();
                 questionWriter.WriteEndElement();
                 questionWriter.Close();
@@ -1165,7 +1357,7 @@ namespace RelicExam
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.createDataBase();
+            this.createDataBase(true);
             button3.Enabled = false;
         }
 
@@ -1228,6 +1420,179 @@ namespace RelicExam
         {
             CodeVerify v = new CodeVerify();
             v.ShowDialog();
+        }
+
+        private void uploadButton_Click(object sender, EventArgs e)
+        {
+            if (!hasMadeChanges)
+            {
+                MessageBox.Show("No changes Made");
+                return;
+            }
+            //WORKING DROPBOX CODE FOR UPLOAD FILES
+            string[] fileList = Directory.GetFiles(questionPath);
+            wait = new PleaseWait(fileList.Count(), 0);
+            int prog = 0;
+            wait.Show();
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            dropBoxStorage = new CloudStorage();
+            // get the configuration for dropbox
+            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            // declare an access token
+            ICloudStorageAccessToken accessToken = null;
+            // load a valid security token from file
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+            }
+            wait.setProgress(prog++);
+            wait.setProgress(prog++);
+            Application.DoEvents();
+            // open the connection 
+            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+            // get a specific directory in the cloud storage, e.g. /Public 
+            var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam/questions");
+            //dropBoxStorage.DeleteFileSystemEntry(questionsFolder);
+            wait.setProgress(prog++);
+            Application.DoEvents();
+            
+            for (int i = 0; i < fileList.Count(); i++)
+            {
+                // upload a testfile from temp directory into public folder of DropBox
+                String srcFile = Environment.ExpandEnvironmentVariables(fileList[i]);
+                dropBoxStorage.UploadFile(srcFile, questionsFolder);
+                wait.setProgress(prog++);
+                Application.DoEvents();
+            }
+            dropBoxStorage.Close();
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            wait.Close();
+        }
+
+        private void answerCEnable_CheckStateChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void answerCEnable_Click(object sender, EventArgs e)
+        {
+            if (answerMarkC.Checked && !answerCEnable.Checked)
+            {
+                MessageBox.Show("Cannot Disable the Answer Question!!");
+                answerCEnable.Checked = true;
+                return;
+            }
+            if (answerCEnable.Checked)
+            {
+                responseCTextBox.ReadOnly = false;
+                answerMarkC.Enabled = true;
+            }
+            else
+            {
+                responseCTextBox.ReadOnly = true;
+                answerMarkC.Enabled = false;
+            }
+        }
+
+        private void DatabaseManager_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            PleaseWait pw = new PleaseWait();
+            if(close){}
+            else
+            {
+                
+                pw.Show();
+                chooser.Close();
+                dropBoxStorage = new CloudStorage();
+                // get the configuration for dropbox
+                var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+                // declare an access token
+                ICloudStorageAccessToken accessToken = null;
+                // load a valid security token from file
+                using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                }
+                // open the connection 
+                var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+                // get a specific directory in the cloud storage, e.g. /Public 
+                //var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
+                //String srcFile = Environment.ExpandEnvironmentVariables(null);
+                dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+                //dropBoxStorage.UploadFile(srcFile, questionsFolder);
+                dropBoxStorage.Close();
+                pw.Close();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
+            chooser = new PhotoViewer(pictureSpawnPoint);
+            chooser.passInList(pictureList);
+            chooser.Location = pictureSpawnPoint;
+            string pictureLocationz;
+            string extension;
+            if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+            else
+            {
+                pictureLocationz = openFileDialog1.FileName;
+                extension = Path.GetExtension(pictureLocationz);
+                chooser.setPicture(pictureLocationz);
+                chooser.ShowDialog();
+            }
+            if (chooser.cancel) return;
+            string[] list = Directory.GetFiles(picturePath);
+            string newName = picturePath + "\\picture" + list.Length + extension;
+            File.Copy(pictureLocationz, picturePath + "\\picture" + list.Length + extension);
+            Picture temp = new Picture(chooser.photoNamee, newName);
+            pictureList.Add(temp);
+            //update the picture combo box
+            comboBox1.Items.Add(temp);
+            comboBox1.SelectedIndex = getPicture(chooser.photoNamee);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (actuallyLoad)
+            {
+                if (comboBox1.SelectedIndex == 0 || comboBox1.SelectedIndex == -1)
+                {
+                    pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
+                    chooser = new PhotoViewer(pictureSpawnPoint);
+                    chooser.Location = pictureSpawnPoint;
+                    chooser.Show();
+                    return;
+                }
+                Picture tempPic = pictureList[comboBox1.SelectedIndex - 1];
+                pictureName = tempPic.photoTitle;
+                pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
+                chooser = new PhotoViewer(pictureSpawnPoint);
+                chooser.Location = pictureSpawnPoint;
+                chooser.setPicture(tempPic.photoFileName);
+                chooser.Show();
+            }
+        }
+        //gets the index from pictureList of desired picture based on title
+        private int getPicture(string title)
+        {
+            if (title.Equals("NONE")) return 0;
+            for (int i = 0; i < pictureList.Count; i++)
+            {
+                if (title.Equals(pictureList[i].photoTitle))
+                {
+                    return i+1;
+                }
+            }
+            return 0;
         }
     }
 }
