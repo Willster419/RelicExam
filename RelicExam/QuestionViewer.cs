@@ -33,6 +33,7 @@ namespace RelicExam
         public string dataBasePath;
         public string questionPath;
         public string questionBase;
+        public string picturePath;
         private ArrayList questionReaderList;
         private string questionPrefix = "question";
         private int questionNumber = 0;
@@ -100,6 +101,7 @@ namespace RelicExam
             dataBasePath = tempPath + "\\relicExamDatabase";
             questionPath = dataBasePath + "\\questions";
             questionBase = "questionBase.xml";
+            picturePath = dataBasePath + "\\pictures";
 
             //load the questions into memory:
             //new up everything for single use
@@ -134,9 +136,11 @@ namespace RelicExam
                 }
             }
             questionBaseReader.Close();
+            //add picture file paths to Pictures
             for (int i = 0; i < pictureList.Count; i++)
             {
-                pictureList[i].photoFileName = pictureFileNameList[i];
+                string fileName = Path.GetFileName(pictureFileNameList[i]);
+                pictureList[i].photoFileName = picturePath + "\\" + fileName;
             }
 
             //parse questions
@@ -257,6 +261,7 @@ namespace RelicExam
         private void button3_Click(object sender, EventArgs e)
         {
             //RAGEQUIT BUTTON
+            if (foto != null) foto.Close();
             this.Hide();
         }
 
@@ -364,6 +369,7 @@ namespace RelicExam
         private void QuestionViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
+            if (foto != null) foto.Close();
             this.Hide();
         }
 

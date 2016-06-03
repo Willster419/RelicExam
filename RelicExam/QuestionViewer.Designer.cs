@@ -170,6 +170,7 @@
             // 
             this.theQuestionRichTextBox.Location = new System.Drawing.Point(12, 103);
             this.theQuestionRichTextBox.Name = "theQuestionRichTextBox";
+            this.theQuestionRichTextBox.ReadOnly = true;
             this.theQuestionRichTextBox.Size = new System.Drawing.Size(620, 50);
             this.theQuestionRichTextBox.TabIndex = 11;
             this.theQuestionRichTextBox.Text = "";
@@ -178,6 +179,7 @@
             // 
             this.richTextBox2.Location = new System.Drawing.Point(12, 392);
             this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.ReadOnly = true;
             this.richTextBox2.Size = new System.Drawing.Size(620, 43);
             this.richTextBox2.TabIndex = 12;
             this.richTextBox2.Text = "";
@@ -234,6 +236,7 @@
             // 
             this.responseD.Location = new System.Drawing.Point(42, 74);
             this.responseD.Name = "responseD";
+            this.responseD.ReadOnly = true;
             this.responseD.Size = new System.Drawing.Size(570, 20);
             this.responseD.TabIndex = 21;
             // 
@@ -241,6 +244,7 @@
             // 
             this.responseC.Location = new System.Drawing.Point(42, 48);
             this.responseC.Name = "responseC";
+            this.responseC.ReadOnly = true;
             this.responseC.Size = new System.Drawing.Size(570, 20);
             this.responseC.TabIndex = 22;
             // 
@@ -248,6 +252,7 @@
             // 
             this.responseB.Location = new System.Drawing.Point(42, 26);
             this.responseB.Name = "responseB";
+            this.responseB.ReadOnly = true;
             this.responseB.Size = new System.Drawing.Size(570, 20);
             this.responseB.TabIndex = 23;
             // 
@@ -255,6 +260,7 @@
             // 
             this.responseA.Location = new System.Drawing.Point(42, 3);
             this.responseA.Name = "responseA";
+            this.responseA.ReadOnly = true;
             this.responseA.Size = new System.Drawing.Size(570, 20);
             this.responseA.TabIndex = 24;
             // 

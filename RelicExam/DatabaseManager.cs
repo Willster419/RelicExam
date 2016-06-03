@@ -174,7 +174,7 @@ namespace RelicExam
             
         }
 
-        private void loadDataBase()
+        public void loadDataBase()
         {
             //new up everything
             tempQuestion = new Question();
@@ -1530,7 +1530,7 @@ namespace RelicExam
                 
                 pw.Show();
                 Application.DoEvents();
-                chooser.Close();
+                if (chooser != null) chooser.Close();
                 dropBoxStorage = new CloudStorage();
                 // get the configuration for dropbox
                 var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
@@ -1645,6 +1645,19 @@ namespace RelicExam
                     pictureList.RemoveAt(i);
                 }
             }
+        }
+
+        public void parseFilePaths()
+        {
+            //parse all file paths
+            appPath = Application.StartupPath;
+            tempPath = Path.GetTempPath();
+            dataBasePath = tempPath + "\\relicExamDatabase";
+            questionPath = dataBasePath + "\\questions";
+            playerPath = dataBasePath + "\\players";
+            questionBase = "questionBase.xml";
+            playerBase = "playerBase.xml";
+            picturePath = dataBasePath + "\\pictures";
         }
     }
 }

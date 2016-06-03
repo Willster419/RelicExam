@@ -118,10 +118,13 @@ namespace RelicExam
             //make instances of all the sub forms withen this form
             dataBaseManager = new DatabaseManager();
             enterPassword = new EnterPassword();
-            //DEV CODE HERE
+            
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
                 //database is blank
+
+                //DEV CODE
+                /*
                 DialogResult r = MessageBox.Show("Empty Database. Create Sample Database? If you select no, the\napplication will crash when loading a quiz", "Empty Database", MessageBoxButtons.YesNo);
                 if (r == DialogResult.Yes)
                 {
@@ -131,9 +134,15 @@ namespace RelicExam
                     m.createDataBase(true);
                     m.setupSampleXmlFiles();
                 }
-                else {  }
+                else {  }*/
+                //END DEV CODE
+                
             }
-            //END DEV CODE
+            DatabaseManager m = new DatabaseManager();
+            m.parseFilePaths();
+            m.createDataBase(true);
+            m.loadDataBase();
+            m.Dispose();
 
             wait.setProgress(4);
             Application.DoEvents();
