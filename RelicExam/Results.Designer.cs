@@ -134,6 +134,7 @@
             this.Controls.Add(this.scoreLabel2);
             this.Controls.Add(this.totalQuestionsLabel);
             this.Controls.Add(this.scoreLabel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Results";
             this.Text = "Results";
             this.Load += new System.EventHandler(this.Results_Load);

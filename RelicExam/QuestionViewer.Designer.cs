@@ -62,10 +62,12 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.nextQuestion = new System.Windows.Forms.Button();
             this.rageQuit = new System.Windows.Forms.Button();
+            this.panel5 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // currentQuestionNum
@@ -82,9 +84,9 @@
             this.questionLabel.AutoSize = true;
             this.questionLabel.Location = new System.Drawing.Point(3, 9);
             this.questionLabel.Name = "questionLabel";
-            this.questionLabel.Size = new System.Drawing.Size(47, 13);
+            this.questionLabel.Size = new System.Drawing.Size(49, 13);
             this.questionLabel.TabIndex = 1;
-            this.questionLabel.Text = "question";
+            this.questionLabel.Text = "Question";
             // 
             // totalQuestions
             // 
@@ -171,23 +173,23 @@
             this.theQuestionRichTextBox.Location = new System.Drawing.Point(12, 103);
             this.theQuestionRichTextBox.Name = "theQuestionRichTextBox";
             this.theQuestionRichTextBox.ReadOnly = true;
-            this.theQuestionRichTextBox.Size = new System.Drawing.Size(620, 50);
+            this.theQuestionRichTextBox.Size = new System.Drawing.Size(612, 50);
             this.theQuestionRichTextBox.TabIndex = 11;
             this.theQuestionRichTextBox.Text = "";
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(12, 392);
+            this.richTextBox2.Location = new System.Drawing.Point(3, 16);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(620, 43);
+            this.richTextBox2.Size = new System.Drawing.Size(606, 81);
             this.richTextBox2.TabIndex = 12;
             this.richTextBox2.Text = "";
             // 
             // correctOrNot
             // 
             this.correctOrNot.AutoSize = true;
-            this.correctOrNot.Location = new System.Drawing.Point(281, 376);
+            this.correctOrNot.Location = new System.Drawing.Point(281, 0);
             this.correctOrNot.Name = "correctOrNot";
             this.correctOrNot.Size = new System.Drawing.Size(47, 13);
             this.correctOrNot.TabIndex = 13;
@@ -222,6 +224,7 @@
             this.panel1.Controls.Add(this.responseD);
             this.panel1.Controls.Add(this.responseC);
             this.panel1.Controls.Add(this.responseB);
+            this.panel1.Controls.Add(this.submitAnswer);
             this.panel1.Controls.Add(this.responseA);
             this.panel1.Controls.Add(this.radioButtonA);
             this.panel1.Controls.Add(this.radioButtonB);
@@ -229,7 +232,7 @@
             this.panel1.Controls.Add(this.radioButtonD);
             this.panel1.Location = new System.Drawing.Point(12, 159);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(620, 100);
+            this.panel1.Size = new System.Drawing.Size(612, 129);
             this.panel1.TabIndex = 17;
             // 
             // responseD
@@ -237,7 +240,7 @@
             this.responseD.Location = new System.Drawing.Point(42, 74);
             this.responseD.Name = "responseD";
             this.responseD.ReadOnly = true;
-            this.responseD.Size = new System.Drawing.Size(570, 20);
+            this.responseD.Size = new System.Drawing.Size(567, 20);
             this.responseD.TabIndex = 21;
             // 
             // responseC
@@ -245,7 +248,7 @@
             this.responseC.Location = new System.Drawing.Point(42, 48);
             this.responseC.Name = "responseC";
             this.responseC.ReadOnly = true;
-            this.responseC.Size = new System.Drawing.Size(570, 20);
+            this.responseC.Size = new System.Drawing.Size(567, 20);
             this.responseC.TabIndex = 22;
             // 
             // responseB
@@ -253,7 +256,7 @@
             this.responseB.Location = new System.Drawing.Point(42, 26);
             this.responseB.Name = "responseB";
             this.responseB.ReadOnly = true;
-            this.responseB.Size = new System.Drawing.Size(570, 20);
+            this.responseB.Size = new System.Drawing.Size(567, 20);
             this.responseB.TabIndex = 23;
             // 
             // responseA
@@ -261,7 +264,7 @@
             this.responseA.Location = new System.Drawing.Point(42, 3);
             this.responseA.Name = "responseA";
             this.responseA.ReadOnly = true;
-            this.responseA.Size = new System.Drawing.Size(570, 20);
+            this.responseA.Size = new System.Drawing.Size(567, 20);
             this.responseA.TabIndex = 24;
             // 
             // panel2
@@ -276,7 +279,7 @@
             this.panel2.Controls.Add(this.of);
             this.panel2.Location = new System.Drawing.Point(12, 29);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(620, 38);
+            this.panel2.Size = new System.Drawing.Size(612, 38);
             this.panel2.TabIndex = 18;
             // 
             // theMap
@@ -293,7 +296,7 @@
             this.mapLabel.Name = "mapLabel";
             this.mapLabel.Size = new System.Drawing.Size(32, 16);
             this.mapLabel.TabIndex = 23;
-            this.mapLabel.Text = "map:";
+            this.mapLabel.Text = "Map:";
             // 
             // theCatagory
             // 
@@ -309,7 +312,7 @@
             this.catagoryLabel.Name = "catagoryLabel";
             this.catagoryLabel.Size = new System.Drawing.Size(51, 13);
             this.catagoryLabel.TabIndex = 21;
-            this.catagoryLabel.Text = "catagory:";
+            this.catagoryLabel.Text = "Catagory:";
             // 
             // panel3
             // 
@@ -317,9 +320,9 @@
             this.panel3.Controls.Add(this.progressBar1);
             this.panel3.Controls.Add(this.numSecondsLeft);
             this.panel3.Controls.Add(this.secondsLeftLabel);
-            this.panel3.Location = new System.Drawing.Point(12, 290);
+            this.panel3.Location = new System.Drawing.Point(12, 294);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(620, 73);
+            this.panel3.Size = new System.Drawing.Size(612, 73);
             this.panel3.TabIndex = 19;
             // 
             // outOfTime
@@ -335,14 +338,14 @@
             // 
             this.progressBar1.Location = new System.Drawing.Point(3, 38);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(609, 23);
+            this.progressBar1.Size = new System.Drawing.Size(606, 23);
             this.progressBar1.TabIndex = 20;
             // 
             // submitAnswer
             // 
-            this.submitAnswer.Location = new System.Drawing.Point(12, 265);
+            this.submitAnswer.Location = new System.Drawing.Point(3, 100);
             this.submitAnswer.Name = "submitAnswer";
-            this.submitAnswer.Size = new System.Drawing.Size(620, 23);
+            this.submitAnswer.Size = new System.Drawing.Size(606, 23);
             this.submitAnswer.TabIndex = 20;
             this.submitAnswer.Text = "submit";
             this.submitAnswer.UseVisualStyleBackColor = true;
@@ -354,44 +357,52 @@
             this.panel4.Controls.Add(this.questionTitle);
             this.panel4.Location = new System.Drawing.Point(12, 73);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(620, 24);
+            this.panel4.Size = new System.Drawing.Size(612, 24);
             this.panel4.TabIndex = 21;
             // 
             // nextQuestion
             // 
-            this.nextQuestion.Location = new System.Drawing.Point(549, 441);
+            this.nextQuestion.Location = new System.Drawing.Point(549, 481);
             this.nextQuestion.Name = "nextQuestion";
             this.nextQuestion.Size = new System.Drawing.Size(75, 23);
             this.nextQuestion.TabIndex = 22;
             this.nextQuestion.Text = "Next";
             this.nextQuestion.UseVisualStyleBackColor = true;
-            this.nextQuestion.Click += new System.EventHandler(this.button2_Click);
+            this.nextQuestion.Click += new System.EventHandler(this.nextQuestion_Click);
             // 
             // rageQuit
             // 
-            this.rageQuit.Location = new System.Drawing.Point(12, 441);
+            this.rageQuit.Location = new System.Drawing.Point(9, 481);
             this.rageQuit.Name = "rageQuit";
             this.rageQuit.Size = new System.Drawing.Size(75, 23);
             this.rageQuit.TabIndex = 23;
             this.rageQuit.Text = "RageQuit";
             this.rageQuit.UseVisualStyleBackColor = true;
-            this.rageQuit.Click += new System.EventHandler(this.button3_Click);
+            this.rageQuit.Click += new System.EventHandler(this.rageQuit_Click);
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.correctOrNot);
+            this.panel5.Controls.Add(this.richTextBox2);
+            this.panel5.Location = new System.Drawing.Point(12, 375);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(612, 100);
+            this.panel5.TabIndex = 24;
             // 
             // QuestionViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(636, 472);
+            this.ClientSize = new System.Drawing.Size(636, 516);
+            this.Controls.Add(this.panel5);
             this.Controls.Add(this.rageQuit);
             this.Controls.Add(this.nextQuestion);
             this.Controls.Add(this.panel4);
-            this.Controls.Add(this.submitAnswer);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.correctOrNot);
-            this.Controls.Add(this.richTextBox2);
             this.Controls.Add(this.theQuestionRichTextBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "QuestionViewer";
             this.Text = "QuestionViewer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.QuestionViewer_FormClosing);
@@ -404,8 +415,9 @@
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -444,5 +456,6 @@
         private System.Windows.Forms.Button nextQuestion;
         private System.Windows.Forms.Button rageQuit;
         private System.Windows.Forms.Label outOfTime;
+        private System.Windows.Forms.Panel panel5;
     }
 }

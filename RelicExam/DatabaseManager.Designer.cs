@@ -560,6 +560,7 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "\"Supported Picture Types|*.jpg;*.jpeg;*.png;*.bmp;*.gif\"";
             // 
             // DatabaseManager
             // 
@@ -583,6 +584,7 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "DatabaseManager";
             this.Text = "DatabaseManager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DatabaseManager_FormClosing);

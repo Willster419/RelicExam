@@ -14,10 +14,11 @@ namespace RelicExam
 {
     public partial class QuestionViewer : Form
     {
+        //list all static objects to exist throughout the program
         public int numQuestions;
         private string catagory;
         private string map;
-        private int currentQuestion = 0;
+        private int currentQuestion;
         private Question tempQuestion;
         Question loadedQuestion;
         public int numCorrect;
@@ -42,7 +43,7 @@ namespace RelicExam
         private Random rng;
         private Results theResults;
         private int timeLeft;
-        bool canSubmit;
+        public bool canSubmit;
         private PhotoViewer foto;
         private Point pictureSpawnPoint;
 
@@ -65,36 +66,23 @@ namespace RelicExam
             progressBar1.Value = timeLeft;
             numSecondsLeft.Text = "" + timeLeft--;
             //handle timout
-            if (timeLeft == -1)
+            if (timeLeft < 0)
             {
                 outOfTime.Visible = true;
                 correct = false;
+                submitAnswer.Enabled = false;
                 this.postQuestion();
-                //TIMEOUT
             }
         }
 
         private void submitAnswer_Click(object sender, EventArgs e)
         {
-            if (canSubmit)
-            {
-                canSubmit = false;
-            }
-            else
-            {
-                MessageBox.Show("You already submitted for this question");
-            }
+            submitAnswer.Enabled = false;
             this.postQuestion();
         }
 
         private void QuestionViewer_Load(object sender, EventArgs e)
         {
-            timer1.Stop();
-            timer1.Enabled = false;
-            currentQuestion = 0;
-            questionNumber = 0;
-            outOfTime.Visible = false;
-            theResults = new Results();
             //parse all file paths
             appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
@@ -102,9 +90,8 @@ namespace RelicExam
             questionPath = dataBasePath + "\\questions";
             questionBase = "questionBase.xml";
             picturePath = dataBasePath + "\\pictures";
-
-            //load the questions into memory:
-            //new up everything for single use
+            //new up everything
+            theResults = new Results();
             questionList = new List<Question>();
             mapList = new List<Map>();
             catagoryList = new List<Catagory>();
@@ -115,8 +102,14 @@ namespace RelicExam
             pictureList = new List<Picture>();
             rng = new Random();
             List<string> pictureFileNameList = new List<string>();
-
-            //parse questionBase
+            //reset  stuff
+            currentQuestion = 0;
+            timer1.Stop();
+            timer1.Enabled = false;
+            currentQuestion = 0;
+            questionNumber = 0;
+            outOfTime.Visible = false;
+            //parse questionBase to this form
             while (questionBaseReader.Read())
             {
                 if (questionBaseReader.IsStartElement())
@@ -136,14 +129,12 @@ namespace RelicExam
                 }
             }
             questionBaseReader.Close();
-            //add picture file paths to Pictures
+            //add picture filenames to pictures list
             for (int i = 0; i < pictureList.Count; i++)
             {
-                string fileName = Path.GetFileName(pictureFileNameList[i]);
-                pictureList[i].photoFileName = picturePath + "\\" + fileName;
+                pictureList[i].photoFileName = picturePath + "\\" + Path.GetFileName(pictureFileNameList[i]);
             }
-
-            //parse questions
+            //parse questions to question list
             foreach (string q in questionReaderList)
             {
                 questionReader = new XmlTextReader(questionPath + "\\" + q);
@@ -210,9 +201,8 @@ namespace RelicExam
                 }
                 questionList.Add(tempQuestion);
                 questionReader.Close();
-            }
-            //determine if it needs to filter questions based on catagory or map
-
+            }//end for loop
+            //determine if filtering is required
             if (catagory == null && map == null)
             {
                 //no filtering required
@@ -239,7 +229,7 @@ namespace RelicExam
                     }
                 }
             }
-            //let user know if number of askable questions < questions in list
+            //let user know if number of askable questions < questions in database
             if (questionList.Count < numQuestions)
             {
                 //question list maxed out
@@ -258,14 +248,14 @@ namespace RelicExam
             this.displayNextQuestion();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void rageQuit_Click(object sender, EventArgs e)
         {
             //RAGEQUIT BUTTON
             if (foto != null) foto.Close();
             this.Hide();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void nextQuestion_Click(object sender, EventArgs e)
         {
             //NEXT BUTTON
             if (currentQuestion == numQuestions)
@@ -282,9 +272,11 @@ namespace RelicExam
                 this.displayNextQuestion();
             }
         }
-
+        //resets the gui with the question
         private void displayNextQuestion()
         {
+            //soft reset of some gui componets
+            submitAnswer.Enabled = true;
             if (foto != null) foto.Close();
             loadedQuestion = questionDisplayList[currentQuestion];
             //display every single UI componet of the question
@@ -324,7 +316,7 @@ namespace RelicExam
             foto.Location = pictureSpawnPoint;
             if (loadedQuestion.p.photoFileName.Equals("null.jpg"))
             {
-
+                //no picture to display
             }
             else
             {
@@ -365,16 +357,16 @@ namespace RelicExam
             timer1.Start();
             currentQuestion++;
         }
-
         private void QuestionViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
             if (foto != null) foto.Close();
             this.Hide();
         }
-
+        //does all the post processing after a question has been answered
         private void postQuestion()
         {
+            //enable the next question
             nextQuestion.Enabled = true;
             //stop the timer
             timer1.Stop();

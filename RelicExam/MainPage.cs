@@ -39,7 +39,7 @@ namespace RelicExam
         public string dataBasePath;
         public string questionPath;
         public string questionBase;
-        private WebClient client = new WebClient();
+        private WebClient client;
         private string version = "Beta3";
         private PleaseWait wait;
 
@@ -47,7 +47,7 @@ namespace RelicExam
         {
             InitializeComponent();
         }
-        //more code for the best secure password checker
+        //the most secure password checker ever
         private void ServiceModeButton_Click(object sender, EventArgs e)
         {
             enterPassword.ShowDialog();
@@ -61,34 +61,56 @@ namespace RelicExam
             }
             else
             {
-                if (!dataBaseManager.close) dataBaseManager.ShowDialog();
+                if (!dataBaseManager.close)
+                {
+                    this.Hide();
+                    dataBaseManager.ShowDialog();
+                }
                 else { }
             }
+            this.Show();
         }
 
         private void MainPage_Load(object sender, EventArgs e)
         {
-            wait = new PleaseWait(10,1);
-            Application.DoEvents();
-            wait.Show();
-            Application.DoEvents();
-
+            //TODO: Make multi-threaded version of the loader
+            //TODO: Implement database version checking so it does not have to constantly download everything
+            //TODO: Fix currentl xml implementation of questions
             //parse all file paths
             appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
             dataBasePath = tempPath + "\\relicExamDatabase";
             questionPath = dataBasePath + "\\questions";
             questionBase = "questionBase.xml";
-            
+            //new up required objects
+            client = new WebClient();
+            dataBaseManager = new DatabaseManager();
+            enterPassword = new EnterPassword();
+            questionList = new List<Question>();
+            mapList = new List<Map>();
+            catagoryList = new List<Catagory>();
+            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
+            wait = new PleaseWait();
+            //show loading screen
+            wait.Show();
+            Application.DoEvents();
             //check if dependencies are downloaded
             if (!File.Exists(appPath + "\\AppLimit.CloudComputing.SharpBox.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/AppLimit.CloudComputing.SharpBox.dll", appPath + "\\AppLimit.CloudComputing.SharpBox.dll");
             if (!File.Exists(appPath + "\\key.txt")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/key.txt", appPath + "\\key.txt");
             if (!File.Exists(appPath + "\\Newtonsoft.Json.Net40.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Newtonsoft.Json.Net40.dll",appPath + "\\Newtonsoft.Json.Net40.dll");
-
+            //check for blank database
+            if (!Directory.Exists(dataBasePath)) Directory.CreateDirectory(dataBasePath);
             //check for updates
-            Directory.CreateDirectory(dataBasePath);
             if (File.Exists(dataBasePath + "\\version.txt")) File.Delete(dataBasePath + "\\version.txt");
-            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/version.txt",dataBasePath + "\\version.txt");
+            try
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/version.txt", dataBasePath + "\\version.txt");
+            }
+            catch (WebException)
+            {
+                MessageBox.Show("ERROR 404: File not found");
+                this.Close();
+            }
             string tempVersion = File.ReadAllText(dataBasePath + "\\version.txt");
             if (!tempVersion.Equals(version))
             {
@@ -103,26 +125,19 @@ namespace RelicExam
                     {
                         client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/RelicExam.exe", appPath + "\\RelicExam_V" + tempVersion + ".exe");
                     }
-                    catch (WebException w)
+                    catch (WebException)
                     {
-                        MessageBox.Show(w.Message);
-                        return;
+                        MessageBox.Show("ERROR 404: File not found");
+                        this.Close();
                     }
 
-                    System.Diagnostics.Process.Start(appPath + "\\RelicExam_V" + tempVersion + ".exe");
+                    Process.Start(appPath + "\\RelicExam_V" + tempVersion + ".exe");
                     this.Close();
                 }
             }
-            wait.setProgress(3);
-            Application.DoEvents();
-            //make instances of all the sub forms withen this form
-            dataBaseManager = new DatabaseManager();
-            enterPassword = new EnterPassword();
-            
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
                 //database is blank
-
                 //DEV CODE
                 /*
                 DialogResult r = MessageBox.Show("Empty Database. Create Sample Database? If you select no, the\napplication will crash when loading a quiz", "Empty Database", MessageBoxButtons.YesNo);
@@ -136,63 +151,39 @@ namespace RelicExam
                 }
                 else {  }*/
                 //END DEV CODE
-                
             }
+            wait.Close();
+            //create a temp databaseManager to download the database
             DatabaseManager m = new DatabaseManager();
             m.parseFilePaths();
-            m.createDataBase(true);
+            //m.createDataBase(true);
             m.loadDataBase();
             m.Dispose();
-
-            wait.setProgress(4);
-            Application.DoEvents();
-            
-            //new up the xml reader and stuff
-            questionList = new List<Question>();
-            mapList = new List<Map>();
-            catagoryList = new List<Catagory>();
-            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-            wait.setProgress(5);
-            Application.DoEvents();
-            //Download the Latest QuestionBase
-
-
-            wait.setProgress(9);
-            Application.DoEvents();
-            //read the catagories and maps
-            if (!File.Exists(questionPath + "\\" + questionBase))
+            //read question base for maps and catagory only
+            while (questionBaseReader.Read())
             {
-                //BLANK DATABASE/FIRST RUN
-            }
-            else
-            {
-                //read question base
-                while (questionBaseReader.Read())
+                if (questionBaseReader.IsStartElement())
                 {
-                    if (questionBaseReader.IsStartElement())
+                    switch (questionBaseReader.Name)
                     {
-                        switch (questionBaseReader.Name)
-                        {
-                            case "catagory":
-                                catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
-                                break;
-                            case "map":
-                                mapList.Add(new Map(questionBaseReader.ReadString()));
-                                break;
-                        }
+                        case "catagory":
+                            catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
+                            break;
+                        case "map":
+                            mapList.Add(new Map(questionBaseReader.ReadString()));
+                            break;
                     }
                 }
-                questionBaseReader.Close();
             }
-            wait.setProgress(10);
-            Application.DoEvents();
-            wait.Close();
+            questionBaseReader.Close();
         }
 
         private void selectTestType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            //parse the type of quiz requested
             if (selectTestType.SelectedIndex == 0)
             {
+                //map
                 specifyTypeBox.Show();
                 label3.Show();
                 label3.Text = "Specify Map";
@@ -209,6 +200,7 @@ namespace RelicExam
             }
             else if (selectTestType.SelectedIndex == 1)
             {
+                //catagory
                 specifyTypeBox.Show();
                 label3.Show();
                 label3.Text = "Specify Catagory";
@@ -224,6 +216,7 @@ namespace RelicExam
             }
             else if (selectTestType.SelectedIndex == 2)
             {
+                //both
                 label3.Hide();
                 specifyTypeBox.Hide();
             }
@@ -234,11 +227,11 @@ namespace RelicExam
         {
             if ((selectNumQuestions.SelectedIndex == -1 || selectTestType.SelectedIndex == -1) || ((2 > selectTestType.SelectedIndex && selectTestType.SelectedIndex > -1) && specifyTypeBox.SelectedIndex == -1))
             {
+                //incorrect options selected
                 MessageBox.Show("Please select all options");
                 return;
             }
-            int numQuestions;
-            numQuestions = int.Parse(selectNumQuestions.SelectedItem.ToString());
+            int numQuestions = int.Parse(selectNumQuestions.SelectedItem.ToString());
             if (selectTestType.SelectedIndex == 0)
             {
                 //MAP

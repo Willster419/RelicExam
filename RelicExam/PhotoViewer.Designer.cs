@@ -104,6 +104,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.photoName);
             this.Controls.Add(this.pictureBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "PhotoViewer";
             this.Text = "PhotoViewer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PhotoViewer_FormClosing);

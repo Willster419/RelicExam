@@ -55,6 +55,7 @@
             this.ClientSize = new System.Drawing.Size(284, 71);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.databaseLoading);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "PleaseWait";
             this.Text = "PleaseWait";
             this.ResumeLayout(false);

@@ -14,6 +14,7 @@ namespace RelicExam
         public PleaseWait()
         {
             InitializeComponent();
+            progressBar1.Visible = false;
         }
         public PleaseWait(int maxValue, int minValue)
         {

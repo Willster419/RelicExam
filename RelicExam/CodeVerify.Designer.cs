@@ -120,6 +120,7 @@
             this.Controls.Add(this.codeTextBox);
             this.Controls.Add(this.expectedLabel);
             this.Controls.Add(this.codeLabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "CodeVerify";
             this.Text = "CodeVerify";
             this.ResumeLayout(false);

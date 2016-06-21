@@ -157,6 +157,7 @@
             this.Controls.Add(this.selectTestType);
             this.Controls.Add(this.relicExamWelcome);
             this.Controls.Add(this.ServiceModeButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainPage";
             this.Text = "Relic Exam V";
             this.Load += new System.EventHandler(this.MainPage_Load);

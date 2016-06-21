@@ -80,6 +80,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.enterPasswordLabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "EnterPassword";
             this.Text = "EnterPassword";
             this.Load += new System.EventHandler(this.EnterPassword_Load);
