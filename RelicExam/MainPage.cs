@@ -42,6 +42,7 @@ namespace RelicExam
         private WebClient client;
         private string version = "Beta3";
         private PleaseWait wait;
+        private CodeVerify cv;
 
         public MainPage()
         {
@@ -109,6 +110,7 @@ namespace RelicExam
             catagoryList = new List<Catagory>();
             questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
             wait = new PleaseWait();
+            cv = new CodeVerify();
             //show loading screen
             wait.Show();
             Application.DoEvents();
@@ -274,6 +276,23 @@ namespace RelicExam
                 questionViewer.ShowDialog();
             }
             else { }
+        }
+
+        private void verifyCodeButton_Click(object sender, EventArgs e)
+        {
+            enterPassword.overrideLockCheckBox.Visible = false;
+            enterPassword.ShowDialog();
+            this.Hide();
+            if (enterPassword.passwordTextBox.Text.Equals("relic1"))
+            {
+                cv.ShowDialog();
+            }
+            else
+            {
+
+            }
+            enterPassword.overrideLockCheckBox.Visible = true;
+            this.Show();
         }
     }
 }

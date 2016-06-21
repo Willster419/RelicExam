@@ -38,6 +38,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.specifyTypeBox = new System.Windows.Forms.ComboBox();
+            this.verifyCodeButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ServiceModeButton
@@ -142,11 +143,22 @@
             this.specifyTypeBox.Size = new System.Drawing.Size(121, 21);
             this.specifyTypeBox.TabIndex = 9;
             // 
+            // verifyCodeButton
+            // 
+            this.verifyCodeButton.Location = new System.Drawing.Point(119, 130);
+            this.verifyCodeButton.Name = "verifyCodeButton";
+            this.verifyCodeButton.Size = new System.Drawing.Size(79, 23);
+            this.verifyCodeButton.TabIndex = 10;
+            this.verifyCodeButton.Text = "Verify Code";
+            this.verifyCodeButton.UseVisualStyleBackColor = true;
+            this.verifyCodeButton.Click += new System.EventHandler(this.verifyCodeButton_Click);
+            // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(351, 160);
+            this.Controls.Add(this.verifyCodeButton);
             this.Controls.Add(this.specifyTypeBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -178,6 +190,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox specifyTypeBox;
+        private System.Windows.Forms.Button verifyCodeButton;
     }
 }
 
