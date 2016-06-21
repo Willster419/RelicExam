@@ -74,31 +74,18 @@ namespace RelicExam
 
         private void DatabaseManager_Load(object sender, EventArgs e)
         {
+            //some boolean logic hack i don't know
             actuallyLoad = false;
+            hasMadeChanges = false;
             //display a loading window and load the database
             wait = new PleaseWait();
-            //Application.DoEvents();
             wait.Show();
             Application.DoEvents();
-            //do all intensive code here
-            
-            //write a file saying someone is editing the questionList to DropBox
-
-            hasMadeChanges = false;
             //parse all file paths
-            appPath = Application.StartupPath;
-            tempPath = Path.GetTempPath();
-            dataBasePath = tempPath + "\\relicExamDatabase";
-            questionPath = dataBasePath + "\\questions";
-            playerPath = dataBasePath + "\\players";
-            questionBase = "questionBase.xml";
-            playerBase = "playerBase.xml";
-            picturePath = dataBasePath + "\\pictures";
-
+            this.parseFilePaths();
             //declare all temp objects
             tempQuestion = new Question();
             tempPlayer = new Player();
-
             //check for another user on the system
             try
             {
@@ -136,54 +123,30 @@ namespace RelicExam
                 this.Close();
                 return;
             }
-
-            wait.Close();
-            //update gui
-            
             //System.Threading.Thread.Sleep(100);
             this.answerCEnable_CheckedChanged(null, null);
             this.answerDEnable_CheckedChanged(null, null);
             currentModeLabel.Visible = false;
             removeButton.Enabled = false;
-            //check if the database is blank
-            if (!File.Exists(questionPath + "\\" + questionBase))
+            //determine if the database has been updated since last use
+            /*client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\tempQuestionBase.xml");
+            hash = MD5.Create();
+            string newHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\tempQuestionBase.xml"));
+            string oldHash = null;
+            if (File.Exists(questionPath + "\\QuestionBase.xml"))
             {
-                this.createDataBase(true);
-                //new up everything
-                tempQuestion = new Question();
-                tempPlayer = new Player();
-                questionList = new List<Question>();
-                playerList = new List<Player>();
-                mapList = new List<Map>();
-                catagoryList = new List<Catagory>();
-                playerBaseReader = new XmlTextReader(playerPath + "\\" + playerBase);
-                questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-                playerReaderList = new ArrayList();
-                questionReaderList = new ArrayList();
-                pictureList = new List<Picture>();
-                //MessageBox.Show("Database is blank");
-                //resetForm_Click(null, null);
-                //return;
-                //determine if the database has been updated since last use
-                /*client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\tempQuestionBase.xml");
-                hash = MD5.Create();
-                string newHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\tempQuestionBase.xml"));
-                string oldHash = null;
-                if (File.Exists(questionPath + "\\QuestionBase.xml"))
-                {
-                    oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\QuestionBase.xml"));
-                }
-                if (!newHash.Equals(oldHash))
-                {
-                    //database has been updated or is blank, need to download new one
-                    this.downloadLatestDatabase();
-                }
-                if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");*/
+                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\QuestionBase.xml"));
             }
-            else
+            if (!newHash.Equals(oldHash))
             {
-                this.loadDataBase(true);
+                //database has been updated or is blank, need to download new one
+                this.downloadLatestDatabase();
             }
+            if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");*/
+            //all done checking/updating the database
+            wait.Close();
+            //update gui
+            this.loadDataBase(true);
             this.resetGUI();
             
         }
