@@ -45,7 +45,7 @@ namespace RelicExam
             percentCorrectLabel.Text = "" + percentCorrect;
             verificationCode = percentCorrect * percentCorrect;
             verificationCode = verificationCode * 420;
-            vCodeLabel.Text = "" + verificationCode;
+            vCodeLabel.Text = "" + verificationCode + "-" + percentCorrect;
         }
     }
 }

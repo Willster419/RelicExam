@@ -49,6 +49,7 @@
             this.responseD = new System.Windows.Forms.TextBox();
             this.responseC = new System.Windows.Forms.TextBox();
             this.responseB = new System.Windows.Forms.TextBox();
+            this.submitAnswer = new System.Windows.Forms.Button();
             this.responseA = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.theMap = new System.Windows.Forms.Label();
@@ -58,7 +59,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.outOfTime = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.submitAnswer = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.nextQuestion = new System.Windows.Forms.Button();
             this.rageQuit = new System.Windows.Forms.Button();
@@ -259,6 +259,16 @@
             this.responseB.Size = new System.Drawing.Size(567, 20);
             this.responseB.TabIndex = 23;
             // 
+            // submitAnswer
+            // 
+            this.submitAnswer.Location = new System.Drawing.Point(3, 100);
+            this.submitAnswer.Name = "submitAnswer";
+            this.submitAnswer.Size = new System.Drawing.Size(606, 23);
+            this.submitAnswer.TabIndex = 20;
+            this.submitAnswer.Text = "submit";
+            this.submitAnswer.UseVisualStyleBackColor = true;
+            this.submitAnswer.Click += new System.EventHandler(this.submitAnswer_Click);
+            // 
             // responseA
             // 
             this.responseA.Location = new System.Drawing.Point(42, 3);
@@ -330,9 +340,9 @@
             this.outOfTime.AutoSize = true;
             this.outOfTime.Location = new System.Drawing.Point(369, 14);
             this.outOfTime.Name = "outOfTime";
-            this.outOfTime.Size = new System.Drawing.Size(67, 13);
+            this.outOfTime.Size = new System.Drawing.Size(61, 13);
             this.outOfTime.TabIndex = 21;
-            this.outOfTime.Text = "Out Of Time!";
+            this.outOfTime.Text = "Out of time!";
             // 
             // progressBar1
             // 
@@ -340,16 +350,6 @@
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(606, 23);
             this.progressBar1.TabIndex = 20;
-            // 
-            // submitAnswer
-            // 
-            this.submitAnswer.Location = new System.Drawing.Point(3, 100);
-            this.submitAnswer.Name = "submitAnswer";
-            this.submitAnswer.Size = new System.Drawing.Size(606, 23);
-            this.submitAnswer.TabIndex = 20;
-            this.submitAnswer.Text = "submit";
-            this.submitAnswer.UseVisualStyleBackColor = true;
-            this.submitAnswer.Click += new System.EventHandler(this.submitAnswer_Click);
             // 
             // panel4
             // 

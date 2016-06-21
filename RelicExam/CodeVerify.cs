@@ -26,8 +26,10 @@ namespace RelicExam
         {
             try
             {
-                code = int.Parse(codeTextBox.Text);
-                expectedOutput = int.Parse(expectedOutputTextBox.Text);
+                char delimiter = System.Convert.ToChar("-");
+                string[] s = codeTextBox.Text.Split(delimiter);
+                code = int.Parse(s[0]);
+                expectedOutput = int.Parse(s[1]);
                 output = code / 420;
                 double doubleOutput = Math.Sqrt(output);
                 output = (int)doubleOutput;

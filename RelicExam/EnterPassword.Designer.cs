@@ -29,9 +29,10 @@
         private void InitializeComponent()
         {
             this.enterPasswordLabel = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.passwordTextBox = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.explainEnter = new System.Windows.Forms.Label();
+            this.overrideLockCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // enterPasswordLabel
@@ -43,14 +44,14 @@
             this.enterPasswordLabel.TabIndex = 0;
             this.enterPasswordLabel.Text = "Please enter the service mode password";
             // 
-            // textBox1
+            // passwordTextBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(15, 25);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.PasswordChar = '*';
-            this.textBox1.Size = new System.Drawing.Size(191, 20);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
+            this.passwordTextBox.Location = new System.Drawing.Point(15, 25);
+            this.passwordTextBox.Name = "passwordTextBox";
+            this.passwordTextBox.PasswordChar = '*';
+            this.passwordTextBox.Size = new System.Drawing.Size(191, 20);
+            this.passwordTextBox.TabIndex = 1;
+            this.passwordTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
             // button1
             // 
@@ -71,19 +72,29 @@
             this.explainEnter.TabIndex = 3;
             this.explainEnter.Text = "Enter password and press enter or button";
             // 
+            // overrideLockCheckBox
+            // 
+            this.overrideLockCheckBox.AutoSize = true;
+            this.overrideLockCheckBox.Location = new System.Drawing.Point(15, 93);
+            this.overrideLockCheckBox.Name = "overrideLockCheckBox";
+            this.overrideLockCheckBox.Size = new System.Drawing.Size(108, 17);
+            this.overrideLockCheckBox.TabIndex = 4;
+            this.overrideLockCheckBox.Text = "dev override lock";
+            this.overrideLockCheckBox.UseVisualStyleBackColor = true;
+            // 
             // EnterPassword
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(218, 91);
+            this.ClientSize = new System.Drawing.Size(218, 109);
+            this.Controls.Add(this.overrideLockCheckBox);
             this.Controls.Add(this.explainEnter);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.passwordTextBox);
             this.Controls.Add(this.enterPasswordLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "EnterPassword";
             this.Text = "EnterPassword";
-            this.Load += new System.EventHandler(this.EnterPassword_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -92,8 +103,9 @@
         #endregion
 
         private System.Windows.Forms.Label enterPasswordLabel;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label explainEnter;
+        public System.Windows.Forms.CheckBox overrideLockCheckBox;
+        public System.Windows.Forms.TextBox passwordTextBox;
     }
 }

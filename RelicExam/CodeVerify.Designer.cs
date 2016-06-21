@@ -76,6 +76,7 @@
             // 
             this.expectedOutputTextBox.Location = new System.Drawing.Point(156, 34);
             this.expectedOutputTextBox.Name = "expectedOutputTextBox";
+            this.expectedOutputTextBox.ReadOnly = true;
             this.expectedOutputTextBox.Size = new System.Drawing.Size(100, 20);
             this.expectedOutputTextBox.TabIndex = 4;
             // 

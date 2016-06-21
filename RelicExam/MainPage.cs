@@ -51,22 +51,40 @@ namespace RelicExam
         private void ServiceModeButton_Click(object sender, EventArgs e)
         {
             enterPassword.ShowDialog();
-            if (!enterPassword.correct && enterPassword.justClosing %2 == 1)
+            this.Hide();
+            if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
-                MessageBox.Show("Password Incorrect");
-            }
-            else if (!enterPassword.correct && enterPassword.justClosing % 2 == 0)
-            {
-                //do nothing, exept close
+                if (enterPassword.overrideLockCheckBox.Checked)
+                {
+                    //create cloud storage instance
+                    CloudStorage dropBoxStorage = new CloudStorage();
+                    // get the configuration for dropbox
+                    var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+                    // declare an access token
+                    ICloudStorageAccessToken accessToken = null;
+                    // load a valid security token from file
+                    using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                    }
+                    // open the connection 
+                    var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+                    // get a specific directory in the cloud storage, e.g. /Public 
+                    //var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
+                    //String srcFile = Environment.ExpandEnvironmentVariables(null);
+                    dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+                    //dropBoxStorage.UploadFile(srcFile, questionsFolder);
+                    dropBoxStorage.Close();
+                    dataBaseManager.ShowDialog();
+                }
+                else
+                {
+                    dataBaseManager.ShowDialog();
+                }
             }
             else
             {
-                if (!dataBaseManager.close)
-                {
-                    this.Hide();
-                    dataBaseManager.ShowDialog();
-                }
-                else { }
+
             }
             this.Show();
         }
