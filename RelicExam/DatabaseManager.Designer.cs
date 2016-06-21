@@ -54,7 +54,7 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.clearForm = new System.Windows.Forms.Button();
+            this.resetForm = new System.Windows.Forms.Button();
             this.catagoryComboBox = new System.Windows.Forms.ComboBox();
             this.catagoryLabel = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
@@ -73,9 +73,9 @@
             this.verifyCode = new System.Windows.Forms.Button();
             this.uploadButton = new System.Windows.Forms.Button();
             this.panel11 = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
+            this.addPictureButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.photoComboBox = new System.Windows.Forms.ComboBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -347,15 +347,15 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // clearForm
+            // resetForm
             // 
-            this.clearForm.Location = new System.Drawing.Point(299, 0);
-            this.clearForm.Name = "clearForm";
-            this.clearForm.Size = new System.Drawing.Size(140, 23);
-            this.clearForm.TabIndex = 2;
-            this.clearForm.Text = "reset GUI";
-            this.clearForm.UseVisualStyleBackColor = true;
-            this.clearForm.Click += new System.EventHandler(this.clearForm_Click);
+            this.resetForm.Location = new System.Drawing.Point(299, 0);
+            this.resetForm.Name = "resetForm";
+            this.resetForm.Size = new System.Drawing.Size(140, 23);
+            this.resetForm.TabIndex = 2;
+            this.resetForm.Text = "reset GUI";
+            this.resetForm.UseVisualStyleBackColor = true;
+            this.resetForm.Click += new System.EventHandler(this.resetForm_Click);
             // 
             // catagoryComboBox
             // 
@@ -394,7 +394,7 @@
             // 
             this.panel7.Controls.Add(this.theQuestionTitle);
             this.panel7.Controls.Add(this.questionTitle);
-            this.panel7.Controls.Add(this.clearForm);
+            this.panel7.Controls.Add(this.resetForm);
             this.panel7.Location = new System.Drawing.Point(12, 56);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(445, 27);
@@ -517,24 +517,24 @@
             // 
             // panel11
             // 
-            this.panel11.Controls.Add(this.button2);
+            this.panel11.Controls.Add(this.addPictureButton);
             this.panel11.Controls.Add(this.label2);
-            this.panel11.Controls.Add(this.comboBox1);
+            this.panel11.Controls.Add(this.photoComboBox);
             this.panel11.Location = new System.Drawing.Point(12, 388);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(338, 50);
             this.panel11.TabIndex = 26;
             // 
-            // button2
+            // addPictureButton
             // 
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(268, 14);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(67, 23);
-            this.button2.TabIndex = 27;
-            this.button2.Text = "add new...";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.addPictureButton.Enabled = false;
+            this.addPictureButton.Location = new System.Drawing.Point(268, 14);
+            this.addPictureButton.Name = "addPictureButton";
+            this.addPictureButton.Size = new System.Drawing.Size(67, 23);
+            this.addPictureButton.TabIndex = 27;
+            this.addPictureButton.Text = "add new...";
+            this.addPictureButton.UseVisualStyleBackColor = true;
+            this.addPictureButton.Click += new System.EventHandler(this.addPictureButton_Click);
             // 
             // label2
             // 
@@ -545,17 +545,17 @@
             this.label2.TabIndex = 26;
             this.label2.Text = "Select Photo";
             // 
-            // comboBox1
+            // photoComboBox
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.photoComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.photoComboBox.FormattingEnabled = true;
+            this.photoComboBox.Items.AddRange(new object[] {
             "NONE"});
-            this.comboBox1.Location = new System.Drawing.Point(6, 16);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(256, 21);
-            this.comboBox1.TabIndex = 25;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.photoComboBox.Location = new System.Drawing.Point(6, 16);
+            this.photoComboBox.Name = "photoComboBox";
+            this.photoComboBox.Size = new System.Drawing.Size(256, 21);
+            this.photoComboBox.TabIndex = 25;
+            this.photoComboBox.SelectedIndexChanged += new System.EventHandler(this.photoComboBox_SelectedIndexChanged);
             // 
             // openFileDialog1
             // 
@@ -640,7 +640,7 @@
         private System.Windows.Forms.ComboBox catagoryComboBox;
         private System.Windows.Forms.Label catagoryLabel;
         private System.Windows.Forms.Button saveButton;
-        private System.Windows.Forms.Button clearForm;
+        private System.Windows.Forms.Button resetForm;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel6;
@@ -660,9 +660,9 @@
         private System.Windows.Forms.Button verifyCode;
         private System.Windows.Forms.Button uploadButton;
         private System.Windows.Forms.Panel panel11;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button addPictureButton;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox photoComboBox;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }

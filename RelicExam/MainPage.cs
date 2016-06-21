@@ -19,6 +19,7 @@ using System.Diagnostics;
 using AppLimit.CloudComputing.SharpBox;
 using AppLimit.CloudComputing.SharpBox.StorageProvider.DropBox;
 using System.Web;
+using System.Security.Cryptography;
 
 
 namespace RelicExam
@@ -43,6 +44,8 @@ namespace RelicExam
         private string version = "Beta3";
         private PleaseWait wait;
         private CodeVerify cv;
+        private PleaseWait pw;
+        private MD5 hash;
 
         public MainPage()
         {
@@ -57,24 +60,15 @@ namespace RelicExam
             {
                 if (enterPassword.overrideLockCheckBox.Checked)
                 {
-                    //create cloud storage instance
                     CloudStorage dropBoxStorage = new CloudStorage();
-                    // get the configuration for dropbox
                     var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-                    // declare an access token
                     ICloudStorageAccessToken accessToken = null;
-                    // load a valid security token from file
                     using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
                     {
                         accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
                     }
-                    // open the connection 
                     var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-                    // get a specific directory in the cloud storage, e.g. /Public 
-                    //var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
-                    //String srcFile = Environment.ExpandEnvironmentVariables(null);
                     dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
-                    //dropBoxStorage.UploadFile(srcFile, questionsFolder);
                     dropBoxStorage.Close();
                     dataBaseManager.ShowDialog();
                 }
@@ -89,113 +83,17 @@ namespace RelicExam
             }
             this.Show();
         }
-
+        //called when the application has finished system loading
         private void MainPage_Load(object sender, EventArgs e)
         {
-            //TODO: Make multi-threaded version of the loader
-            //TODO: Implement database version checking so it does not have to constantly download everything
-            //TODO: Fix currentl xml implementation of questions
-            //parse all file paths
-            appPath = Application.StartupPath;
-            tempPath = Path.GetTempPath();
-            dataBasePath = tempPath + "\\relicExamDatabase";
-            questionPath = dataBasePath + "\\questions";
-            questionBase = "questionBase.xml";
-            //new up required objects
-            client = new WebClient();
-            dataBaseManager = new DatabaseManager();
-            enterPassword = new EnterPassword();
-            questionList = new List<Question>();
-            mapList = new List<Map>();
-            catagoryList = new List<Catagory>();
-            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-            wait = new PleaseWait();
-            cv = new CodeVerify();
-            //show loading screen
-            wait.Show();
+            this.Hide();
+            pw = new PleaseWait(100, 0);
+            //this.loadLiterallyEverything();
+            //pw.Show();
+            this.Hide();
             Application.DoEvents();
-            //check if dependencies are downloaded
-            if (!File.Exists(appPath + "\\AppLimit.CloudComputing.SharpBox.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/AppLimit.CloudComputing.SharpBox.dll", appPath + "\\AppLimit.CloudComputing.SharpBox.dll");
-            if (!File.Exists(appPath + "\\key.txt")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/key.txt", appPath + "\\key.txt");
-            if (!File.Exists(appPath + "\\Newtonsoft.Json.Net40.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Newtonsoft.Json.Net40.dll",appPath + "\\Newtonsoft.Json.Net40.dll");
-            //check for blank database
-            if (!Directory.Exists(dataBasePath)) Directory.CreateDirectory(dataBasePath);
-            //check for updates
-            if (File.Exists(dataBasePath + "\\version.txt")) File.Delete(dataBasePath + "\\version.txt");
-            try
-            {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/version.txt", dataBasePath + "\\version.txt");
-            }
-            catch (WebException)
-            {
-                MessageBox.Show("ERROR 404: File not found");
-                this.Close();
-            }
-            string tempVersion = File.ReadAllText(dataBasePath + "\\version.txt");
-            if (!tempVersion.Equals(version))
-            {
-                DialogResult res = MessageBox.Show("New version found. Update now?", "Update", MessageBoxButtons.YesNo);
-                if (res == DialogResult.No)
-                {
-                    this.Close();
-                }
-                else
-                {
-                    try
-                    {
-                        client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/RelicExam.exe", appPath + "\\RelicExam_V" + tempVersion + ".exe");
-                    }
-                    catch (WebException)
-                    {
-                        MessageBox.Show("ERROR 404: File not found");
-                        this.Close();
-                    }
-
-                    Process.Start(appPath + "\\RelicExam_V" + tempVersion + ".exe");
-                    this.Close();
-                }
-            }
-            if (!File.Exists(questionPath + "\\" + questionBase))
-            {
-                //database is blank
-                //DEV CODE
-                /*
-                DialogResult r = MessageBox.Show("Empty Database. Create Sample Database? If you select no, the\napplication will crash when loading a quiz", "Empty Database", MessageBoxButtons.YesNo);
-                if (r == DialogResult.Yes)
-                {
-                    DatabaseManager m = new DatabaseManager();
-                    m.Show();
-                    m.Hide();
-                    m.createDataBase(true);
-                    m.setupSampleXmlFiles();
-                }
-                else {  }*/
-                //END DEV CODE
-            }
-            wait.Close();
-            //create a temp databaseManager to download the database
-            DatabaseManager m = new DatabaseManager();
-            m.parseFilePaths();
-            //m.createDataBase(true);
-            m.loadDataBase();
-            m.Dispose();
-            //read question base for maps and catagory only
-            while (questionBaseReader.Read())
-            {
-                if (questionBaseReader.IsStartElement())
-                {
-                    switch (questionBaseReader.Name)
-                    {
-                        case "catagory":
-                            catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
-                            break;
-                        case "map":
-                            mapList.Add(new Map(questionBaseReader.ReadString()));
-                            break;
-                    }
-                }
-            }
-            questionBaseReader.Close();
+            mainPageDatabaseLoader.RunWorkerAsync();
+            pw.ShowDialog();
         }
 
         private void selectTestType_SelectedIndexChanged(object sender, EventArgs e)
@@ -293,6 +191,231 @@ namespace RelicExam
             }
             enterPassword.overrideLockCheckBox.Visible = true;
             this.Show();
+        }
+
+        private void mainPageDatabaseLoader_DoWork(object sender, DoWorkEventArgs e)
+        {
+            this.loadLiterallyEverything();
+        }
+        //reports an int of the progress level
+        private void mainPageDatabaseLoader_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            pw.setProgress(e.ProgressPercentage);
+        }
+        //runs when the work is complete
+        private void mainPageDatabaseLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            pw.Hide();
+            this.Show();
+        }
+        //self explanatory
+        private void loadLiterallyEverything()
+        {
+            //parse all file paths
+            appPath = Application.StartupPath;
+            tempPath = Path.GetTempPath();
+            dataBasePath = tempPath + "\\relicExamDatabase";
+            questionPath = dataBasePath + "\\questions";
+            questionBase = "questionBase.xml";
+            //new up required objects
+            client = new WebClient();
+            dataBaseManager = new DatabaseManager();
+            enterPassword = new EnterPassword();
+            questionList = new List<Question>();
+            mapList = new List<Map>();
+            catagoryList = new List<Catagory>();
+            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
+            wait = new PleaseWait();
+            cv = new CodeVerify();
+            //show loading screen (old)
+            //wait.Show();
+            //Application.DoEvents();
+            mainPageDatabaseLoader.ReportProgress(10);
+            //check if dependencies are downloaded
+            if (!File.Exists(appPath + "\\AppLimit.CloudComputing.SharpBox.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/AppLimit.CloudComputing.SharpBox.dll", appPath + "\\AppLimit.CloudComputing.SharpBox.dll");
+            mainPageDatabaseLoader.ReportProgress(20);
+            if (!File.Exists(appPath + "\\key.txt")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/key.txt", appPath + "\\key.txt");
+            mainPageDatabaseLoader.ReportProgress(30);
+            if (!File.Exists(appPath + "\\Newtonsoft.Json.Net40.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Newtonsoft.Json.Net40.dll", appPath + "\\Newtonsoft.Json.Net40.dll");
+            mainPageDatabaseLoader.ReportProgress(40);
+            //check for blank database
+            if (!Directory.Exists(dataBasePath)) Directory.CreateDirectory(dataBasePath);
+            //check for updates
+            if (File.Exists(dataBasePath + "\\version.txt")) File.Delete(dataBasePath + "\\version.txt");
+            try
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/version.txt", dataBasePath + "\\version.txt");
+            }
+            catch (WebException)
+            {
+                MessageBox.Show("ERROR 404: File not found");
+                this.Close();
+            }
+            mainPageDatabaseLoader.ReportProgress(50);
+            string tempVersion = File.ReadAllText(dataBasePath + "\\version.txt");
+            if (!tempVersion.Equals(version))
+            {
+                DialogResult res = MessageBox.Show("New version found. Update now?", "Update", MessageBoxButtons.YesNo);
+                if (res == DialogResult.No)
+                {
+                    this.Close();
+                }
+                else
+                {
+                    try
+                    {
+                        client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/RelicExam.exe", appPath + "\\RelicExam_V" + tempVersion + ".exe");
+                    }
+                    catch (WebException)
+                    {
+                        MessageBox.Show("ERROR 404: File not found");
+                        this.Close();
+                    }
+
+                    Process.Start(appPath + "\\RelicExam_V" + tempVersion + ".exe");
+                    this.Close();
+                }
+            }
+            if (!File.Exists(questionPath + "\\" + questionBase))
+            {
+                //database is blank
+                Directory.CreateDirectory(questionPath);
+                //DEV CODE
+                /*
+                DialogResult r = MessageBox.Show("Empty Database. Create Sample Database? If you select no, the\napplication will crash when loading a quiz", "Empty Database", MessageBoxButtons.YesNo);
+                if (r == DialogResult.Yes)
+                {
+                    DatabaseManager m = new DatabaseManager();
+                    m.Show();
+                    m.Hide();
+                    m.createDataBase(true);
+                    m.setupSampleXmlFiles();
+                }
+                else {  }*/
+                //END DEV CODE
+            }
+            //wait.Close();
+            mainPageDatabaseLoader.ReportProgress(40);
+            //determine if the database has been updated since last use
+            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\tempQuestionBase.xml");
+            hash = MD5.Create();
+            string newHash = this.GetMd5Hash(hash,File.ReadAllText(questionPath + "\\tempQuestionBase.xml"));
+            string oldHash = null;
+            if (File.Exists(questionPath + "\\QuestionBase.xml"))
+            {
+                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\QuestionBase.xml"));
+            }
+            if (!newHash.Equals(oldHash))
+            {
+                //database has been updated or is blank, need to download new one
+                //create a temp databaseManager to download the database
+                this.downloadLatestDatabase();
+            }
+            mainPageDatabaseLoader.ReportProgress(90);
+            //read question base for maps and catagory only
+            while (questionBaseReader.Read())
+            {
+                if (questionBaseReader.IsStartElement())
+                {
+                    switch (questionBaseReader.Name)
+                    {
+                        case "catagory":
+                            catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
+                            break;
+                        case "map":
+                            mapList.Add(new Map(questionBaseReader.ReadString()));
+                            break;
+                    }
+                }
+            }
+            if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");
+            mainPageDatabaseLoader.ReportProgress(99);
+            Thread.Sleep(500);
+            mainPageDatabaseLoader.ReportProgress(100);
+            questionBaseReader.Close();
+        }
+        private string GetMd5Hash(MD5 md5Hash, string input)
+        {
+
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+        }
+        private void downloadLatestDatabase()
+        {
+            //new up temp lists
+            ArrayList questionReaderList = new ArrayList();
+            XmlTextReader tempQuestionBaseReader;
+            ArrayList pictureNameList = new ArrayList();
+            string picturePath = dataBasePath + "\\pictures";
+            //download latest questionBase
+            if (File.Exists(questionPath + "\\" + questionBase)) File.Delete(questionPath + "\\" + questionBase);
+            try
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\" + questionBase);
+            }
+            catch (WebException)
+            {
+                MessageBox.Show("ERROR 404: file not found");
+                this.Close();
+                return;
+                //File.Move(questionPath + "\\questionBase.tmp",questionPath + "\\" + questionBase);
+            }
+            mainPageDatabaseLoader.ReportProgress(45);
+            //then we can new up the xml readers
+            tempQuestionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
+            List<string> pictureFileNameList = new List<string>();
+
+            //read question base for picture and question names
+            while (tempQuestionBaseReader.Read())
+            {
+                if (tempQuestionBaseReader.IsStartElement())
+                {
+                    switch (tempQuestionBaseReader.Name)
+                    {
+                        case "question":
+                            questionReaderList.Add(tempQuestionBaseReader.ReadString());
+                            break;
+                        case "pictureFilePath":
+                            pictureNameList.Add(tempQuestionBaseReader.ReadString());
+                            break;
+                    }
+                }
+            }
+            tempQuestionBaseReader.Close();
+            if (Directory.Exists(picturePath)) Directory.Delete(picturePath, true);
+            Directory.CreateDirectory(picturePath);
+            mainPageDatabaseLoader.ReportProgress(50);
+            //download each picture. 50-70
+            int tempProg = 50;
+            foreach (String pp in pictureNameList)
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + pp, picturePath + "\\" + pp);
+                tempProg = tempProg + 2;
+                mainPageDatabaseLoader.ReportProgress(tempProg);
+            }
+            //download each question. 70-90
+            tempProg = 70;
+            foreach (String q in questionReaderList)
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/questions/" + q, questionPath + "\\" + q);
+                tempProg = tempProg + 2;
+                mainPageDatabaseLoader.ReportProgress(tempProg);
+            }
+            mainPageDatabaseLoader.ReportProgress(90);
         }
     }
 }

@@ -39,6 +39,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.specifyTypeBox = new System.Windows.Forms.ComboBox();
             this.verifyCodeButton = new System.Windows.Forms.Button();
+            this.mainPageDatabaseLoader = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // ServiceModeButton
@@ -153,6 +154,13 @@
             this.verifyCodeButton.UseVisualStyleBackColor = true;
             this.verifyCodeButton.Click += new System.EventHandler(this.verifyCodeButton_Click);
             // 
+            // mainPageDatabaseLoader
+            // 
+            this.mainPageDatabaseLoader.WorkerReportsProgress = true;
+            this.mainPageDatabaseLoader.DoWork += new System.ComponentModel.DoWorkEventHandler(this.mainPageDatabaseLoader_DoWork);
+            this.mainPageDatabaseLoader.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.mainPageDatabaseLoader_ProgressChanged);
+            this.mainPageDatabaseLoader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.mainPageDatabaseLoader_RunWorkerCompleted);
+            // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -191,6 +199,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox specifyTypeBox;
         private System.Windows.Forms.Button verifyCodeButton;
+        private System.ComponentModel.BackgroundWorker mainPageDatabaseLoader;
     }
 }
 

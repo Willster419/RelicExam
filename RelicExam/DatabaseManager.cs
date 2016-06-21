@@ -163,18 +163,18 @@ namespace RelicExam
                 questionReaderList = new ArrayList();
                 pictureList = new List<Picture>();
                 //MessageBox.Show("Database is blank");
-                //clearForm_Click(null, null);
+                //resetForm_Click(null, null);
                 //return;
             }
             else
             {
-                this.loadDataBase();
+                this.loadDataBase(true);
             }
             this.resetGUI();
             
         }
 
-        public void loadDataBase()
+        public void loadDataBase(bool displayProgress)
         {
             //new up everything
             tempQuestion = new Question();
@@ -232,6 +232,7 @@ namespace RelicExam
                 }
             }
             questionBaseReader.Close();
+
             //parse fileNames
             for (int i = 0; i < pictureList.Count; i++)
             {
@@ -239,8 +240,9 @@ namespace RelicExam
                 pictureList[i].photoFileName = picturePath + "\\" + fileName;
             }
 
-            wait = new PleaseWait(questionReaderList.Count+pictureList.Count, 0);
-            wait.Show();
+            //create the loading window
+            if(displayProgress) wait = new PleaseWait(questionReaderList.Count+pictureList.Count, 0);
+            if(displayProgress) wait.Show();
             int progg = 0;
             //read player base
             /*while (playerBaseReader.Read())
@@ -266,7 +268,7 @@ namespace RelicExam
             Directory.CreateDirectory(picturePath);
             foreach (Picture pp in pictureList)
             {
-                wait.setProgress(progg++);
+                if(displayProgress) wait.setProgress(progg++);
                 String fileName = Path.GetFileName(pp.photoFileName);
                 client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + fileName, picturePath + "\\" + fileName);
             }
@@ -274,7 +276,7 @@ namespace RelicExam
             //parse questions
             foreach (string q in questionReaderList)
             {
-                wait.setProgress(progg++);
+                if(displayProgress) wait.setProgress(progg++);
                 //download them first tho
                 if (File.Exists(questionPath + "\\" + q)) File.Delete(questionPath + "\\" + q);
                 client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/" + q, questionPath + "\\" + q);
@@ -343,7 +345,7 @@ namespace RelicExam
                 questionList.Add(tempQuestion);
                 questionReader.Close();
             }
-            wait.Close();
+            if(displayProgress)wait.Close();
         }
 
         private void resetGUI()
@@ -375,13 +377,13 @@ namespace RelicExam
             {
                 catagoryComboBox.Items.Add(c);
             }
-            while (comboBox1.Items.Count > 1)
+            while (photoComboBox.Items.Count > 1)
             {
-                comboBox1.Items.RemoveAt(1);
+                photoComboBox.Items.RemoveAt(1);
             }
             foreach (Picture pp in pictureList)
             {
-                comboBox1.Items.Add(pp);
+                photoComboBox.Items.Add(pp);
             }
             questionTextBox.Text = "";
             responseATextBox.Text = "";
@@ -398,7 +400,7 @@ namespace RelicExam
             theQuestionTitle.Text = "";
             timeToAnswerTextBox.Text = "" + "";
             currentModeLabel.Visible = false;
-            this.comboBox1_SelectedIndexChanged(null, null);
+            this.photoComboBox_SelectedIndexChanged(null, null);
         }
 
         private void answerCEnable_CheckedChanged(object sender, EventArgs e)
@@ -648,24 +650,24 @@ namespace RelicExam
                 questionWriter.Close();
             }
         }
-
+        //OLD! DO NOT USE!
         private void button3_Click(object sender, EventArgs e)
         {
             this.createDataBase(true);
             this.setupSampleXmlFiles();
             button1.Enabled = false;
         }
-
+        //OLD! DO NOT USE!
         private void button4_Click(object sender, EventArgs e)
         {
             //check if the database is blank
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
                 MessageBox.Show("Database is blank");
-                clearForm_Click(null, null);
+                resetForm_Click(null, null);
                 return;
             }
-            this.loadDataBase();
+            this.loadDataBase(true);
             this.resetGUI();
         }
 
@@ -673,7 +675,7 @@ namespace RelicExam
         {
             if(chooser != null)chooser.Close();
             actuallyLoad = true;
-            button2.Enabled = true;
+            addPictureButton.Enabled = true;
             pictureName = "";
             saveButton.Enabled = true;
             if (questionComboBox.SelectedIndex == -1) return;
@@ -685,7 +687,7 @@ namespace RelicExam
                 currentModeLabel.Visible = true;
                 saveButton.Text = "create";
                 removeButton.Enabled = false;
-                comboBox1.SelectedIndex = -1;
+                photoComboBox.SelectedIndex = -1;
             }
             else
             {
@@ -757,12 +759,12 @@ namespace RelicExam
                 string tempPictureName = q2Load.p.photoTitle;
                 if (tempPictureName == null)
                 {
-                    comboBox1.SelectedIndex = 0;
+                    photoComboBox.SelectedIndex = 0;
                     return;
                 }
                 if (tempPictureName.Equals("NONE") && tempPictureName !=null )
                 {
-                    comboBox1.SelectedIndex = 0;
+                    photoComboBox.SelectedIndex = 0;
                 }
                 else
                 {
@@ -770,14 +772,14 @@ namespace RelicExam
                     {
                         if (tempPictureName.Equals(pictureList[i].photoTitle))
                         {
-                            comboBox1.SelectedIndex = ++i;
+                            photoComboBox.SelectedIndex = ++i;
                             break;
                         }
                     }
                 }
                 
             }
-            comboBox1_SelectedIndexChanged(null, null);
+            photoComboBox_SelectedIndexChanged(null, null);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -794,7 +796,7 @@ namespace RelicExam
             //update the gui
             //////////////////////////////////////////////////////////////////
             //but first make sure everything is selected
-            if (theQuestionTitle.Text.Equals("") || questionTextBox.Text.Equals("") || responseATextBox.Text.Equals("") || responseBTextBox.Text.Equals("") || timeToAnswerTextBox.Text.Equals("0") || (answerCEnable.Checked && responseCTextBox.Text.Equals("")) || (answerDEnable.Checked && responseDTextBox.Text.Equals("")) || (catagoryComboBox.Text.Equals("") && catagoryComboBox.SelectedIndex == -1) || (mapComboBox.Text.Equals("") && mapComboBox.SelectedIndex == -1) || (!answerMarkA.Checked && !answerMarkB.Checked && !answerMarkC.Checked && !answerMarkD.Checked) || comboBox1.SelectedIndex == -1)
+            if (theQuestionTitle.Text.Equals("") || questionTextBox.Text.Equals("") || responseATextBox.Text.Equals("") || responseBTextBox.Text.Equals("") || timeToAnswerTextBox.Text.Equals("0") || (answerCEnable.Checked && responseCTextBox.Text.Equals("")) || (answerDEnable.Checked && responseDTextBox.Text.Equals("")) || (catagoryComboBox.Text.Equals("") && catagoryComboBox.SelectedIndex == -1) || (mapComboBox.Text.Equals("") && mapComboBox.SelectedIndex == -1) || (!answerMarkA.Checked && !answerMarkB.Checked && !answerMarkC.Checked && !answerMarkD.Checked) || photoComboBox.SelectedIndex == -1)
             {
                 MessageBox.Show("please make sure everything is filled out properly before continuing!");
                 return;
@@ -924,9 +926,9 @@ namespace RelicExam
                         questionList = new List<Question>();
                     }
                     //parse new picture
-                    if (comboBox1.SelectedIndex != 0)
+                    if (photoComboBox.SelectedIndex != 0)
                     {
-                        newQ.p = pictureList[comboBox1.SelectedIndex - 1];
+                        newQ.p = pictureList[photoComboBox.SelectedIndex - 1];
                     }
                     else
                     {
@@ -940,7 +942,7 @@ namespace RelicExam
                     this.setupQuestionBase();
                     this.setupQuestions();
                     this.uploadButton_Click(null, null);
-                    this.loadDataBase();
+                    this.loadDataBase(true);
                     this.resetGUI();
                 }
             }
@@ -1113,9 +1115,9 @@ namespace RelicExam
                         }
                     }
                     //PARSE picture
-                    if (comboBox1.SelectedIndex != 0)
+                    if (photoComboBox.SelectedIndex != 0)
                     {
-                        q2Edit.p = pictureList[comboBox1.SelectedIndex - 1];
+                        q2Edit.p = pictureList[photoComboBox.SelectedIndex - 1];
                     }
                     else
                     {
@@ -1128,7 +1130,7 @@ namespace RelicExam
                     this.setupQuestionBase();
                     this.setupQuestions();
                     this.uploadButton_Click(null, null);
-                    this.loadDataBase();
+                    this.loadDataBase(true);
                     this.resetGUI();
                 }
             }
@@ -1213,7 +1215,7 @@ namespace RelicExam
                 this.setupQuestionBase();
                 this.setupQuestions();
                 this.uploadButton_Click(null, null);
-                this.loadDataBase();
+                this.loadDataBase(true);
                 this.resetGUI();
                 removeButton.Enabled = false;
             }
@@ -1373,14 +1375,14 @@ namespace RelicExam
 
             }
         }
-
+        //OLD! DO NOT USE!
         private void button1_Click(object sender, EventArgs e)
         {
             this.createDataBase(true);
             button3.Enabled = false;
         }
 
-        private void clearForm_Click(object sender, EventArgs e)
+        private void resetForm_Click(object sender, EventArgs e)
         {
             questionComboBox.SelectedIndex = -1;
             mapComboBox.SelectedIndex = -1;
@@ -1400,7 +1402,7 @@ namespace RelicExam
             theQuestionTitle.Text = "";
             timeToAnswerTextBox.Text = "" + "";
             currentModeLabel.Visible = false;
-            comboBox1_SelectedIndexChanged(null, null);
+            photoComboBox_SelectedIndexChanged(null, null);
         }
         private void cleanupCatagories()
         {
@@ -1441,7 +1443,7 @@ namespace RelicExam
             CodeVerify v = new CodeVerify();
             v.ShowDialog();
         }
-
+        //OLD! DO NOT USE!
         private void uploadButton_Click(object sender, EventArgs e)
         {
             if (!hasMadeChanges)
@@ -1553,7 +1555,7 @@ namespace RelicExam
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void addPictureButton_Click(object sender, EventArgs e)
         {
             if (chooser != null) chooser.Close();
             pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
@@ -1580,8 +1582,8 @@ namespace RelicExam
             Picture temp = new Picture(chooser.photoNamee, newName);
             pictureList.Add(temp);
             //update the picture combo box
-            comboBox1.Items.Add(temp);
-            comboBox1.SelectedIndex = getPicture(chooser.photoNamee);
+            photoComboBox.Items.Add(temp);
+            photoComboBox.SelectedIndex = getPicture(chooser.photoNamee);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -1589,13 +1591,13 @@ namespace RelicExam
 
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void photoComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (actuallyLoad)
             {
                 //close and photoviewers 
                 if (chooser != null) chooser.Close();
-                if (comboBox1.SelectedIndex == 0 || comboBox1.SelectedIndex == -1)
+                if (photoComboBox.SelectedIndex == 0 || photoComboBox.SelectedIndex == -1)
                 {
                     pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
                     chooser = new PhotoViewer(pictureSpawnPoint);
@@ -1603,7 +1605,7 @@ namespace RelicExam
                     chooser.Show();
                     return;
                 }
-                Picture tempPic = pictureList[comboBox1.SelectedIndex - 1];
+                Picture tempPic = pictureList[photoComboBox.SelectedIndex - 1];
                 pictureName = tempPic.photoTitle;
                 pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
                 chooser = new PhotoViewer(pictureSpawnPoint);
@@ -1625,13 +1627,12 @@ namespace RelicExam
             }
             return 0;
         }
-
+        //load every picture in the picture database(done?)
+        //load every picture in the folder
+        //for each picture in folder, run through the list and 
+        //count the number of hits it is used using the picture's filePath
         private void cleanUpPictures()
         {
-            //load every picture in the picture database(done?)
-            //load every picture in the folder
-            //for each picture in folder, run through the list and 
-            //count the number of hits it is used using the picture's filePath
             for (int i = 0; i < pictureList.Count; i++)
             {
                 int numHits = 0;
@@ -1646,7 +1647,7 @@ namespace RelicExam
                 }
             }
         }
-
+        //parses all file paths required upon application load
         public void parseFilePaths()
         {
             //parse all file paths

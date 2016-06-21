@@ -313,6 +313,7 @@ namespace RelicExam
             radioButtonD.Checked = false;
             pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
             foto = new PhotoViewer(pictureSpawnPoint);
+            foto.preview.Visible = false;
             foto.Location = pictureSpawnPoint;
             if (loadedQuestion.p.photoFileName.Equals("null.jpg"))
             {
