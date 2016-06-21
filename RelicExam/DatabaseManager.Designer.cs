@@ -77,6 +77,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.photoComboBox = new System.Windows.Forms.ComboBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -562,6 +563,12 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "\"Supported Picture Types|*.jpg;*.jpeg;*.png;*.bmp;*.gif\"";
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -664,5 +671,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox photoComboBox;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

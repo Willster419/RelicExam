@@ -240,7 +240,7 @@ namespace RelicExam
             mainPageDatabaseLoader.ReportProgress(40);
             //check for blank database
             if (!Directory.Exists(dataBasePath)) Directory.CreateDirectory(dataBasePath);
-            //check for updates
+            //check for updates to application
             if (File.Exists(dataBasePath + "\\version.txt")) File.Delete(dataBasePath + "\\version.txt");
             try
             {
@@ -276,6 +276,7 @@ namespace RelicExam
                     this.Close();
                 }
             }
+            //check for blank databse
             if (!File.Exists(questionPath + "\\" + questionBase))
             {
                 //database is blank
@@ -294,6 +295,7 @@ namespace RelicExam
                 else {  }*/
                 //END DEV CODE
             }
+            //(old) close the waiting window cause loading is done
             //wait.Close();
             mainPageDatabaseLoader.ReportProgress(40);
             //determine if the database has been updated since last use
@@ -308,9 +310,9 @@ namespace RelicExam
             if (!newHash.Equals(oldHash))
             {
                 //database has been updated or is blank, need to download new one
-                //create a temp databaseManager to download the database
                 this.downloadLatestDatabase();
             }
+            if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");
             mainPageDatabaseLoader.ReportProgress(90);
             //read question base for maps and catagory only
             while (questionBaseReader.Read())
@@ -328,32 +330,30 @@ namespace RelicExam
                     }
                 }
             }
-            if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");
+            questionBaseReader.Close();
+            //set progress to 99 and sleep it so the progress bar updates for those with fancy themes
             mainPageDatabaseLoader.ReportProgress(99);
             Thread.Sleep(500);
             mainPageDatabaseLoader.ReportProgress(100);
-            questionBaseReader.Close();
         }
+        //gets a string md5 hash checksum of the input string. in this case, the input string is the file
         private string GetMd5Hash(MD5 md5Hash, string input)
         {
-
             // Convert the input string to a byte array and compute the hash.
             byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-
             // Create a new Stringbuilder to collect the bytes
             // and create a string.
             StringBuilder sBuilder = new StringBuilder();
-
             // Loop through each byte of the hashed data 
             // and format each one as a hexadecimal string.
             for (int i = 0; i < data.Length; i++)
             {
                 sBuilder.Append(data[i].ToString("x2"));
             }
-
             // Return the hexadecimal string.
             return sBuilder.ToString();
         }
+        //self-explanatory
         private void downloadLatestDatabase()
         {
             //new up temp lists

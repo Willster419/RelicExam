@@ -18,6 +18,7 @@ using System.Diagnostics;
 using AppLimit.CloudComputing.SharpBox;
 using AppLimit.CloudComputing.SharpBox.StorageProvider.DropBox;
 using System.Web;
+using System.Security.Cryptography;
 
 namespace RelicExam
 {
@@ -110,8 +111,7 @@ namespace RelicExam
             catch (WebException)
             {
                 //if none, you are the user now
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                //DISABLE WHEN DEVELOPING
+                //make a random file to use a single instance file lock
                 File.WriteAllText(tempPath + "\\inUse.txt", "the service is in use");
                 dropBoxStorage = new CloudStorage();
                 // get the configuration for dropbox
@@ -130,7 +130,6 @@ namespace RelicExam
                 String srcFile = Environment.ExpandEnvironmentVariables(tempPath + "\\inUse.txt");
                 dropBoxStorage.UploadFile(srcFile, questionsFolder);
                 dropBoxStorage.Close();
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
             }
             if (close)
             {
@@ -165,6 +164,21 @@ namespace RelicExam
                 //MessageBox.Show("Database is blank");
                 //resetForm_Click(null, null);
                 //return;
+                //determine if the database has been updated since last use
+                /*client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\tempQuestionBase.xml");
+                hash = MD5.Create();
+                string newHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\tempQuestionBase.xml"));
+                string oldHash = null;
+                if (File.Exists(questionPath + "\\QuestionBase.xml"))
+                {
+                    oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\QuestionBase.xml"));
+                }
+                if (!newHash.Equals(oldHash))
+                {
+                    //database has been updated or is blank, need to download new one
+                    this.downloadLatestDatabase();
+                }
+                if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");*/
             }
             else
             {
@@ -1659,6 +1673,38 @@ namespace RelicExam
             questionBase = "questionBase.xml";
             playerBase = "playerBase.xml";
             picturePath = dataBasePath + "\\pictures";
+        }
+        //gets a string md5 hash checksum of the input string. in this case, the input string is the file
+        private string GetMd5Hash(MD5 md5Hash, string input)
+        {
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
         }
     }
 }
