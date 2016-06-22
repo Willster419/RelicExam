@@ -18,7 +18,7 @@ namespace RelicExam
         }
         public override string ToString() 
         {
-            return photoFileName;
+            return System.IO.Path.GetFileName(photoFileName);
         }
     }
 }

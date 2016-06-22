@@ -57,6 +57,9 @@ namespace RelicExam
         {
             enterPassword.ShowDialog();
             this.Hide();
+            wait = new PleaseWait();
+            wait.Show();
+            dataBaseManager = new DatabaseManager(questionList, mapList, catagoryList);
             if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
                 //correct password
@@ -73,10 +76,12 @@ namespace RelicExam
                     var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
                     dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
                     dropBoxStorage.Close();
+                    wait.Close();
                     dataBaseManager.ShowDialog();
                 }
                 else
                 {
+                    wait.Close();
                     dataBaseManager.ShowDialog();
                 }
             }
@@ -322,7 +327,7 @@ namespace RelicExam
                                     break;
                                 case "catagory":
                                     tempQuestion.cat = new Catagory(questionReader.ReadString());
-                                    this.addCatagoryIfNotDuplicate(new Catagory(questionReader.ReadString()));
+                                    this.addCatagoryIfNotDuplicate(tempQuestion.cat);
                                     break;
                                 case "theQuestion":
                                     tempQuestion.theQuestion = questionReader.ReadString();
@@ -356,7 +361,7 @@ namespace RelicExam
                                     break;
                                 case "map":
                                     tempQuestion.m = new Map(questionReader.ReadString());
-                                    this.addMapIfNotDuplicate(new Map(questionReader.ReadString()));
+                                    this.addMapIfNotDuplicate(tempQuestion.m);
                                     break;
                                 case "picture":
                                     tempQuestion.p = new Picture(questionReader.ReadString());
@@ -443,12 +448,13 @@ namespace RelicExam
         private void refreshDatabase_Click(object sender, EventArgs e)
         {
             //delete the entire database, download the new one
-
+            Directory.Delete(dataBasePath,true);
+            this.MainPage_Load(null, null);
         }
         //re-downloads all the pictures
         private void downloadPictures()
         {
-            Directory.Delete(picturePath, true);
+            if(Directory.Exists(picturePath)) Directory.Delete(picturePath, true);
             Directory.CreateDirectory(picturePath);
             mainPageDatabaseLoader.ReportProgress(50);
             //download each picture. 50-90

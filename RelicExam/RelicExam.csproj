@@ -102,7 +102,6 @@
       <DependentUpon>PhotoViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Picture.cs" />
-    <Compile Include="Player.cs" />
     <Compile Include="PleaseWait.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -24,34 +24,15 @@ namespace RelicExam
 {
     public partial class DatabaseManager : Form
     {
-        public XmlTextWriter questionBaseWriter;
-        public XmlTextReader questionBaseReader;
-        public XmlTextWriter playerBaseWriter;
-        public XmlTextReader playerBaseReader;
-        public XmlTextWriter playerWriter;
-        public XmlTextReader playerReader;
         public XmlTextWriter questionWriter;
-        public XmlTextReader questionReader;
         private Question tempQuestion;
-        private Player tempPlayer;
         private string tempPath;
         private string appPath;
         public string dataBasePath;
         public string questionPath;
         public string playerPath;
         public string questionBase;
-        public string playerBase;
         private PleaseWait wait;
-        private string[] sampleCatagories;
-        private string[] sampleMaps;
-        private ArrayList questionReaderList;
-        private ArrayList playerReaderList;
-        private string questionPrefix = "question";
-        private int questionNumber = 0;
-        private string xmlExtension = ".xml";
-        private string playerPrefix = "player";
-        private int playerNumber = 0;
-        private List<Player> playerList;
         private List<Question> questionList;
         private List<Map> mapList;
         private List<Catagory> catagoryList;
@@ -66,12 +47,20 @@ namespace RelicExam
         private Point pictureSpawnPoint;
         private string picturePath;
         private bool actuallyLoad;
-
+        //basic constructor
         public DatabaseManager()
         {
             InitializeComponent();
         }
-
+        //constructor that passes in the loaded question, map, and cataogry lists
+        public DatabaseManager(List<Question> QList, List<Map> MList, List<Catagory> CList)
+        {
+            InitializeComponent();
+            questionList = QList;
+            mapList = MList;
+            catagoryList = CList;
+        }
+        //called when the form is ready to be shown
         private void DatabaseManager_Load(object sender, EventArgs e)
         {
             //some boolean logic hack i don't know
@@ -85,7 +74,6 @@ namespace RelicExam
             this.parseFilePaths();
             //declare all temp objects
             tempQuestion = new Question();
-            tempPlayer = new Player();
             //check for another user on the system
             try
             {
@@ -114,7 +102,9 @@ namespace RelicExam
                 var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
                 // get a specific directory in the cloud storage, e.g. /Public 
                 var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
+                //get the file to upload
                 String srcFile = Environment.ExpandEnvironmentVariables(tempPath + "\\inUse.txt");
+                //upload the file and close the connection
                 dropBoxStorage.UploadFile(srcFile, questionsFolder);
                 dropBoxStorage.Close();
             }
@@ -123,206 +113,23 @@ namespace RelicExam
                 this.Close();
                 return;
             }
-            //System.Threading.Thread.Sleep(100);
-            this.answerCEnable_CheckedChanged(null, null);
-            this.answerDEnable_CheckedChanged(null, null);
+            //oh boy, more hacks i put in
             currentModeLabel.Visible = false;
             removeButton.Enabled = false;
-            //determine if the database has been updated since last use
-            /*client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionBaseFullPath + "\\tempQuestionBase.xml");
-            hash = MD5.Create();
-            string newHash = this.GetMd5Hash(hash, File.ReadAllText(questionBaseFullPath + "\\tempQuestionBase.xml"));
-            string oldHash = null;
-            if (File.Exists(questionBaseFullPath + "\\QuestionBase.xml"))
-            {
-                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionBaseFullPath + "\\QuestionBase.xml"));
-            }
-            if (!newHash.Equals(oldHash))
-            {
-                //database has been updated or is blank, need to download new one
-                this.downloadLatestDatabase();
-            }
-            if (File.Exists(questionBaseFullPath + "\\tempQuestionBase.xml")) File.Delete(questionBaseFullPath + "\\tempQuestionBase.xml");*/
-            //all done checking/updating the database
+            //close this first loading window
             wait.Close();
-            //update gui
-            this.loadDataBase(true);
-            this.resetGUI();
-            
-        }
-
-        public void loadDataBase(bool displayProgress)
-        {
-            //new up everything
-            tempQuestion = new Question();
-            tempPlayer = new Player();
-            questionList = new List<Question>();
-            playerList = new List<Player>();
-            mapList = new List<Map>();
+            //(OLD) load the database
+            //don't need to now because the lists are passed in
+            //this.loadDataBase(true);
+            //create a list of pictures for the combobox
+            //this way of doing it assumes that the database is in tact
             pictureList = new List<Picture>();
-            catagoryList = new List<Catagory>();
-            playerReaderList = new ArrayList();
-            questionReaderList = new ArrayList();
-
-            //download latest questionBase
-            if (File.Exists(questionPath + "\\" + questionBase)) File.Delete(questionPath + "\\" + questionBase);
-            try
+            foreach (string s in Directory.GetFiles(picturePath))
             {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\" + questionBase);
+                pictureList.Add(new Picture(s));
             }
-            catch (WebException)
-            {
-                MessageBox.Show("404 nooooooooo");
-                this.Close();
-                return;
-                //File.Move(questionBaseFullPath + "\\questionBase.tmp",questionBaseFullPath + "\\" + questionBase);
-            }
-
-            //then we can new up the xml readers
-            playerBaseReader = new XmlTextReader(playerPath + "\\" + playerBase);
-            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-            List<string> pictureFileNameList = new List<string>();
-
-            //read question base
-            while (questionBaseReader.Read())
-            {
-                if (questionBaseReader.IsStartElement())
-                {
-                    switch (questionBaseReader.Name)
-                    {
-                        case "catagory":
-                            catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
-                            break;
-                        case "map":
-                            mapList.Add(new Map(questionBaseReader.ReadString()));
-                            break;
-                        case "question":
-                            questionReaderList.Add(questionBaseReader.ReadString());
-                            break;
-                        case "picture":
-                            pictureList.Add(new Picture(questionBaseReader.ReadString()));
-                            break;
-                        case "pictureFilePath":
-                            pictureFileNameList.Add(questionBaseReader.ReadString());
-                            break;
-                    }
-                }
-            }
-            questionBaseReader.Close();
-
-            //parse fileNames
-            for (int i = 0; i < pictureList.Count; i++)
-            {
-                string fileName = Path.GetFileName(pictureFileNameList[i]);
-                pictureList[i].photoFileName = picturePath + "\\" + fileName;
-            }
-
-            //create the loading window
-            if(displayProgress) wait = new PleaseWait(questionReaderList.Count+pictureList.Count, 0);
-            if(displayProgress) wait.Show();
-            int progg = 0;
-            //read player base
-            /*while (playerBaseReader.Read())
-            {
-                if (playerBaseReader.IsStartElement())
-                {
-                    switch (playerBaseReader.Name)
-                    {
-                        case "player":
-                            playerReaderList.Add(playerBaseReader.ReadString());
-                            break;
-                    }
-                }
-            }
-            playerBaseReader.Close();
-            //parse players (TODO)
-            //playerReader.Close();*/
-
-            //download pictures
-            //System.Threading.Thread.Sleep(100);
-            if (chooser != null) chooser.Close();
-            if (Directory.Exists(picturePath)) Directory.Delete(picturePath,true);
-            Directory.CreateDirectory(picturePath);
-            foreach (Picture pp in pictureList)
-            {
-                if(displayProgress) wait.setProgress(progg++);
-                String fileName = Path.GetFileName(pp.photoFileName);
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + fileName, picturePath + "\\" + fileName);
-            }
-
-            //parse questions
-            foreach (string q in questionReaderList)
-            {
-                if(displayProgress) wait.setProgress(progg++);
-                //download them first tho
-                if (File.Exists(questionPath + "\\" + q)) File.Delete(questionPath + "\\" + q);
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/" + q, questionPath + "\\" + q);
-                questionReader = new XmlTextReader(questionPath + "\\" + q);
-                tempQuestion = new Question();
-                while (questionReader.Read())
-                {
-                    if (questionReader.IsStartElement())
-                    {
-                        switch (questionReader.Name)
-                        {
-                            //parse everything
-                            case "title":
-                                tempQuestion.title = questionReader.ReadString();
-                                break;
-                            case "catagory":
-                                tempQuestion.cat.setCatagory(questionReader.ReadString());
-                                break;
-                            case "theQuestion":
-                                tempQuestion.theQuestion = questionReader.ReadString();
-                                break;
-                            case "responseA":
-                                tempQuestion.responseA = questionReader.ReadString();
-                                break;
-                            case "responseB":
-                                tempQuestion.responseB = questionReader.ReadString();
-                                break;
-                            case "responseC":
-                                tempQuestion.responseC = questionReader.ReadString();
-                                break;
-                            case "responseCEnabled":
-                                tempQuestion.responseCEnabled = Boolean.Parse(questionReader.ReadString());
-                                break;
-                            case "responseD":
-                                tempQuestion.responseD = questionReader.ReadString();
-                                break;
-                            case "responseDEnabled":
-                                tempQuestion.responseDEnabled = Boolean.Parse(questionReader.ReadString());
-                                break;
-                            case "answer":
-                                tempQuestion.answer = questionReader.ReadString();
-                                break;
-                            case "timeToAnswer":
-                                tempQuestion.timeToAnswer = int.Parse(questionReader.ReadString());
-                                break;
-                            case "explanationOfAnswer":
-                                tempQuestion.explanationOfAnswer = questionReader.ReadString();
-                                break;
-                            case "map":
-                                tempQuestion.m.setMap(questionReader.ReadString());
-                                break;
-                            case "picture":
-                                string result = questionReader.ReadString();
-                                if (result.Equals("NONE") || result.Equals(""))
-                                {
-                                    //tempQuestion.p = new Picture("NONE", "null.jpg");
-                                }
-                                else
-                                {
-                                    tempQuestion.p = pictureList[getPicture(result)-1];
-                                }
-                                break;
-                        }
-                    }
-                }
-                questionList.Add(tempQuestion);
-                questionReader.Close();
-            }
-            if(displayProgress)wait.Close();
+            //reset the GUI
+            this.resetGUI();
         }
 
         private void resetGUI()
@@ -379,12 +186,7 @@ namespace RelicExam
             currentModeLabel.Visible = false;
             this.photoComboBox_SelectedIndexChanged(null, null);
         }
-
-        private void answerCEnable_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        //event raised when the checkbox for answer d is changed
         private void answerDEnable_CheckedChanged(object sender, EventArgs e)
         {
             if (answerMarkD.Checked)
@@ -404,250 +206,7 @@ namespace RelicExam
                 answerMarkD.Enabled = false;
             }
         }
-
-        public void createDataBase(bool cleanSweep)
-        {
-            if (cleanSweep)
-            {
-                try
-                {
-                    if (Directory.Exists(dataBasePath)) Directory.Delete(dataBasePath, true);
-                }
-                catch (IOException)
-                {
-                    MessageBox.Show("get out of my database");
-                }
-                Directory.CreateDirectory(dataBasePath);
-                Directory.CreateDirectory(questionPath);
-                Directory.CreateDirectory(playerPath);
-                Directory.CreateDirectory(picturePath);
-            }
-            else
-            {
-                try
-                {
-                    Directory.Delete(playerPath, true);
-                    Directory.Delete(questionPath, true);
-                    Directory.CreateDirectory(playerPath);
-                    Directory.CreateDirectory(questionPath);
-                }
-                catch (IOException)
-                {
-                    MessageBox.Show("get out of my database");
-                }
-            }
-        }
-
-        public void setupSampleXmlFiles()
-        {
-            //setup sample questionBase arrayLists
-            sampleCatagories = new string[3];
-            sampleCatagories[0] = "How2Pen";
-            sampleCatagories[1] = "Command";
-            sampleCatagories[2] = "Calling";
-            sampleMaps = new string[3];
-            sampleMaps[0] = "Campinovka";
-            sampleMaps[1] = "Derpinberg";
-            sampleMaps[2] = "Kittenguard";
-            questionNumber = 0;
-            playerNumber = 0;
-            //each method is self-explanatory...
-            this.setupSampleQuestionBase();
-            this.setupSamplePlayerBase();
-            this.setupSamplePlayers();
-            this.setupSampleQuestions();
-        }
-
-        private void setupSampleQuestionBase()
-        {
-            //File.CreateText(questionBaseFullPath + "\\" + questionBase);
-            //File.AppendAllText(questionBaseFullPath + "\\" + questionBase, "fuck this");
-            //stream = new FileStream(questionBaseFullPath + "\\" + questionBase, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-            questionBaseWriter = new XmlTextWriter(questionPath + "\\" + questionBase, Encoding.UTF8);
-            questionBaseWriter.Formatting = Formatting.Indented;
-
-            questionBaseWriter.WriteStartDocument();
-            questionBaseWriter.WriteStartElement("QuestionBase.xml");
-
-            questionBaseWriter.WriteComment("Catagories List");
-            questionBaseWriter.WriteStartElement("catagories");
-            questionBaseWriter.WriteElementString("catagory", sampleCatagories[0]);
-            questionBaseWriter.WriteElementString("catagory", sampleCatagories[1]);
-            questionBaseWriter.WriteElementString("catagory", sampleCatagories[2]);
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteComment("Maps List");
-            questionBaseWriter.WriteStartElement("maps");
-            questionBaseWriter.WriteElementString("map", sampleMaps[0]);
-            questionBaseWriter.WriteElementString("map", sampleMaps[1]);
-            questionBaseWriter.WriteElementString("map", sampleMaps[2]);
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteComment("Questions");
-            questionBaseWriter.WriteStartElement("questions");
-            questionBaseWriter.WriteElementString(questionPrefix, questionPrefix + questionNumber++ + xmlExtension);
-            questionBaseWriter.WriteElementString(questionPrefix, questionPrefix + questionNumber++ + xmlExtension);
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteEndElement();
-            questionBaseWriter.Close();
-            //stream.Unlock(0,4);
-            //stream.Close();
-        }
-
-        private void setupSamplePlayers()
-        {
-            //new everything
-            Player player0 = new Player();
-            Player player1 = new Player();
-            Player[] samplePlayerList = new Player[2];
-
-            //describe each player like it was from an xml file
-            player0.name = "Willster419";
-            player0.totalTimesPlayed = 1;
-            player0.percentCorrent = 100;
-            player0.lastPercentCorrect = -1;
-            player0.totalSessionQuestions = 10;
-            player0.lastTotalSessionQuestions = -1;
-
-            player1.name = "TechnoD";
-            player1.totalTimesPlayed = 420;
-            player1.percentCorrent = 69;
-            player1.lastPercentCorrect = -1;
-            player1.totalSessionQuestions = 20;
-            player1.lastTotalSessionQuestions = -1;
-
-            //add them to the list
-            samplePlayerList[0] = player0;
-            samplePlayerList[1] = player1;
-
-            //write each player from the list
-            for (int i = 0; i < samplePlayerList.Count(); i++)
-            {
-                playerWriter = new XmlTextWriter(playerPath + "\\" + playerPrefix + i + xmlExtension, Encoding.UTF8);
-                playerWriter.Formatting = Formatting.Indented;
-
-                playerWriter.WriteStartDocument();
-                playerWriter.WriteStartElement(playerPrefix + i + xmlExtension);
-                playerWriter.WriteStartElement("player");
-                playerWriter.WriteElementString("name", samplePlayerList[i].name);
-                playerWriter.WriteElementString("totalTimesPlayed", "" + samplePlayerList[i].totalTimesPlayed);
-                playerWriter.WriteElementString("percentCorrect", "" + samplePlayerList[i].percentCorrent);
-                playerWriter.WriteElementString("lastPercentCorrent", "" + samplePlayerList[i].lastPercentCorrect);
-                playerWriter.WriteElementString("totalSessionQuestions", "" + samplePlayerList[i].totalSessionQuestions);
-                playerWriter.WriteElementString("lastTotalSessionQuestions", "" + samplePlayerList[i].lastTotalSessionQuestions);
-                playerWriter.WriteEndElement();
-                playerWriter.WriteEndElement();
-                playerWriter.Close();
-            }
-        }
-
-        private void setupSamplePlayerBase()
-        {
-            playerBaseWriter = new XmlTextWriter(playerPath + "\\" + playerBase, Encoding.UTF8);
-            playerBaseWriter.Formatting = Formatting.Indented;
-
-            playerBaseWriter.WriteStartDocument();
-            playerBaseWriter.WriteStartElement("playerBase.xml");
-
-            playerBaseWriter.WriteComment("Player List");
-            playerBaseWriter.WriteStartElement("players");
-            playerBaseWriter.WriteElementString(playerPrefix, playerPrefix + playerNumber++ + xmlExtension);
-            playerBaseWriter.WriteElementString(playerPrefix, playerPrefix + playerNumber++ + xmlExtension);
-            playerBaseWriter.WriteEndElement();
-
-            playerBaseWriter.WriteEndElement();
-            playerBaseWriter.Close();
-        }
-
-        private void setupSampleQuestions()
-        {
-            //new everyting
-            Question question0 = new Question();
-            Question question1 = new Question();
-            Question[] sampleQuestionList = new Question[2];
-
-            //questions
-            question0.title = "Sample Question 1";
-            question0.cat.setCatagory(sampleCatagories[0]);
-            question0.theQuestion = "This is the Sample Question";
-            question0.responseA = "response a";
-            question0.responseB = "response b";
-            question0.responseC = "response c";
-            question0.responseCEnabled = true;
-            question0.responseD = "response d";
-            question0.responseDEnabled = true;
-            question0.answer = "c";
-            question0.timeToAnswer = 20;
-            question0.explanationOfAnswer = "explanation";
-            question0.m.setMap(sampleMaps[0]);
-
-            question1.title = "Sample Question 2";
-            question1.cat.setCatagory(sampleCatagories[1]);
-            question1.theQuestion = "This is the Sample Question2";
-            question1.responseA = "response a2";
-            question1.responseB = "response b2";
-            question1.responseC = "response c2";
-            question1.responseCEnabled = true;
-            question1.responseD = "response d2";
-            question1.responseDEnabled = true;
-            question1.answer = "b";
-            question1.timeToAnswer = 20;
-            question1.explanationOfAnswer = "explanation2";
-            question1.m.setMap(sampleMaps[1]);
-
-            //add to list
-            sampleQuestionList[0] = question0;
-            sampleQuestionList[1] = question1;
-
-            //write each question from the list
-            for (int i = 0; i < sampleQuestionList.Count(); i++)
-            {
-                questionWriter = new XmlTextWriter(questionPath + "\\" + questionPrefix + i + xmlExtension, Encoding.UTF8);
-                questionWriter.Formatting = Formatting.Indented;
-
-                questionWriter.WriteStartDocument();
-                questionWriter.WriteStartElement(questionPrefix + i + xmlExtension);
-                questionWriter.WriteStartElement("question");
-                questionWriter.WriteElementString("title", sampleQuestionList[i].title);
-                questionWriter.WriteElementString("catagory", sampleQuestionList[i].cat.getCatagory());
-                questionWriter.WriteElementString("theQuestion", sampleQuestionList[i].theQuestion);
-                questionWriter.WriteElementString("responseA", sampleQuestionList[i].responseA);
-                questionWriter.WriteElementString("responseB", sampleQuestionList[i].responseB);
-                questionWriter.WriteElementString("responseC", sampleQuestionList[i].responseC);
-                questionWriter.WriteElementString("responseCEnabled", "" + sampleQuestionList[i].responseCEnabled);
-                questionWriter.WriteElementString("responseD", sampleQuestionList[i].responseD);
-                questionWriter.WriteElementString("responseDEnabled", "" + sampleQuestionList[i].responseDEnabled);
-                questionWriter.WriteElementString("answer", sampleQuestionList[i].answer);
-                questionWriter.WriteElementString("timeToAnswer", "" + sampleQuestionList[i].timeToAnswer);
-                questionWriter.WriteElementString("explanationOfAnswer", sampleQuestionList[i].explanationOfAnswer);
-                questionWriter.WriteElementString("map", sampleQuestionList[i].m.getMap());
-                questionWriter.WriteEndElement();
-                questionWriter.WriteEndElement();
-                questionWriter.Close();
-            }
-        }
-        //OLD! DO NOT USE!
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.createDataBase(true);
-            this.setupSampleXmlFiles();
-            button1.Enabled = false;
-        }
-        //OLD! DO NOT USE!
-        private void button4_Click(object sender, EventArgs e)
-        {
-            //check if the database is blank
-            if (!File.Exists(questionPath + "\\" + questionBase))
-            {
-                MessageBox.Show("Database is blank");
-                resetForm_Click(null, null);
-                return;
-            }
-            this.loadDataBase(true);
-            this.resetGUI();
-        }
-
+        //event raised when the question combo box sleection is changed
         private void questionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(chooser != null)chooser.Close();
@@ -915,11 +474,7 @@ namespace RelicExam
                     questionList.Add(newQ);
                     this.cleanupCatagories();
                     this.cleanUpPictures();
-                    this.createDataBase(false);
-                    this.setupQuestionBase();
-                    this.setupQuestions();
                     this.uploadButton_Click(null, null);
-                    this.loadDataBase(true);
                     this.resetGUI();
                 }
             }
@@ -1102,12 +657,8 @@ namespace RelicExam
                     }
 
                     this.cleanupCatagories();
-                    this.cleanUpPictures();
-                    this.createDataBase(false);
-                    this.setupQuestionBase();
-                    this.setupQuestions();
+                    this.cleanUpPictures();;
                     this.uploadButton_Click(null, null);
-                    this.loadDataBase(true);
                     this.resetGUI();
                 }
             }
@@ -1188,133 +739,10 @@ namespace RelicExam
                 questionList.RemoveAt(indexToRemove-1);
                 this.cleanupCatagories();
                 this.cleanUpPictures();
-                this.createDataBase(false);
-                this.setupQuestionBase();
-                this.setupQuestions();
                 this.uploadButton_Click(null, null);
-                this.loadDataBase(true);
                 this.resetGUI();
                 removeButton.Enabled = false;
             }
-        }
-
-        private void createQuestion()
-        {
-
-            //determine if it needs to create another entry for a new catagory or map
-        }
-
-        private void updateQuestion()
-        {
-            //determine if the map or catagory has changed
-            //if so, if old one was the last one of a catagory or ma
-            //and determine if new one needs to create another entry for a new catagory or map
-        }
-
-        private void removeQuestion(int indexToRemove)
-        {
-
-        }
-
-        private void setupQuestionBase()
-        {
-            questionNumber = 0;
-            playerNumber = 0;
-            questionBaseWriter = new XmlTextWriter(questionPath + "\\" + questionBase, Encoding.UTF8);
-            questionBaseWriter.Formatting = Formatting.Indented;
-
-            questionBaseWriter.WriteStartDocument();
-            questionBaseWriter.WriteStartElement("QuestionBase.xml");
-
-            questionBaseWriter.WriteComment("Catagories List");
-            questionBaseWriter.WriteStartElement("catagories");
-            foreach (Catagory cat in catagoryList)
-            {
-                questionBaseWriter.WriteElementString("catagory", cat.getCatagory());
-            }
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteComment("Maps List");
-            questionBaseWriter.WriteStartElement("maps");
-            foreach (Map m in mapList)
-            {
-                questionBaseWriter.WriteElementString("map", m.getMap());
-            }
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteComment("Pictures List");
-            questionBaseWriter.WriteStartElement("pictures");
-            foreach (Picture pp in pictureList)
-            {
-                //questionBaseWriter.WriteElementString("picture", pp.photoTitle);
-            }
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteComment("Pictures File Paths");
-            questionBaseWriter.WriteStartElement("pictureFilePaths");
-            foreach (Picture pp in pictureList)
-            {
-                string fileName = Path.GetFileName(pp.photoFileName);
-                questionBaseWriter.WriteElementString("pictureFilePath", fileName);
-            }
-            questionBaseWriter.WriteEndElement();
-
-
-            
-            questionBaseWriter.WriteComment("Questions");
-            questionBaseWriter.WriteStartElement("questions");
-            foreach (Question q in questionList)
-            {
-                questionBaseWriter.WriteElementString(questionPrefix, questionPrefix + questionNumber++ + xmlExtension);
-            }
-            questionBaseWriter.WriteEndElement();
-
-            questionBaseWriter.WriteEndElement();
-            questionBaseWriter.Close();
-        }
-
-        private void setupQuestions()
-        {
-            //write each question from the list
-            for (int i = 0; i < questionList.Count; i++)
-            {
-                questionWriter = new XmlTextWriter(questionPath + "\\" + questionPrefix + i + xmlExtension, Encoding.UTF8);
-                questionWriter.Formatting = Formatting.Indented;
-
-                questionWriter.WriteStartDocument();
-                questionWriter.WriteStartElement(questionPrefix + i + xmlExtension);
-                questionWriter.WriteStartElement("question");
-                questionWriter.WriteElementString("title", questionList[i].title);
-                questionWriter.WriteElementString("catagory", questionList[i].cat.getCatagory());
-                questionWriter.WriteElementString("theQuestion", questionList[i].theQuestion);
-                questionWriter.WriteElementString("responseA", questionList[i].responseA);
-                questionWriter.WriteElementString("responseB", questionList[i].responseB);
-                questionWriter.WriteElementString("responseC", questionList[i].responseC);
-                questionWriter.WriteElementString("responseCEnabled", "" + questionList[i].responseCEnabled);
-                questionWriter.WriteElementString("responseD", questionList[i].responseD);
-                questionWriter.WriteElementString("responseDEnabled", "" + questionList[i].responseDEnabled);
-                questionWriter.WriteElementString("answer", questionList[i].answer);
-                questionWriter.WriteElementString("timeToAnswer", "" + questionList[i].timeToAnswer);
-                questionWriter.WriteElementString("explanationOfAnswer", "" + questionList[i].explanationOfAnswer);
-                questionWriter.WriteElementString("map", "" + questionList[i].m.getMap());
-                //questionWriter.WriteElementString("picture", questionList[i].p.photoTitle);
-                questionWriter.WriteEndElement();
-                questionWriter.WriteEndElement();
-                questionWriter.Close();
-            }
-        }
-
-        private void timeToAnswerTextBox_MouseLeave(object sender, EventArgs e)
-        {
-            /*try
-            {
-                int temp = int.Parse(timeToAnswerTextBox.Text);
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show("This must be a whole number");
-                timeToAnswerTextBox.Text = "" + lastNumber;
-            }*/
         }
 
         private void timeToAnswerTextBox_Leave(object sender, EventArgs e)
@@ -1351,12 +779,6 @@ namespace RelicExam
             {
 
             }
-        }
-        //OLD! DO NOT USE!
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.createDataBase(true);
-            button3.Enabled = false;
         }
 
         private void resetForm_Click(object sender, EventArgs e)
@@ -1502,6 +924,9 @@ namespace RelicExam
 
         private void DatabaseManager_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //ask if you want to save and upload your chances
+            //do so
+            //close the form
             PleaseWait pw = new PleaseWait();
             if(close){}
             else
@@ -1576,10 +1001,7 @@ namespace RelicExam
                 if (chooser != null) chooser.Close();
                 if (photoComboBox.SelectedIndex == 0 || photoComboBox.SelectedIndex == -1)
                 {
-                    pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
-                    chooser = new PhotoViewer(pictureSpawnPoint);
-                    chooser.Location = pictureSpawnPoint;
-                    chooser.Show();
+                    //don't show the photo viewer if there is no picture to show
                     return;
                 }
                 Picture tempPic = pictureList[photoComboBox.SelectedIndex - 1];
@@ -1634,7 +1056,6 @@ namespace RelicExam
             questionPath = dataBasePath + "\\questions";
             playerPath = dataBasePath + "\\players";
             questionBase = "questionBase.xml";
-            playerBase = "playerBase.xml";
             picturePath = dataBasePath + "\\pictures";
         }
         //gets a string md5 hash checksum of the input string. in this case, the input string is the file
@@ -1668,6 +1089,13 @@ namespace RelicExam
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
 
+        }
+
+        private void saveUploadChangesButton_Click(object sender, EventArgs e)
+        {
+            //save and upload the changes
+            //requires loading dialog
+            //don't close
         }
     }
 }
