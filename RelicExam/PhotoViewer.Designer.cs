@@ -52,8 +52,6 @@
             this.photoName.Name = "photoName";
             this.photoName.Size = new System.Drawing.Size(100, 20);
             this.photoName.TabIndex = 1;
-            this.photoName.Enter += new System.EventHandler(this.photoName_Enter);
-            this.photoName.Leave += new System.EventHandler(this.photoName_Leave);
             // 
             // label1
             // 

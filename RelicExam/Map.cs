@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RelicExam
 {
-    class Map
+    public class Map
     {
         private string theMap;
         public Map() { }

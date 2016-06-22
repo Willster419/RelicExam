@@ -40,6 +40,7 @@
             this.specifyTypeBox = new System.Windows.Forms.ComboBox();
             this.verifyCodeButton = new System.Windows.Forms.Button();
             this.mainPageDatabaseLoader = new System.ComponentModel.BackgroundWorker();
+            this.refreshDatabase = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ServiceModeButton
@@ -161,11 +162,22 @@
             this.mainPageDatabaseLoader.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.mainPageDatabaseLoader_ProgressChanged);
             this.mainPageDatabaseLoader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.mainPageDatabaseLoader_RunWorkerCompleted);
             // 
+            // refreshDatabase
+            // 
+            this.refreshDatabase.Location = new System.Drawing.Point(204, 130);
+            this.refreshDatabase.Name = "refreshDatabase";
+            this.refreshDatabase.Size = new System.Drawing.Size(120, 23);
+            this.refreshDatabase.TabIndex = 11;
+            this.refreshDatabase.Text = "Refresh Database";
+            this.refreshDatabase.UseVisualStyleBackColor = true;
+            this.refreshDatabase.Click += new System.EventHandler(this.refreshDatabase_Click);
+            // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(351, 160);
+            this.Controls.Add(this.refreshDatabase);
             this.Controls.Add(this.verifyCodeButton);
             this.Controls.Add(this.specifyTypeBox);
             this.Controls.Add(this.label3);
@@ -200,6 +212,7 @@
         private System.Windows.Forms.ComboBox specifyTypeBox;
         private System.Windows.Forms.Button verifyCodeButton;
         private System.ComponentModel.BackgroundWorker mainPageDatabaseLoader;
+        private System.Windows.Forms.Button refreshDatabase;
     }
 }
 

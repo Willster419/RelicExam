@@ -16,7 +16,7 @@ namespace RelicExam
         public string photoNamee;
         private Point startPoint;
         private List<Picture> thePictureList;
-        private string oldName;
+        private string photoPath;
         public PhotoViewer()
         {
             InitializeComponent();
@@ -31,6 +31,8 @@ namespace RelicExam
         public void setPicture(string pictureFile)
         {
             pictureBox1.Image = Image.FromFile(pictureFile);
+            photoNamee = pictureFile;
+            photoNamee = System.IO.Path.GetFileName(photoNamee);
             cancel = true;
         }
 
@@ -48,24 +50,27 @@ namespace RelicExam
         private void button1_Click(object sender, EventArgs e)
         {
             //accept
-            //checks for invalid photo names
-            if (photoName.Text.Equals(""))
+            //take the save name and use that as the fileName
+            //unless it is already taken
+            //check for a valid name
+            photoPath = System.IO.Path.GetTempPath() + "\\relicExamDatabase\\pictures";
+            if(this.photoName.Text == null || this.photoName.Text.Equals(""))
             {
-                MessageBox.Show("Invalid name");
-                return;
+                //invalid name
+                MessageBox.Show("invalid name");
             }
-            for (int i = 0; i < thePictureList.Count; i++)
+                //TODO:check for possible problems with the extension
+            else if(System.IO.File.Exists(photoPath + "\\" + photoNamee))
             {
-                if (thePictureList[i].photoTitle.Equals(photoName.Text))
-                {
-                    MessageBox.Show("Name is already taken");
-                    photoName.Text = oldName;
-                    return;
-                }
+                //picture with that name already exists
+                MessageBox.Show("picture with that name already exists");
             }
-            photoNamee = photoName.Text;
-            cancel = false;
-            this.Close();
+            else
+            {
+                //good to save the picture
+                cancel = false;
+                this.Close();
+            }
         }
 
         private void PhotoViewer_Load(object sender, EventArgs e)
@@ -76,30 +81,6 @@ namespace RelicExam
         public void passInList(List<Picture> theList)
         {
             thePictureList = theList;
-        }
-
-        private void photoName_Leave(object sender, EventArgs e)
-        {
-            /*
-            //checks for invalid photo names
-            if(photoName.Text.Equals(""))
-            {
-                MessageBox.Show("Invalid name");
-                return;
-            }
-            for (int i = 0; i < thePictureList.Count; i++)
-            {
-                if (thePictureList[i].Equals(photoName.Text))
-                {
-                    MessageBox.Show("Name is already taken");
-                    photoName.Text = oldName;
-                }
-            }*/
-        }
-
-        private void photoName_Enter(object sender, EventArgs e)
-        {
-            oldName = photoName.Text;
         }
     }
 }

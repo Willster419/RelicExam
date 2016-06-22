@@ -30,21 +30,23 @@ namespace RelicExam
         private DatabaseManager dataBaseManager;
         private EnterPassword enterPassword;
         private QuestionViewer questionViewer;
-        public XmlTextReader questionBaseReader;
+        public XmlTextReader questionReader;
         private List<Question> questionList;
         private List<Map> mapList;
         private List<Catagory> catagoryList;
         private string tempPath;
         private string appPath;
         public string dataBasePath;
-        public string questionPath;
+        public string questionBaseFullPath;
         public string questionBase;
+        private string picturePath;
         private WebClient client;
         private string version = "Beta3";
         private PleaseWait wait;
         private CodeVerify cv;
         private PleaseWait pw;
         private MD5 hash;
+        private Question tempQuestion;
 
         public MainPage()
         {
@@ -57,8 +59,10 @@ namespace RelicExam
             this.Hide();
             if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
+                //correct password
                 if (enterPassword.overrideLockCheckBox.Checked)
                 {
+                    //and override the file lock
                     CloudStorage dropBoxStorage = new CloudStorage();
                     var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
                     ICloudStorageAccessToken accessToken = null;
@@ -78,16 +82,15 @@ namespace RelicExam
             }
             else
             {
-
+                //incorrect password
             }
             this.Show();
         }
         //called when the application has finished system loading
         private void MainPage_Load(object sender, EventArgs e)
         {
-            this.Hide();
             pw = new PleaseWait(100, 0);
-            //this.loadLiterallyEverything();
+            //this.loadLiterallyEverything(); OLD single thread version
             //pw.Show();
             this.Hide();
             Application.DoEvents();
@@ -153,20 +156,20 @@ namespace RelicExam
             {
                 //MAP
                 string selectedType = specifyTypeBox.SelectedItem.ToString();
-                questionViewer = new QuestionViewer(numQuestions, null, selectedType);
+                questionViewer = new QuestionViewer(numQuestions, null, selectedType,questionList,catagoryList,mapList);
                 questionViewer.ShowDialog();
             }
             else if (selectTestType.SelectedIndex == 1)
             {
                //CATAGORY
                 string selectedType = specifyTypeBox.SelectedItem.ToString();
-                questionViewer = new QuestionViewer(numQuestions,selectedType,null);
+                questionViewer = new QuestionViewer(numQuestions,selectedType,null,questionList,catagoryList,mapList);
                 questionViewer.ShowDialog();
             }
             else if (selectTestType.SelectedIndex == 2)
             {
                 //RANDOM
-                questionViewer = new QuestionViewer(numQuestions,null,null);
+                questionViewer = new QuestionViewer(numQuestions,null,null,questionList,catagoryList,mapList);
                 questionViewer.ShowDialog();
             }
             else { }
@@ -179,11 +182,12 @@ namespace RelicExam
             this.Hide();
             if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
+                //correct password
                 cv.ShowDialog();
             }
             else
             {
-
+                //incorrect password
             }
             enterPassword.overrideLockCheckBox.Visible = true;
             this.Show();
@@ -211,8 +215,9 @@ namespace RelicExam
             appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
             dataBasePath = tempPath + "\\relicExamDatabase";
-            questionPath = dataBasePath + "\\questions";
-            questionBase = "questionBase.xml";
+            questionBaseFullPath = dataBasePath + "\\questions.xml";
+            questionBase = "questions.xml";
+            picturePath = dataBasePath + "\\pictures";
             //new up required objects
             client = new WebClient();
             dataBaseManager = new DatabaseManager();
@@ -220,9 +225,10 @@ namespace RelicExam
             questionList = new List<Question>();
             mapList = new List<Map>();
             catagoryList = new List<Catagory>();
-            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
+            questionReader = new XmlTextReader(questionBaseFullPath);
             wait = new PleaseWait();
             cv = new CodeVerify();
+            tempQuestion = new Question();
             //show loading screen (old)
             //wait.Show();
             //Application.DoEvents();
@@ -272,79 +278,110 @@ namespace RelicExam
                     this.Close();
                 }
             }
-            //check for blank databse
-            if (!File.Exists(questionPath + "\\" + questionBase))
-            {
-                //database is blank
-                Directory.CreateDirectory(questionPath);
-                //DEV CODE
-                /*
-                DialogResult r = MessageBox.Show("Empty Database. Create Sample Database? If you select no, the\napplication will crash when loading a quiz", "Empty Database", MessageBoxButtons.YesNo);
-                if (r == DialogResult.Yes)
-                {
-                    DatabaseManager m = new DatabaseManager();
-                    m.Show();
-                    m.Hide();
-                    m.createDataBase(true);
-                    m.setupSampleXmlFiles();
-                }
-                else {  }*/
-                //END DEV CODE
-            }
             //(old) close the waiting window cause loading is done
             //wait.Close();
             mainPageDatabaseLoader.ReportProgress(40);
             //determine if the database has been updated since last use
-            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\tempQuestionBase.xml");
+            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
             hash = MD5.Create();
-            string newHash = this.GetMd5Hash(hash,File.ReadAllText(questionPath + "\\tempQuestionBase.xml"));
+            string newHash = this.GetMd5Hash(hash,File.ReadAllText(dataBasePath + "\\tempQuestions.xml"));
             string oldHash = null;
-            if (File.Exists(questionPath + "\\QuestionBase.xml"))
+            if (File.Exists(questionBaseFullPath))
             {
-                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\QuestionBase.xml"));
+                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionBaseFullPath));
             }
             if (!newHash.Equals(oldHash))
             {
+                if (!Directory.Exists(dataBasePath)) Directory.CreateDirectory(dataBasePath);
                 //database has been updated or is blank, need to download new one
                 this.downloadLatestDatabase();
             }
-            if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");
+            if (File.Exists(dataBasePath + "\\tempQuestions.xml")) File.Delete(dataBasePath + "\\tempQuestions.xml");
             mainPageDatabaseLoader.ReportProgress(90);
-            //read question base for maps and catagory only
-            questionBaseReader.Read();
-            questionBaseReader.Read();
-            questionBaseReader.Read();
-            questionBaseReader.Read();
-            questionBaseReader.Read();
-            questionBaseReader.Read();
-            while (questionBaseReader.Read())
+            //NEW: read entire database to parse into other windows
+            questionReader.Read();
+            questionReader.Read();
+            questionReader.Read();
+            questionReader.Read();
+            questionReader.Read();
+            questionReader.Read();
+            while (questionReader.Read())
             {
-                if (questionBaseReader.Name.Equals("question"))
+                if (questionReader.Name.Equals("question"))
                 {
-                    while (questionBaseReader.Read())
+                    while (questionReader.Read())
                     {
-                        if (questionBaseReader.IsStartElement())
+                        if (questionReader.IsStartElement())
                         {
-                            switch (questionBaseReader.Name)
+                            switch (questionReader.Name)
                             {
+                                //parse everything into the temp question, as well as making
+                                //a list of all maps and catagories that arn't duplicate
+                                case "title":
+                                    tempQuestion.title = questionReader.ReadString();
+                                    break;
                                 case "catagory":
-                                    //add it if it's not a duplicate
-                                    this.addCatagoryIfNotDuplicate(new Catagory(questionBaseReader.ReadString()));
+                                    tempQuestion.cat = new Catagory(questionReader.ReadString());
+                                    this.addCatagoryIfNotDuplicate(new Catagory(questionReader.ReadString()));
+                                    break;
+                                case "theQuestion":
+                                    tempQuestion.theQuestion = questionReader.ReadString();
+                                    break;
+                                case "responseA":
+                                    tempQuestion.responseA = questionReader.ReadString();
+                                    break;
+                                case "responseB":
+                                    tempQuestion.responseB = questionReader.ReadString();
+                                    break;
+                                case "responseC":
+                                    tempQuestion.responseC = questionReader.ReadString();
+                                    break;
+                                case "responseCEnabled":
+                                    tempQuestion.responseCEnabled = Boolean.Parse(questionReader.ReadString());
+                                    break;
+                                case "responseD":
+                                    tempQuestion.responseD = questionReader.ReadString();
+                                    break;
+                                case "responseDEnabled":
+                                    tempQuestion.responseDEnabled = Boolean.Parse(questionReader.ReadString());
+                                    break;
+                                case "answer":
+                                    tempQuestion.answer = questionReader.ReadString();
+                                    break;
+                                case "timeToAnswer":
+                                    tempQuestion.timeToAnswer = int.Parse(questionReader.ReadString());
+                                    break;
+                                case "explanationOfAnswer":
+                                    tempQuestion.explanationOfAnswer = questionReader.ReadString();
                                     break;
                                 case "map":
-                                    //add if it's not a duplicate
-                                    this.addMapIfNotDuplicate(new Map(questionBaseReader.ReadString()));
+                                    tempQuestion.m = new Map(questionReader.ReadString());
+                                    this.addMapIfNotDuplicate(new Map(questionReader.ReadString()));
+                                    break;
+                                case "picture":
+                                    tempQuestion.p = new Picture(questionReader.ReadString());
                                     break;
                             }
+                        }
+                        if (questionReader.Name.Equals("picture"))
+                        {
+                            //add the question to memory and reset the temp question
+                            questionList.Add(tempQuestion);
+                            tempQuestion = new Question();
+                            break;
                         }
                     }
                 }
             }
-            questionBaseReader.Close();
+            questionReader.Close();
+            mainPageDatabaseLoader.ReportProgress(50);
+            //re-download all pictures if we have to
+            if (!newHash.Equals(oldHash)) this.downloadPictures();
             //set progress to 99 and sleep it so the progress bar updates for those with fancy themes
             mainPageDatabaseLoader.ReportProgress(99);
             Thread.Sleep(500);
             mainPageDatabaseLoader.ReportProgress(100);
+            //by the end of this, we now have loaded all question catagory and map lists into memory for other windows
         }
         //gets a string md5 hash checksum of the input string. in this case, the input string is the file
         private string GetMd5Hash(MD5 md5Hash, string input)
@@ -363,69 +400,22 @@ namespace RelicExam
             // Return the hexadecimal string.
             return sBuilder.ToString();
         }
-        //self-explanatory
+        //downloads latest questionbase
         private void downloadLatestDatabase()
         {
-            //new up temp lists
-            ArrayList questionReaderList = new ArrayList();
-            XmlTextReader tempQuestionBaseReader;
-            ArrayList pictureNameList = new ArrayList();
-            string picturePath = dataBasePath + "\\pictures";
             //download latest questionBase
-            if (File.Exists(questionPath + "\\" + questionBase)) File.Delete(questionPath + "\\" + questionBase);
+            if (File.Exists(questionBaseFullPath)) File.Delete(questionBaseFullPath);
             try
             {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\" + questionBase);
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", questionBaseFullPath);
             }
             catch (WebException)
             {
                 MessageBox.Show("ERROR 404: file not found");
                 this.Close();
                 return;
-                //File.Move(questionPath + "\\questionBase.tmp",questionPath + "\\" + questionBase);
             }
             mainPageDatabaseLoader.ReportProgress(45);
-            //then we can new up the xml readers
-            tempQuestionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-            List<string> pictureFileNameList = new List<string>();
-
-            //read question base for picture and question names
-            while (tempQuestionBaseReader.Read())
-            {
-                if (tempQuestionBaseReader.IsStartElement())
-                {
-                    switch (tempQuestionBaseReader.Name)
-                    {
-                        case "question":
-                            questionReaderList.Add(tempQuestionBaseReader.ReadString());
-                            break;
-                        case "pictureFilePath":
-                            pictureNameList.Add(tempQuestionBaseReader.ReadString());
-                            break;
-                    }
-                }
-            }
-            tempQuestionBaseReader.Close();
-            if (Directory.Exists(picturePath)) Directory.Delete(picturePath, true);
-            Directory.CreateDirectory(picturePath);
-            mainPageDatabaseLoader.ReportProgress(50);
-            //download each picture. 50-70
-            int tempProg = 50;
-            foreach (String pp in pictureNameList)
-            {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + pp, picturePath + "\\" + pp);
-                tempProg = tempProg + 2;
-                mainPageDatabaseLoader.ReportProgress(tempProg);
-            }
-            //download each question. 70-90
-            tempProg = 70;
-            foreach (String q in questionReaderList)
-            {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/questions/" + q, questionPath + "\\" + q);
-                tempProg = tempProg + 2;
-                mainPageDatabaseLoader.ReportProgress(tempProg);
-            }
-            mainPageDatabaseLoader.ReportProgress(90);
         }
         //self-explanatory
         private void addMapIfNotDuplicate(Map mm)
@@ -448,6 +438,28 @@ namespace RelicExam
                 if (c.getCatagory().Equals(cc.getCatagory())) return;
             }
             catagoryList.Add(cc);
+        }
+
+        private void refreshDatabase_Click(object sender, EventArgs e)
+        {
+            //delete the entire database, download the new one
+
+        }
+        //re-downloads all the pictures
+        private void downloadPictures()
+        {
+            Directory.Delete(picturePath, true);
+            Directory.CreateDirectory(picturePath);
+            mainPageDatabaseLoader.ReportProgress(50);
+            //download each picture. 50-90
+            int tempProg = 50;
+            foreach (Question q in questionList)
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + q.p.photoFileName, picturePath + "\\" + q.p.photoFileName);
+                tempProg = tempProg + 2;
+                mainPageDatabaseLoader.ReportProgress(tempProg);
+            }
+            mainPageDatabaseLoader.ReportProgress(90);
         }
     }
 }

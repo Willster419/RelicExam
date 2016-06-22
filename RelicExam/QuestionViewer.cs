@@ -52,12 +52,15 @@ namespace RelicExam
             InitializeComponent();
         }
         //contstructor that somehow knows which type it is. honestly i forget how i got this to work, it just does
-        public QuestionViewer(int numQuestionss, string catagoryy, string mapp)
+        public QuestionViewer(int numQuestionss, string catagoryy, string mapp, List<Question> QList, List<Catagory> CList, List<Map> MList)
         {
             InitializeComponent();
             numQuestions = numQuestionss;
             catagory = catagoryy;
             map = mapp;
+            questionList = QList;
+            catagoryList = CList;
+            mapList = MList;
         }
         //the countdown for how much time you have left to answer
         private void timer1_Tick(object sender, EventArgs e)
@@ -84,24 +87,13 @@ namespace RelicExam
         private void QuestionViewer_Load(object sender, EventArgs e)
         {
             //parse all file paths
-            appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
             dataBasePath = tempPath + "\\relicExamDatabase";
-            questionPath = dataBasePath + "\\questions";
-            questionBase = "questionBase.xml";
             picturePath = dataBasePath + "\\pictures";
             //new up everything
             theResults = new Results();
-            questionList = new List<Question>();
-            mapList = new List<Map>();
-            catagoryList = new List<Catagory>();
-            questionBaseReader = new XmlTextReader(questionPath + "\\" + questionBase);
-            questionReaderList = new ArrayList();
-            tempQuestion = new Question();
             questionDisplayList = new List<Question>();
-            pictureList = new List<Picture>();
             rng = new Random();
-            List<string> pictureFileNameList = new List<string>();
             //reset  stuff
             currentQuestion = 0;
             timer1.Stop();
@@ -109,99 +101,6 @@ namespace RelicExam
             currentQuestion = 0;
             questionNumber = 0;
             outOfTime.Visible = false;
-            //parse questionBase to this form
-            while (questionBaseReader.Read())
-            {
-                if (questionBaseReader.IsStartElement())
-                {
-                    switch (questionBaseReader.Name)
-                    {
-                        case "question":
-                            questionReaderList.Add(questionBaseReader.ReadString());
-                            break;
-                        case "picture":
-                            pictureList.Add(new Picture(questionBaseReader.ReadString()));
-                            break;
-                        case "pictureFilePath":
-                            pictureFileNameList.Add(questionBaseReader.ReadString());
-                            break;
-                    }
-                }
-            }
-            questionBaseReader.Close();
-            //add picture filenames to pictures list
-            for (int i = 0; i < pictureList.Count; i++)
-            {
-                pictureList[i].photoFileName = picturePath + "\\" + Path.GetFileName(pictureFileNameList[i]);
-            }
-            //parse questions to question list
-            foreach (string q in questionReaderList)
-            {
-                questionReader = new XmlTextReader(questionPath + "\\" + q);
-                tempQuestion = new Question();
-                while (questionReader.Read())
-                {
-                    if (questionReader.IsStartElement())
-                    {
-                        switch (questionReader.Name)
-                        {
-                            //parse everything
-                            case "title":
-                                tempQuestion.title = questionReader.ReadString();
-                                break;
-                            case "catagory":
-                                tempQuestion.cat.setCatagory(questionReader.ReadString());
-                                break;
-                            case "theQuestion":
-                                tempQuestion.theQuestion = questionReader.ReadString();
-                                break;
-                            case "responseA":
-                                tempQuestion.responseA = questionReader.ReadString();
-                                break;
-                            case "responseB":
-                                tempQuestion.responseB = questionReader.ReadString();
-                                break;
-                            case "responseC":
-                                tempQuestion.responseC = questionReader.ReadString();
-                                break;
-                            case "responseCEnabled":
-                                tempQuestion.responseCEnabled = Boolean.Parse(questionReader.ReadString());
-                                break;
-                            case "responseD":
-                                tempQuestion.responseD = questionReader.ReadString();
-                                break;
-                            case "responseDEnabled":
-                                tempQuestion.responseDEnabled = Boolean.Parse(questionReader.ReadString());
-                                break;
-                            case "answer":
-                                tempQuestion.answer = questionReader.ReadString();
-                                break;
-                            case "timeToAnswer":
-                                tempQuestion.timeToAnswer = int.Parse(questionReader.ReadString());
-                                break;
-                            case "explanationOfAnswer":
-                                tempQuestion.explanationOfAnswer = questionReader.ReadString();
-                                break;
-                            case "map":
-                                tempQuestion.m.setMap(questionReader.ReadString());
-                                break;
-                            case "picture":
-                                string result = questionReader.ReadString();
-                                if (result.Equals("NONE") || result.Equals(""))
-                                {
-                                    tempQuestion.p = new Picture("NONE", "null.jpg");
-                                }
-                                else
-                                {
-                                    tempQuestion.p = pictureList[getPicture(result)];
-                                }
-                                break;
-                        }
-                    }
-                }
-                questionList.Add(tempQuestion);
-                questionReader.Close();
-            }//end for loop
             //determine if filtering is required
             if (catagory == null && map == null)
             {
@@ -321,7 +220,7 @@ namespace RelicExam
             }
             else
             {
-                foto.setPicture(loadedQuestion.p.photoFileName);
+                foto.setPicture(picturePath + "\\" + loadedQuestion.p.photoFileName);
                 foto.Show();
             }
             
@@ -405,19 +304,6 @@ namespace RelicExam
                 correctOrNot.Visible = true;
                 richTextBox2.Visible = true;
             }
-        }
-        //gets the index from pictureList of desired picture based on title
-        private int getPicture(string title)
-        {
-            if (title.Equals("NONE")) return 0;
-            for (int i = 0; i < pictureList.Count; i++)
-            {
-                if (title.Equals(pictureList[i].photoTitle))
-                {
-                    return i;
-                }
-            }
-            return -1;
         }
     }
 }

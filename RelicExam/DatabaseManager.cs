@@ -129,20 +129,20 @@ namespace RelicExam
             currentModeLabel.Visible = false;
             removeButton.Enabled = false;
             //determine if the database has been updated since last use
-            /*client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionPath + "\\tempQuestionBase.xml");
+            /*client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questionBase.xml", questionBaseFullPath + "\\tempQuestionBase.xml");
             hash = MD5.Create();
-            string newHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\tempQuestionBase.xml"));
+            string newHash = this.GetMd5Hash(hash, File.ReadAllText(questionBaseFullPath + "\\tempQuestionBase.xml"));
             string oldHash = null;
-            if (File.Exists(questionPath + "\\QuestionBase.xml"))
+            if (File.Exists(questionBaseFullPath + "\\QuestionBase.xml"))
             {
-                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionPath + "\\QuestionBase.xml"));
+                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionBaseFullPath + "\\QuestionBase.xml"));
             }
             if (!newHash.Equals(oldHash))
             {
                 //database has been updated or is blank, need to download new one
                 this.downloadLatestDatabase();
             }
-            if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");*/
+            if (File.Exists(questionBaseFullPath + "\\tempQuestionBase.xml")) File.Delete(questionBaseFullPath + "\\tempQuestionBase.xml");*/
             //all done checking/updating the database
             wait.Close();
             //update gui
@@ -175,7 +175,7 @@ namespace RelicExam
                 MessageBox.Show("404 nooooooooo");
                 this.Close();
                 return;
-                //File.Move(questionPath + "\\questionBase.tmp",questionPath + "\\" + questionBase);
+                //File.Move(questionBaseFullPath + "\\questionBase.tmp",questionBaseFullPath + "\\" + questionBase);
             }
 
             //then we can new up the xml readers
@@ -309,7 +309,7 @@ namespace RelicExam
                                 string result = questionReader.ReadString();
                                 if (result.Equals("NONE") || result.Equals(""))
                                 {
-                                    tempQuestion.p = new Picture("NONE", "null.jpg");
+                                    //tempQuestion.p = new Picture("NONE", "null.jpg");
                                 }
                                 else
                                 {
@@ -460,9 +460,9 @@ namespace RelicExam
 
         private void setupSampleQuestionBase()
         {
-            //File.CreateText(questionPath + "\\" + questionBase);
-            //File.AppendAllText(questionPath + "\\" + questionBase, "fuck this");
-            //stream = new FileStream(questionPath + "\\" + questionBase, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            //File.CreateText(questionBaseFullPath + "\\" + questionBase);
+            //File.AppendAllText(questionBaseFullPath + "\\" + questionBase, "fuck this");
+            //stream = new FileStream(questionBaseFullPath + "\\" + questionBase, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             questionBaseWriter = new XmlTextWriter(questionPath + "\\" + questionBase, Encoding.UTF8);
             questionBaseWriter.Formatting = Formatting.Indented;
 
@@ -733,7 +733,7 @@ namespace RelicExam
                     mapComboBox.SelectedIndex = 0;
                 }
                 //get the picture selected
-                string tempPictureName = q2Load.p.photoTitle;
+                string tempPictureName = null;// q2Load.p.photoTitle;
                 if (tempPictureName == null)
                 {
                     photoComboBox.SelectedIndex = 0;
@@ -747,7 +747,7 @@ namespace RelicExam
                 {
                     for (int i = 0; i < pictureList.Count; i++)
                     {
-                        if (tempPictureName.Equals(pictureList[i].photoTitle))
+                        if (true)//tempPictureName.Equals(pictureList[i].photoTitle))
                         {
                             photoComboBox.SelectedIndex = ++i;
                             break;
@@ -909,7 +909,7 @@ namespace RelicExam
                     }
                     else
                     {
-                       newQ.p = new Picture("NONE","null.jpg");
+                       //newQ.p = new Picture("NONE","null.jpg");
                     }
 
                     questionList.Add(newQ);
@@ -1098,7 +1098,7 @@ namespace RelicExam
                     }
                     else
                     {
-                        q2Edit.p = new Picture("NONE","null.jpg");
+                       // q2Edit.p = new Picture("NONE","null.jpg");
                     }
 
                     this.cleanupCatagories();
@@ -1246,7 +1246,7 @@ namespace RelicExam
             questionBaseWriter.WriteStartElement("pictures");
             foreach (Picture pp in pictureList)
             {
-                questionBaseWriter.WriteElementString("picture", pp.photoTitle);
+                //questionBaseWriter.WriteElementString("picture", pp.photoTitle);
             }
             questionBaseWriter.WriteEndElement();
 
@@ -1297,7 +1297,7 @@ namespace RelicExam
                 questionWriter.WriteElementString("timeToAnswer", "" + questionList[i].timeToAnswer);
                 questionWriter.WriteElementString("explanationOfAnswer", "" + questionList[i].explanationOfAnswer);
                 questionWriter.WriteElementString("map", "" + questionList[i].m.getMap());
-                questionWriter.WriteElementString("picture", questionList[i].p.photoTitle);
+                //questionWriter.WriteElementString("picture", questionList[i].p.photoTitle);
                 questionWriter.WriteEndElement();
                 questionWriter.WriteEndElement();
                 questionWriter.Close();
@@ -1556,10 +1556,10 @@ namespace RelicExam
             string[] list = Directory.GetFiles(picturePath);
             string newName = picturePath + "\\picture" + list.Length + extension;
             File.Copy(pictureLocationz, picturePath + "\\picture" + list.Length + extension);
-            Picture temp = new Picture(chooser.photoNamee, newName);
-            pictureList.Add(temp);
+            //Picture temp = new Picture(chooser.photoNamee, newName);
+            //pictureList.Add(temp);
             //update the picture combo box
-            photoComboBox.Items.Add(temp);
+            //photoComboBox.Items.Add(temp);
             photoComboBox.SelectedIndex = getPicture(chooser.photoNamee);
         }
 
@@ -1583,7 +1583,7 @@ namespace RelicExam
                     return;
                 }
                 Picture tempPic = pictureList[photoComboBox.SelectedIndex - 1];
-                pictureName = tempPic.photoTitle;
+                //pictureName = tempPic.photoTitle;
                 pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
                 chooser = new PhotoViewer(pictureSpawnPoint);
                 chooser.Location = pictureSpawnPoint;
@@ -1597,7 +1597,7 @@ namespace RelicExam
             if (title.Equals("NONE")) return 0;
             for (int i = 0; i < pictureList.Count; i++)
             {
-                if (title.Equals(pictureList[i].photoTitle))
+                if (true)//title.Equals(pictureList[i].photoTitle))
                 {
                     return i+1;
                 }

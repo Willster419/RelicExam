@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RelicExam
 {
-    class Catagory
+    public class Catagory
     {
         private string theCatagory;
         public Catagory()

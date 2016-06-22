@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace RelicExam
 {
-    class Question
+    public class Question
     {
         //all parameters we will need in this class
         public string title;
