@@ -30,7 +30,6 @@ namespace RelicExam
         private DatabaseManager dataBaseManager;
         private EnterPassword enterPassword;
         private QuestionViewer questionViewer;
-        private PhotoViewer photoViewer;
         public XmlTextReader questionBaseReader;
         private List<Question> questionList;
         private List<Map> mapList;
@@ -155,7 +154,6 @@ namespace RelicExam
                 //MAP
                 string selectedType = specifyTypeBox.SelectedItem.ToString();
                 questionViewer = new QuestionViewer(numQuestions, null, selectedType);
-                photoViewer = new PhotoViewer();
                 questionViewer.ShowDialog();
             }
             else if (selectTestType.SelectedIndex == 1)
@@ -163,14 +161,12 @@ namespace RelicExam
                //CATAGORY
                 string selectedType = specifyTypeBox.SelectedItem.ToString();
                 questionViewer = new QuestionViewer(numQuestions,selectedType,null);
-                photoViewer = new PhotoViewer();
                 questionViewer.ShowDialog();
             }
             else if (selectTestType.SelectedIndex == 2)
             {
                 //RANDOM
                 questionViewer = new QuestionViewer(numQuestions,null,null);
-                photoViewer = new PhotoViewer();
                 questionViewer.ShowDialog();
             }
             else { }
@@ -315,18 +311,32 @@ namespace RelicExam
             if (File.Exists(questionPath + "\\tempQuestionBase.xml")) File.Delete(questionPath + "\\tempQuestionBase.xml");
             mainPageDatabaseLoader.ReportProgress(90);
             //read question base for maps and catagory only
+            questionBaseReader.Read();
+            questionBaseReader.Read();
+            questionBaseReader.Read();
+            questionBaseReader.Read();
+            questionBaseReader.Read();
+            questionBaseReader.Read();
             while (questionBaseReader.Read())
             {
-                if (questionBaseReader.IsStartElement())
+                if (questionBaseReader.Name.Equals("question"))
                 {
-                    switch (questionBaseReader.Name)
+                    while (questionBaseReader.Read())
                     {
-                        case "catagory":
-                            catagoryList.Add(new Catagory(questionBaseReader.ReadString()));
-                            break;
-                        case "map":
-                            mapList.Add(new Map(questionBaseReader.ReadString()));
-                            break;
+                        if (questionBaseReader.IsStartElement())
+                        {
+                            switch (questionBaseReader.Name)
+                            {
+                                case "catagory":
+                                    //add it if it's not a duplicate
+                                    this.addCatagoryIfNotDuplicate(new Catagory(questionBaseReader.ReadString()));
+                                    break;
+                                case "map":
+                                    //add if it's not a duplicate
+                                    this.addMapIfNotDuplicate(new Map(questionBaseReader.ReadString()));
+                                    break;
+                            }
+                        }
                     }
                 }
             }
@@ -416,6 +426,28 @@ namespace RelicExam
                 mainPageDatabaseLoader.ReportProgress(tempProg);
             }
             mainPageDatabaseLoader.ReportProgress(90);
+        }
+        //self-explanatory
+        private void addMapIfNotDuplicate(Map mm)
+        {
+            //traverse the array, if it does not find another it will not break
+            //therefore adding it to the list
+            foreach (Map m in mapList)
+            {
+                if (m.getMap().Equals(mm.getMap())) return;
+            }
+            mapList.Add(mm);
+        }
+        //self-explanatory
+        private void addCatagoryIfNotDuplicate(Catagory cc)
+        {
+            //traverse the array, if it does not find another it will not break
+            //therefore adding it to the list
+            foreach (Catagory c in catagoryList)
+            {
+                if (c.getCatagory().Equals(cc.getCatagory())) return;
+            }
+            catagoryList.Add(cc);
         }
     }
 }

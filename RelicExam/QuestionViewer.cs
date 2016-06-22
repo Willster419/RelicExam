@@ -46,12 +46,12 @@ namespace RelicExam
         public bool canSubmit;
         private PhotoViewer foto;
         private Point pictureSpawnPoint;
-
+        //generic constructor
         public QuestionViewer()
         {
             InitializeComponent();
         }
-
+        //contstructor that somehow knows which type it is. honestly i forget how i got this to work, it just does
         public QuestionViewer(int numQuestionss, string catagoryy, string mapp)
         {
             InitializeComponent();
@@ -59,7 +59,7 @@ namespace RelicExam
             catagory = catagoryy;
             map = mapp;
         }
-
+        //the countdown for how much time you have left to answer
         private void timer1_Tick(object sender, EventArgs e)
         {
             //update timer stuff
@@ -74,13 +74,13 @@ namespace RelicExam
                 this.postQuestion();
             }
         }
-
+        //self-explanatory
         private void submitAnswer_Click(object sender, EventArgs e)
         {
             submitAnswer.Enabled = false;
             this.postQuestion();
         }
-
+        //called when the questionviewer is loaded (TODO: one or multiple times)
         private void QuestionViewer_Load(object sender, EventArgs e)
         {
             //parse all file paths
@@ -247,14 +247,14 @@ namespace RelicExam
             }
             this.displayNextQuestion();
         }
-
+        //rage quit the exam
         private void rageQuit_Click(object sender, EventArgs e)
         {
             //RAGEQUIT BUTTON
             if (foto != null) foto.Close();
             this.Hide();
         }
-
+        //get the next question
         private void nextQuestion_Click(object sender, EventArgs e)
         {
             //NEXT BUTTON
@@ -322,8 +322,9 @@ namespace RelicExam
             else
             {
                 foto.setPicture(loadedQuestion.p.photoFileName);
+                foto.Show();
             }
-            foto.Show();
+            
             //good for debugging, bad for quizing
             /*
             if (loadedQuestion.answer.Equals("a"))
@@ -358,6 +359,7 @@ namespace RelicExam
             timer1.Start();
             currentQuestion++;
         }
+        //called when the question viewer is about to be closed
         private void QuestionViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
