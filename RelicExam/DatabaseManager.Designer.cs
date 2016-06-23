@@ -73,11 +73,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.photoComboBox = new System.Windows.Forms.ComboBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.loadingWorker = new System.ComponentModel.BackgroundWorker();
             this.saveUploadChangesButton = new System.Windows.Forms.Button();
             this.panel12 = new System.Windows.Forms.Panel();
             this.unsavedChangesLabel = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.updateWorker = new System.ComponentModel.BackgroundWorker();
+            this.closeWorker = new System.ComponentModel.BackgroundWorker();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -508,11 +510,11 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "\"Supported Picture Types|*.jpg;*.jpeg;*.png;*.bmp;*.gif\"";
             // 
-            // backgroundWorker1
+            // loadingWorker
             // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.loadingWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadingWorker_DoWork);
+            this.loadingWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.loadingWorker_ProgressChanged);
+            this.loadingWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadingWorker_RunWorkerCompleted);
             // 
             // saveUploadChangesButton
             // 
@@ -548,6 +550,20 @@
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // updateWorker
+            // 
+            this.updateWorker.WorkerReportsProgress = true;
+            this.updateWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.updateWorker_DoWork);
+            this.updateWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.updateWorker_ProgressChanged);
+            this.updateWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.updateWorker_RunWorkerCompleted);
+            // 
+            // closeWorker
+            // 
+            this.closeWorker.WorkerReportsProgress = true;
+            this.closeWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.closeWorker_DoWork);
+            this.closeWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.closeWorker_ProgressChanged);
+            this.closeWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.closeWorker_RunWorkerCompleted);
             // 
             // DatabaseManager
             // 
@@ -643,10 +659,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox photoComboBox;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker loadingWorker;
         private System.Windows.Forms.Button saveUploadChangesButton;
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Label unsavedChangesLabel;
         private System.Windows.Forms.Timer timer1;
+        private System.ComponentModel.BackgroundWorker updateWorker;
+        private System.ComponentModel.BackgroundWorker closeWorker;
     }
 }

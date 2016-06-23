@@ -762,21 +762,6 @@ namespace RelicExam
             return sBuilder.ToString();
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-        }
-
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-
-        }
-
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-
-        }
-
         private void saveUploadChangesButton_Click(object sender, EventArgs e)
         {
             //save and upload the changes
@@ -961,6 +946,51 @@ namespace RelicExam
             wait.Close();
             //upload any new pictures
             //for now, just delete the picture folder and upload all the new ones
+        }
+
+        private void loadingWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void loadingWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+        }
+
+        private void updateWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void updateWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void updateWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+        }
+
+        private void closeWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void closeWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void closeWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
         }
     }
 }
