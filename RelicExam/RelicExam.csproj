@@ -95,6 +95,7 @@
       <DependentUpon>MainPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Map.cs" />
+    <Compile Include="moveQueue.cs" />
     <Compile Include="PhotoViewer.cs">
       <SubType>Form</SubType>
     </Compile>

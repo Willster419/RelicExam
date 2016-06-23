@@ -30,7 +30,6 @@ namespace RelicExam
         private string appPath;
         public string dataBasePath;
         public string questionPath;
-        public string playerPath;
         public string questionBase;
         private PleaseWait wait;
         private List<Question> questionList;
@@ -41,24 +40,26 @@ namespace RelicExam
         private CloudStorage dropBoxStorage;
         private WebClient client = new WebClient();
         public bool close;
-        private string pictureName;
         private PhotoViewer chooser;
         private List<Picture> pictureList;
         private Point pictureSpawnPoint;
         private string picturePath;
         private bool actuallyLoad;
+        private List<MoveQueue> mq;
+        private string oldPicName;
         //basic constructor
         public DatabaseManager()
         {
             InitializeComponent();
         }
         //constructor that passes in the loaded question, map, and cataogry lists
-        public DatabaseManager(List<Question> QList, List<Map> MList, List<Catagory> CList)
+        public DatabaseManager(List<Question> QList, List<Map> MList, List<Catagory> CList, List<Picture>PList)
         {
             InitializeComponent();
             questionList = QList;
             mapList = MList;
             catagoryList = CList;
+            pictureList = PList;
         }
         //called when the form is ready to be shown
         private void DatabaseManager_Load(object sender, EventArgs e)
@@ -74,6 +75,7 @@ namespace RelicExam
             this.parseFilePaths();
             //declare all temp objects
             tempQuestion = new Question();
+            mq = new List<MoveQueue>();
             //check for another user on the system
             try
             {
@@ -121,22 +123,12 @@ namespace RelicExam
             //(OLD) load the database
             //don't need to now because the lists are passed in
             //this.loadDataBase(true);
-            //create a list of pictures for the combobox
-            //this way of doing it assumes that the database is in tact
-            pictureList = new List<Picture>();
-            foreach (string s in Directory.GetFiles(picturePath))
-            {
-                pictureList.Add(new Picture(s));
-            }
             //reset the GUI
             this.resetGUI();
         }
 
         private void resetGUI()
         {
-            questionComboBox.SelectedIndex = -1;
-            mapComboBox.SelectedIndex = -1;
-            catagoryComboBox.SelectedIndex = -1;
             while (questionComboBox.Items.Count > 1)
             {
                 questionComboBox.Items.RemoveAt(1);
@@ -169,6 +161,11 @@ namespace RelicExam
             {
                 photoComboBox.Items.Add(pp);
             }
+            questionComboBox.SelectedIndex = -1;
+            mapComboBox.SelectedIndex = -1;
+            catagoryComboBox.SelectedIndex = -1;
+            mapComboBox.Text = "";
+            catagoryComboBox.Text = "";
             questionTextBox.Text = "";
             responseATextBox.Text = "";
             responseBTextBox.Text = "";
@@ -185,6 +182,8 @@ namespace RelicExam
             timeToAnswerTextBox.Text = "" + "";
             currentModeLabel.Visible = false;
             this.photoComboBox_SelectedIndexChanged(null, null);
+            timer1.Enabled = false;
+            timer1.Stop();
         }
         //event raised when the checkbox for answer d is changed
         private void answerDEnable_CheckedChanged(object sender, EventArgs e)
@@ -206,13 +205,12 @@ namespace RelicExam
                 answerMarkD.Enabled = false;
             }
         }
-        //event raised when the question combo box sleection is changed
+        //event raised when the question combo box selection is changed
         private void questionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(chooser != null)chooser.Close();
             actuallyLoad = true;
             addPictureButton.Enabled = true;
-            pictureName = "";
             saveButton.Enabled = true;
             if (questionComboBox.SelectedIndex == -1) return;
             //determine if a new question is being made or if one is being updated
@@ -292,7 +290,7 @@ namespace RelicExam
                     mapComboBox.SelectedIndex = 0;
                 }
                 //get the picture selected
-                string tempPictureName = null;// q2Load.p.photoTitle;
+                string tempPictureName = q2Load.p.photoFileName;
                 if (tempPictureName == null)
                 {
                     photoComboBox.SelectedIndex = 0;
@@ -302,12 +300,18 @@ namespace RelicExam
                 {
                     photoComboBox.SelectedIndex = 0;
                 }
+                if (tempPictureName.Equals("null.jpg") && tempPictureName != null)
+                {
+                    photoComboBox.SelectedIndex = 0;
+                }
                 else
                 {
+                    //find the picture in picturelist that matches this question's picture
                     for (int i = 0; i < pictureList.Count; i++)
                     {
-                        if (true)//tempPictureName.Equals(pictureList[i].photoTitle))
+                        if (tempPictureName.Equals(pictureList[i].photoFileName))
                         {
+                            photoComboBox.SelectedIndex = 0;
                             photoComboBox.SelectedIndex = ++i;
                             break;
                         }
@@ -315,22 +319,14 @@ namespace RelicExam
                 }
                 
             }
-            photoComboBox_SelectedIndexChanged(null, null);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            //////////////////////////////////////////////////////////////////
-            //(seperate)
             //determine if the user is making a new question or updating one.
             //ask if they are sure
             //process the add/update request in memory
-            //(same)
-            //reflect the update in disk database (delete and re-create)
-            //reload the entire database to memory
-            //upload to dropbox
-            //update the gui
-            //////////////////////////////////////////////////////////////////
+            //reset the gui
             //but first make sure everything is selected
             if (theQuestionTitle.Text.Equals("") || questionTextBox.Text.Equals("") || responseATextBox.Text.Equals("") || responseBTextBox.Text.Equals("") || timeToAnswerTextBox.Text.Equals("0") || (answerCEnable.Checked && responseCTextBox.Text.Equals("")) || (answerDEnable.Checked && responseDTextBox.Text.Equals("")) || (catagoryComboBox.Text.Equals("") && catagoryComboBox.SelectedIndex == -1) || (mapComboBox.Text.Equals("") && mapComboBox.SelectedIndex == -1) || (!answerMarkA.Checked && !answerMarkB.Checked && !answerMarkC.Checked && !answerMarkD.Checked) || photoComboBox.SelectedIndex == -1)
             {
@@ -338,6 +334,7 @@ namespace RelicExam
                 return;
             }
             if (questionComboBox.SelectedIndex == 0)
+
             {
                 //ask if the user is sure they would like to create this question
                 DialogResult result = MessageBox.Show("Are you sure you would like to create this question?", "Are you Sure", MessageBoxButtons.YesNo);
@@ -347,134 +344,17 @@ namespace RelicExam
                 }
                 else
                 {
-                    chooser.Close();
+                    if(chooser != null) chooser.Close();
                     hasMadeChanges = true;
-                    //procede...
-                    //create a new question class with everything from the GUI
-                    Question newQ = new Question();
-                    newQ.theQuestion = questionTextBox.Text;
-                    newQ.responseA = responseATextBox.Text;
-                    newQ.responseB = responseBTextBox.Text;
-                    if (answerCEnable.Checked)
-                    {
-                        newQ.responseCEnabled = answerCEnable.Checked;
-                        newQ.responseC = responseCTextBox.Text;
-                    }
-                    if (answerDEnable.Checked)
-                    {
-                        newQ.responseDEnabled = answerDEnable.Checked;
-                        newQ.responseD = responseDTextBox.Text;
-                    }
-                    if (answerMarkA.Checked)
-                    {
-                        newQ.answer = "a";
-                    }
-                    if (answerMarkB.Checked)
-                    {
-                        newQ.answer = "b";
-                    }
-                    if (answerMarkC.Checked)
-                    {
-                        newQ.answer = "c";
-                    }
-                    if (answerMarkD.Checked)
-                    {
-                        newQ.answer = "d";
-                    }
-                    newQ.explanationOfAnswer = expTextBox.Text;
-                    newQ.title = theQuestionTitle.Text;
-                    newQ.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
-                    int catagoryInt = catagoryComboBox.SelectedIndex;
-                    //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
-                    if (catagoryInt == -1)
-                    {
-                        //NEW CATAGORY
-                        //catagoryList.Add(new Catagory(catagoryComboBox.Text));
-                        newQ.cat.setCatagory(catagoryComboBox.Text);
-                        catagoryComboBox.Text = "";
-                    }
-                    else
-                    {
-                        newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
-                    }
-                    //newQ.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
-                    int mapInt = mapComboBox.SelectedIndex-1;
-                    //newQ.m.setMap(mapComboBox.SelectedText);
-                    if (mapInt == -1)
-                    {
-                        newQ.m.setMap("NONE");
-                    }
-                    else if (mapInt == -2)
-                    {
-                        //NEW MAP
-                        // mapList.Add(new Map(mapComboBox.Text));
-                        newQ.m.setMap(mapComboBox.Text);
-                        mapComboBox.Text = "";
-                    }
-                    else
-                    {
-                        newQ.m.setMap(mapList[mapInt].getMap());
-                    }
-                    //Determine if first entry in the database
-                    if (catagoryList == null)
-                    {
-                        //First Entry of catagory
-                        catagoryList = new List<Catagory>();
-                    }
-                    if (mapList == null)
-                    {
-                        //First Entry of catagory
-                        mapList = new List<Map>();
-                    }
-                    //CATAGORY
-                    //determine if it needs to create another entry for a new catagory
-                    int numHits = 0;
-                    //run through the catagory list and count number of times the catagory to add shows up
-                    foreach (Catagory catTT in catagoryList)
-                    {
-                        if (newQ.cat.getCatagory().Equals(catTT.getCatagory())) numHits++;
-                    }
-                    //if it's 0 hits then add it
-                    if (numHits == 0)
-                    {
-                        catagoryList.Add(new Catagory(newQ.cat.getCatagory()));
-                    }
-                    //MAP
-                    //determine if it needs to create another entry for a new map
-                    int numMapHits = 0;
-                    //run through the map list and count number of times the map to add shows up
-                    foreach (Map mapPP in mapList)
-                    {
-                        if (newQ.m.getMap().Equals(mapPP.getMap())) numMapHits++;
-                    }
-                    //if it's 0 hits then add it
-                    if (numHits == 0)
-                    {
-                        if(!newQ.m.getMap().Equals("NONE"))
-                        {
-                            mapList.Add(new Map(newQ.m.getMap()));
-                        }
-                    }
-                    //and add the question
-                    if (questionList == null)
-                    {
-                        //FIRST ENTRY
-                        questionList = new List<Question>();
-                    }
-                    //parse new picture
-                    if (photoComboBox.SelectedIndex != 0)
-                    {
-                        newQ.p = pictureList[photoComboBox.SelectedIndex - 1];
-                    }
-                    else
-                    {
-                       //newQ.p = new Picture("NONE","null.jpg");
-                    }
-
+                    unsavedChangesLabel.Visible = true;
+                    //create a new question and parse it from the gui
+                    Question newQ = this.parseQuestion(new Question());
+                    //add it to the list
                     questionList.Add(newQ);
-                    this.cleanupCatagories();
-                    this.cleanUpPictures();
-                    this.uploadButton_Click(null, null);
+                    //update the lists and reset the gui
+                    this.updateCatagoryList();
+                    this.updateMapList();
+                    this.updatePictureList();
                     this.resetGUI();
                 }
             }
@@ -488,194 +368,67 @@ namespace RelicExam
                 }
                 else
                 {
-                    chooser.Close();
+                    if (chooser!=null)chooser.Close();
                     hasMadeChanges = true;
-                    //procede...
-                    //load the question from the question index
-                    Question q2Edit = questionList[questionComboBox.SelectedIndex-1];
-                    q2Edit.theQuestion = questionTextBox.Text;
-                    q2Edit.responseA = responseATextBox.Text;
-                    q2Edit.responseB = responseBTextBox.Text;
-
-                    q2Edit.responseCEnabled = answerCEnable.Checked;
-                    if (answerCEnable.Checked)
-                    {
-                        q2Edit.responseC = responseCTextBox.Text;
-                    }
-                    else
-                    {
-                        q2Edit.responseC = "";
-                    }
-
-                    q2Edit.responseDEnabled = answerDEnable.Checked;
-                    if (answerDEnable.Checked)
-                    {
-                        q2Edit.responseD = responseDTextBox.Text;
-                    }
-                    else
-                    {
-                        q2Edit.responseD = "";
-                    }
-
-                    if (answerMarkA.Checked)
-                    {
-                        q2Edit.answer = "a";
-                    }
-                    if (answerMarkB.Checked)
-                    {
-                        q2Edit.answer = "b";
-                    }
-                    if (answerMarkC.Checked)
-                    {
-                        q2Edit.answer = "c";
-                    }
-                    if (answerMarkD.Checked)
-                    {
-                        q2Edit.answer = "d";
-                    }
-                    q2Edit.explanationOfAnswer = expTextBox.Text;
-                    q2Edit.title = theQuestionTitle.Text;
-                    q2Edit.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
-                    string oldCatagory = q2Edit.cat.getCatagory();
-                    string oldMap = q2Edit.m.getMap();
-                    int catagoryInt = catagoryComboBox.SelectedIndex;
-                    //newQ.cat.setCatagory(catagoryComboBox.SelectedText);
-                    if (catagoryInt == -1)
-                    {
-                        //NEW CATAGORY
-                        //catagoryList.Add(new Catagory(catagoryComboBox.Text));
-                        q2Edit.cat.setCatagory(catagoryComboBox.Text);
-                        catagoryComboBox.Text = "";
-                    }
-                    else
-                    {
-                        q2Edit.cat.setCatagory(catagoryList[catagoryInt].getCatagory());
-                    }
-                    int mapInt = mapComboBox.SelectedIndex - 1;
-                    //newQ.m.setMap(mapComboBox.SelectedText);
-                    if (mapInt == -1)
-                    {
-                        q2Edit.m.setMap("NONE");
-                    }
-                    else if (mapInt == -2)
-                    {
-                        //NEW MAP
-                       // mapList.Add(new Map(mapComboBox.Text));
-                        q2Edit.m.setMap(mapComboBox.Text);
-                        mapComboBox.Text = "";
-                    }
-                    else
-                    {
-                        q2Edit.m.setMap(mapList[mapInt].getMap());
-                    }
-                    //CATAGORY
-                    //determine if the catagory has changed
-                    if (catagoryComboBox.SelectedItem!=null)
-                    {
-                        //nothing needs to be done
-                    }
-                    else
-                    {
-                        //if so, determine if old one was the last one of a catagory
-                        int numHitsRemove = 0;
-                        //run through the catagory list and count number of times the catagory to remove shows up
-                        foreach (Catagory cat in catagoryList)
-                        {
-                            if (cat.Equals(oldCatagory)) numHitsRemove++;
-                        }
-                        //and determine if new one needs a new entry for the new catagory
-                        int numHitsAdd = 0;
-                        foreach (Catagory cat in catagoryList)
-                        {
-                            if (cat.Equals(q2Edit.cat.getCatagory())) numHitsAdd++;
-                        }
-                        //if remove is only 1 then remove it
-                        if (numHitsRemove == 1)
-                        {
-                            for (int i = 0; i < catagoryList.Count; i++)
-                            {
-                                string temp = catagoryList[i].getCatagory();
-                                if (oldCatagory.Equals(temp))
-                                {
-                                    catagoryList.RemoveAt(i);
-                                }
-                            }
-                        }
-                        //if add is 0 then add it
-                        if (numHitsAdd == 0)
-                        {
-                            catagoryList.Add(new Catagory(q2Edit.cat.getCatagory()));
-                        }
-                    }
-                    //MAP
-                    //determine if the map has changed
-                    if (mapComboBox.SelectedItem!=null)
-                    {
-                        //nothing needs to be done
-                    }
-                    else
-                    {
-                        //if so, determine if old one was the last one of a map
-                        int numMapHitsRemove = 0;
-                        //run through the map list and count number of times the map to remove shows up
-                        foreach (Map cat in mapList)
-                        {
-                            if (cat.Equals(oldMap)) numMapHitsRemove++;
-                        }
-                        //and determine if new one needs a new entry for the new map
-                        int numMapHitsAdd = 0;
-                        foreach (Map cat in mapList)
-                        {
-                            if (cat.Equals(q2Edit.m.getMap())) numMapHitsAdd++;
-                        }
-                        //if remove is only 1 then remove it
-                        if (numMapHitsRemove == 1)
-                        {
-                            for (int i = 0; i < mapList.Count; i++)
-                            {
-                                string temp = mapList[i].getMap();
-                                if (oldMap.Equals(temp))
-                                {
-                                    mapList.RemoveAt(i);
-                                }
-                            }
-                        }
-                        //if add is 0 then add it
-                        if (numMapHitsAdd == 0)
-                        {
-                            mapList.Add(new Map(q2Edit.m.getMap()));
-                        }
-                    }
-                    //PARSE picture
-                    if (photoComboBox.SelectedIndex != 0)
-                    {
-                        q2Edit.p = pictureList[photoComboBox.SelectedIndex - 1];
-                    }
-                    else
-                    {
-                       // q2Edit.p = new Picture("NONE","null.jpg");
-                    }
-
-                    this.cleanupCatagories();
-                    this.cleanUpPictures();;
-                    this.uploadButton_Click(null, null);
+                    unsavedChangesLabel.Visible = true;
+                    //load the question from the question index and parse it from the gui
+                    Question test = this.parseQuestion(questionList[questionComboBox.SelectedIndex - 1]);
+                    //replace the old question with the new one
+                    questionList[questionComboBox.SelectedIndex - 1] = test;
+                    //update the lists
+                    this.updateCatagoryList();
+                    this.updateMapList();
+                    this.updatePictureList();
+                    //reset the GUI
                     this.resetGUI();
                 }
             }
-            this.saveButton.Enabled = false;
         }
-
+        //parses all gui values into a question
+        private Question parseQuestion(Question q)
+        {
+            q.theQuestion = questionTextBox.Text;
+            q.responseA = responseATextBox.Text;
+            q.responseB = responseBTextBox.Text;
+            if (answerCEnable.Checked)
+            {
+                q.responseCEnabled = answerCEnable.Checked;
+                q.responseC = responseCTextBox.Text;
+            }
+            if (answerDEnable.Checked)
+            {
+                q.responseDEnabled = answerDEnable.Checked;
+                q.responseD = responseDTextBox.Text;
+            }
+            if (answerMarkA.Checked)
+            {
+                q.answer = "a";
+            }
+            if (answerMarkB.Checked)
+            {
+                q.answer = "b";
+            }
+            if (answerMarkC.Checked)
+            {
+                q.answer = "c";
+            }
+            if (answerMarkD.Checked)
+            {
+                q.answer = "d";
+            }
+            q.explanationOfAnswer = expTextBox.Text;
+            q.title = theQuestionTitle.Text;
+            q.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
+            q.cat.setCatagory(catagoryComboBox.Text);
+            q.m.setMap(mapComboBox.Text);
+            q.p.photoFileName = photoComboBox.Text;
+            return q;
+        }
         private void removeButton_Click(object sender, EventArgs e)
         {
-            /////////////////////////////////////////////////////////////////////////////////////
-            //(seperate)
             //ask if the user is sure they would like to remove this question from the database
             //process the remove request in memory
-            //(same)
-            //reflect the update in disk database (delete and re-create)
-            //reload the entire database to memory
             //update the gui
-            /////////////////////////////////////////////////////////////////////////////////////
             DialogResult result = MessageBox.Show("Are you sure you would like to remove this question?", "Are you Sure", MessageBoxButtons.YesNo);
             if (result == System.Windows.Forms.DialogResult.No)
             {
@@ -684,64 +437,15 @@ namespace RelicExam
             else
             {
                 hasMadeChanges = true;
-                //procede...
-                int indexToRemove = questionComboBox.SelectedIndex;
-                Question q2Rem = questionList[indexToRemove - 1];
-                //CATAGORY
-                //determine if it's the last one of a catagory
-                int numHits = 0;
-                Catagory tempCat = q2Rem.cat;
-                string catT = tempCat.getCatagory();
-                //run through the catagory list and count number of times the catagory to remove shows up
-                /*foreach (Catagory cat in catagoryList)
-                {
-                    if (catT.Equals(cat.getCatagory())) numHits++;
-                }*/
-                foreach (Question q in questionList)
-                {
-                    if (catT.Equals(q.cat.getCatagory())) numHits++;
-                }
-                //if it's only 1 then remove it
-                if (numHits == 1)
-                {
-                    for (int i = 0; i < catagoryList.Count; i++)
-                    {
-                        string temp = catagoryList[i].getCatagory();
-                        if (catT.Equals(catagoryList[i].getCatagory()))
-                        {
-                            catagoryList.RemoveAt(i);
-                        }
-                    }
-                }
-                //MAP
-                //determine if it's the last one of a map
-                int numMapHits = 0;
-                Map tempMap = q2Rem.m;
-                string MapP = tempMap.getMap();
-                //run through the catagory list and count number of times the catagory to remove shows up
-                foreach (Map mapppp in mapList)
-                {
-                    string mapListString = mapppp.getMap();
-                    if (MapP.Equals(mapListString)) numMapHits++;
-                }
-                //if it's only 1 then remove it
-                if (numHits == 1)
-                {
-                    for (int i = 0; i < mapList.Count; i++)
-                    {
-                        if (MapP.Equals(mapList[i].getMap()))
-                        {
-                            mapList.RemoveAt(i);
-                        }
-                    }
-                }
-                //and remove the question
-                questionList.RemoveAt(indexToRemove-1);
-                this.cleanupCatagories();
-                this.cleanUpPictures();
-                this.uploadButton_Click(null, null);
+                unsavedChangesLabel.Visible = true;
+                //just remove the question at it's index
+                Question test = questionList[questionComboBox.SelectedIndex - 1];
+                questionList.RemoveAt(questionComboBox.SelectedIndex -1);
+                //update the lists and reset the gui
+                this.updateCatagoryList();
+                this.updateMapList();
+                this.updatePictureList();
                 this.resetGUI();
-                removeButton.Enabled = false;
             }
         }
 
@@ -780,61 +484,10 @@ namespace RelicExam
 
             }
         }
-
+        //button to reset the form
         private void resetForm_Click(object sender, EventArgs e)
         {
-            questionComboBox.SelectedIndex = -1;
-            mapComboBox.SelectedIndex = -1;
-            catagoryComboBox.SelectedIndex = -1;
-            questionTextBox.Text = "";
-            responseATextBox.Text = "";
-            responseBTextBox.Text = "";
-            answerCEnable.Checked = false;
-            responseCTextBox.Text = "";
-            answerDEnable.Checked = false;
-            responseDTextBox.Text = "";
-            answerMarkA.Checked = false;
-            answerMarkB.Checked = false;
-            answerMarkC.Checked = false;
-            answerMarkD.Checked = false;
-            expTextBox.Text = "";
-            theQuestionTitle.Text = "";
-            timeToAnswerTextBox.Text = "" + "";
-            currentModeLabel.Visible = false;
-            photoComboBox_SelectedIndexChanged(null, null);
-        }
-        private void cleanupCatagories()
-        {
-            //for each catagory
-            //for each question
-            //run through the list and see if it is still in use
-            //CATAGORY
-            int catagoryHits;
-            string catagory;
-            for (int i = 0; i < catagoryList.Count; i++)
-            {
-                catagoryHits = 0;
-                catagory = catagoryList[i].getCatagory();
-                for (int j = 0; j < questionList.Count; j++)
-                {
-                    if (questionList[j].cat.getCatagory().Equals(catagory)) catagoryHits++;
-                }
-                if (catagoryHits == 0) catagoryList.RemoveAt(i);
-            }
-            //MAP
-            //(remember to exclude index 0 (NONE)
-            int mapHits;
-            string map;
-            for (int i = 0; i < mapList.Count; i++)
-            {
-                mapHits = 0;
-                map = mapList[i].getMap();
-                for (int j = 0; j < questionList.Count; j++)
-                {
-                    if (questionList[j].m.getMap().Equals(map)) mapHits++;
-                }
-                if (mapHits == 0) mapList.RemoveAt(i);
-            }
+            this.resetGUI();
         }
 
         private void verifyCode_Click(object sender, EventArgs e)
@@ -897,11 +550,6 @@ namespace RelicExam
             wait.Close();
         }
 
-        private void answerCEnable_CheckStateChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void answerCEnable_Click(object sender, EventArgs e)
         {
             if (answerMarkC.Checked && !answerCEnable.Checked)
@@ -927,6 +575,29 @@ namespace RelicExam
             //ask if you want to save and upload your chances
             //do so
             //close the form
+            if (hasMadeChanges)
+            {
+                DialogResult result = MessageBox.Show("You have unsaved changes, would you like to save them?", "Are you Sure", MessageBoxButtons.YesNo);
+                if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+                else
+                {
+                    //save the changes
+
+                }
+            }
+
+
+
+
+
+
+
+
+
+
             PleaseWait pw = new PleaseWait();
             if(close){}
             else
@@ -961,56 +632,66 @@ namespace RelicExam
         {
             if (chooser != null) chooser.Close();
             pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
-            chooser = new PhotoViewer(pictureSpawnPoint);
-            chooser.passInList(pictureList);
+            chooser = new PhotoViewer(pictureSpawnPoint,1);
             chooser.Location = pictureSpawnPoint;
-            string pictureLocationz;
             string extension;
+            string newName;
+            Picture p;
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
             {
                 return;
             }
             else
             {
-                pictureLocationz = openFileDialog1.FileName;
-                extension = Path.GetExtension(pictureLocationz);
-                chooser.setPicture(pictureLocationz);
+                string[] list = Directory.GetFiles(picturePath);
+                extension = Path.GetExtension(openFileDialog1.FileName);
+                newName = picturePath + "\\picture" + list.Length + extension;
+                File.Copy(openFileDialog1.FileName, newName);
+                p = new Picture();
+                p.photoFileName = Path.GetFileName(newName);
+                chooser.parsePicture(p);
                 chooser.ShowDialog();
             }
-            if (chooser.cancel) return;
-            string[] list = Directory.GetFiles(picturePath);
-            string newName = picturePath + "\\picture" + list.Length + extension;
-            File.Copy(pictureLocationz, picturePath + "\\picture" + list.Length + extension);
-            //Picture temp = new Picture(chooser.photoNamee, newName);
-            //pictureList.Add(temp);
-            //update the picture combo box
-            //photoComboBox.Items.Add(temp);
-            photoComboBox.SelectedIndex = getPicture(chooser.photoNamee);
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-
+            if (chooser.cancel)
+            {
+                //delete the file and leave
+                File.Delete(newName);
+            }
+            else
+            {
+                //add it to the list
+                p.photoTitle = chooser.photoTitle;
+                pictureList.Add(p);
+                //attach it to the selected question
+                questionList[questionComboBox.SelectedIndex - 1].p = p;
+                this.resetGUI();
+            }
         }
 
         private void photoComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (actuallyLoad)
             {
-                //close and photoviewers 
+                //close old pictureviewers if they exist 
                 if (chooser != null) chooser.Close();
                 if (photoComboBox.SelectedIndex == 0 || photoComboBox.SelectedIndex == -1)
                 {
                     //don't show the photo viewer if there is no picture to show
                     return;
                 }
+                //get the picture to set
                 Picture tempPic = pictureList[photoComboBox.SelectedIndex - 1];
-                //pictureName = tempPic.photoTitle;
+                //do some spawn point stuff
                 pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
-                chooser = new PhotoViewer(pictureSpawnPoint);
+                chooser = new PhotoViewer(pictureSpawnPoint,2);
                 chooser.Location = pictureSpawnPoint;
-                chooser.setPicture(tempPic.photoFileName);
+                //set the picture into the photoviewer
+                chooser.parsePicture(tempPic);
+                //backup the old picture name
+                oldPicName = tempPic.photoFileName;
                 chooser.Show();
+                timer1.Enabled = true;
+                timer1.Start();
             }
         }
         //gets the index from pictureList of desired picture based on title
@@ -1019,7 +700,7 @@ namespace RelicExam
             if (title.Equals("NONE")) return 0;
             for (int i = 0; i < pictureList.Count; i++)
             {
-                if (true)//title.Equals(pictureList[i].photoTitle))
+                if (title.Equals(pictureList[i].photoFileName))
                 {
                     return i+1;
                 }
@@ -1054,7 +735,6 @@ namespace RelicExam
             tempPath = Path.GetTempPath();
             dataBasePath = tempPath + "\\relicExamDatabase";
             questionPath = dataBasePath + "\\questions";
-            playerPath = dataBasePath + "\\players";
             questionBase = "questionBase.xml";
             picturePath = dataBasePath + "\\pictures";
         }
@@ -1096,6 +776,92 @@ namespace RelicExam
             //save and upload the changes
             //requires loading dialog
             //don't close
+            unsavedChangesLabel.Visible = false;
+            hasMadeChanges = false;
         }
+        //updates the list of maps to reflect current questin list
+        private void updateMapList()
+        {
+            bool duplicate = false;
+            mapList = new List<Map>();
+            foreach (Question q in questionList)
+            {
+                duplicate = false;
+                foreach (Map c in mapList)
+                {
+                    if (q.m.getMap().Equals(c.getMap()))
+                    {
+                        duplicate = true;
+                    }
+                }
+                if (!duplicate) mapList.Add(q.m);
+            }
+        }
+        //updates the list of catagories to reflect current questin list
+        private void updateCatagoryList()
+        {
+            //reset the catagory list
+            //for each catagory in questionlist
+            //traverse catagory list
+            //if the catagory does not already exist
+            //add it
+            bool duplicate = false;
+            catagoryList = new List<Catagory>();
+            foreach (Question q in questionList)
+            {
+                duplicate = false;
+                //going through each question
+                foreach (Catagory c in catagoryList)
+                {
+                    //take the above question and traverse the catagoryList
+                    if (q.cat.getCatagory().Equals(c.getCatagory()))
+                    {
+                        //break the inner for loop because it's a duplicate
+                        duplicate = true;
+                    }
+                }
+                //if we get here it means that it's a new catagory
+                if(!duplicate) catagoryList.Add(q.cat);
+            }
+        }
+        //updates the list of pictures to reflect current questin list
+        private void updatePictureList()
+        {
+            bool duplicate = false;
+            pictureList = new List<Picture>();
+            foreach (Question q in questionList)
+            {
+                duplicate = false;
+                foreach (Picture c in pictureList)
+                {
+                    if (q.p.photoFileName.Equals(c.photoFileName))
+                    {
+                        duplicate = true;
+                    }
+                }
+                if (!duplicate) pictureList.Add(q.p);
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (chooser.nameChange)
+            {
+                //parse it in other questions
+                for (int i = 0; i < questionList.Count; i++)
+                {
+                    if (questionList[i].p.photoFileName.Equals(oldPicName))
+                    {
+                        questionList[i].p.photoTitle = chooser.photoTitle;
+                    }
+                }
+                //mark unsaved changes
+                unsavedChangesLabel.Visible = true;
+                hasMadeChanges = true;
+                chooser.nameChange = false;
+                this.resetGUI();
+            }
+        }
+
     }
 }

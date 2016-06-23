@@ -34,6 +34,7 @@ namespace RelicExam
         private List<Question> questionList;
         private List<Map> mapList;
         private List<Catagory> catagoryList;
+        private List<Picture> pictureList;
         private string tempPath;
         private string appPath;
         public string dataBasePath;
@@ -59,7 +60,7 @@ namespace RelicExam
             this.Hide();
             wait = new PleaseWait();
             wait.Show();
-            dataBaseManager = new DatabaseManager(questionList, mapList, catagoryList);
+            dataBaseManager = new DatabaseManager(questionList, mapList, catagoryList, pictureList);
             if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
                 //correct password
@@ -230,6 +231,7 @@ namespace RelicExam
             questionList = new List<Question>();
             mapList = new List<Map>();
             catagoryList = new List<Catagory>();
+            pictureList = new List<Picture>();
             questionReader = new XmlTextReader(questionBaseFullPath);
             wait = new PleaseWait();
             cv = new CodeVerify();
@@ -314,6 +316,7 @@ namespace RelicExam
             {
                 if (questionReader.Name.Equals("question"))
                 {
+                    tempQuestion.p = new Picture();
                     while (questionReader.Read())
                     {
                         if (questionReader.IsStartElement())
@@ -364,11 +367,16 @@ namespace RelicExam
                                     this.addMapIfNotDuplicate(tempQuestion.m);
                                     break;
                                 case "picture":
-                                    tempQuestion.p = new Picture(questionReader.ReadString());
+                                    tempQuestion.p.photoFileName = questionReader.ReadString();
+                                    break;
+                                    //pictureName HAS to be the last thing read from each question node for this to work
+                                case "pictureName":
+                                    tempQuestion.p.photoTitle = questionReader.ReadString();
+                                    this.addPictureIfNotDuplicate(tempQuestion.p);
                                     break;
                             }
                         }
-                        if (questionReader.Name.Equals("picture"))
+                        if (questionReader.Name.Equals("pictureName"))
                         {
                             //add the question to memory and reset the temp question
                             questionList.Add(tempQuestion);
@@ -444,7 +452,18 @@ namespace RelicExam
             }
             catagoryList.Add(cc);
         }
-
+        //self-explanatory
+        private void addPictureIfNotDuplicate(Picture pp)
+        {
+            //traverse the array, if it does not find another it will not break
+            //therefore adding it to the list
+            foreach (Picture p in pictureList)
+            {
+                if (p.photoFileName.Equals(pp.photoFileName)) return;
+            }
+            pictureList.Add(pp);
+        }
+        //deletes the local database and downloads the new one from the server
         private void refreshDatabase_Click(object sender, EventArgs e)
         {
             //delete the entire database, download the new one

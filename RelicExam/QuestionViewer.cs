@@ -19,26 +19,17 @@ namespace RelicExam
         private string catagory;
         private string map;
         private int currentQuestion;
-        private Question tempQuestion;
         Question loadedQuestion;
         public int numCorrect;
         public bool correct;
-        private XmlTextReader questionBaseReader;
-        private XmlTextReader questionReader;
         private List<Question> questionList;
         private List<Map> mapList;
         private List<Catagory> catagoryList;
-        private List<Picture> pictureList;
         private string tempPath;
-        private string appPath;
         public string dataBasePath;
         public string questionPath;
         public string questionBase;
         public string picturePath;
-        private ArrayList questionReaderList;
-        private string questionPrefix = "question";
-        private int questionNumber = 0;
-        private string xmlExtension = ".xml";
         private List<Question> questionDisplayList;
         private Random rng;
         private Results theResults;
@@ -99,7 +90,6 @@ namespace RelicExam
             timer1.Stop();
             timer1.Enabled = false;
             currentQuestion = 0;
-            questionNumber = 0;
             outOfTime.Visible = false;
             //determine if filtering is required
             if (catagory == null && map == null)
@@ -211,8 +201,7 @@ namespace RelicExam
             radioButtonC.Checked = false;
             radioButtonD.Checked = false;
             pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
-            foto = new PhotoViewer(pictureSpawnPoint);
-            foto.preview.Visible = false;
+            foto = new PhotoViewer(pictureSpawnPoint,3);
             foto.Location = pictureSpawnPoint;
             if (loadedQuestion.p.photoFileName.Equals("null.jpg"))
             {
@@ -220,7 +209,7 @@ namespace RelicExam
             }
             else
             {
-                foto.setPicture(picturePath + "\\" + loadedQuestion.p.photoFileName);
+                foto.parsePicture(loadedQuestion.p);
                 foto.Show();
             }
             

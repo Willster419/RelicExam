@@ -8,6 +8,7 @@ namespace RelicExam
     public class Picture
     {
         public string photoFileName;
+        public string photoTitle;
         public Picture()
         {
 
@@ -18,7 +19,7 @@ namespace RelicExam
         }
         public override string ToString() 
         {
-            return System.IO.Path.GetFileName(photoFileName);
+            return photoTitle + " - " + System.IO.Path.GetFileName(photoFileName);
         }
     }
 }

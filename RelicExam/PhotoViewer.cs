@@ -13,26 +13,40 @@ namespace RelicExam
     public partial class PhotoViewer : Form
     {
         public bool cancel;
+        public bool nameChange;
+        public string photoPath;
+        public string photoExtension;
         public string photoNamee;
+        public string photoNameNoExt;
+        public string photoTitle;
         private Point startPoint;
-        private List<Picture> thePictureList;
-        private string photoPath;
+
         public PhotoViewer()
         {
             InitializeComponent();
             cancel = true;
+            nameChange = false;
         }
-        public PhotoViewer(Point start)
+
+        public PhotoViewer(Point start, int mode)
         {
             InitializeComponent();
             cancel = true;
+            nameChange = false;
             startPoint = start;
+            this.setMode(mode);
         }
-        public void setPicture(string pictureFile)
+        //sets the pictureViewer to the picture on disk
+        //also parses all string paths
+        public void parsePicture(Picture pic)
         {
-            pictureBox1.Image = Image.FromFile(pictureFile);
-            photoNamee = pictureFile;
-            photoNamee = System.IO.Path.GetFileName(photoNamee);
+            photoPath = System.IO.Path.GetTempPath() + "\\relicExamDatabase\\pictures";
+            photoNamee = photoPath + "\\" + pic.photoFileName;
+            photoExtension = System.IO.Path.GetExtension(photoNamee);
+            photoNameNoExt = System.IO.Path.GetFileNameWithoutExtension(photoNamee);
+            pictureBox1.Image = Image.FromFile(photoNamee);
+            photoTitle = pic.photoTitle;
+            photoName.Text = photoTitle;
             cancel = true;
         }
 
@@ -50,25 +64,25 @@ namespace RelicExam
         private void button1_Click(object sender, EventArgs e)
         {
             //accept
-            //take the save name and use that as the fileName
-            //unless it is already taken
             //check for a valid name
-            photoPath = System.IO.Path.GetTempPath() + "\\relicExamDatabase\\pictures";
+            //update it
             if(this.photoName.Text == null || this.photoName.Text.Equals(""))
             {
                 //invalid name
                 MessageBox.Show("invalid name");
             }
                 //TODO:check for possible problems with the extension
-            else if(System.IO.File.Exists(photoPath + "\\" + photoNamee))
+            else if (this.photoName.Text.Equals(photoTitle))
             {
-                //picture with that name already exists
-                MessageBox.Show("picture with that name already exists");
+                //same name as before, also prevents errors with renameing files
+                MessageBox.Show("The name didn't change!!!");
             }
             else
             {
                 //good to save the picture
                 cancel = false;
+                nameChange = true;
+                photoTitle = photoName.Text;
                 this.Close();
             }
         }
@@ -77,10 +91,39 @@ namespace RelicExam
         {
             this.Location = startPoint;
         }
-
-        public void passInList(List<Picture> theList)
+        //sets the "mode" of the photo viewer
+        public void setMode(int m)
         {
-            thePictureList = theList;
+            if (m == 1)
+            {
+                //add mode
+                photoName.ReadOnly = false;
+                button1.Enabled = true;
+                button1.Text = "add picture";
+                button2.Enabled = true;
+                preview.Text = "ADD";
+            }
+            else if (m == 2)
+            {
+                //edit mode
+                photoName.ReadOnly = false;
+                button1.Enabled = true;
+                button1.Text = "change name";
+                button2.Enabled = false;
+                preview.Text = "EDIT";
+            }
+            else if (m == 3)
+            {
+                //viewer mode
+                photoName.ReadOnly = true;
+                button1.Enabled = false;
+                button2.Enabled = false;
+                preview.Text = "VIEWER";
+            }
+            else
+            {
+
+            }
         }
     }
 }
