@@ -45,7 +45,6 @@ namespace RelicExam
         private Point pictureSpawnPoint;
         private string picturePath;
         private bool actuallyLoad;
-        private List<MoveQueue> mq;
         private string oldPicName;
         //basic constructor
         public DatabaseManager()
@@ -75,7 +74,6 @@ namespace RelicExam
             this.parseFilePaths();
             //declare all temp objects
             tempQuestion = new Question();
-            mq = new List<MoveQueue>();
             //check for another user on the system
             try
             {
@@ -118,6 +116,7 @@ namespace RelicExam
             //oh boy, more hacks i put in
             currentModeLabel.Visible = false;
             removeButton.Enabled = false;
+            saveUploadChangesButton.Enabled = false;
             //close this first loading window
             wait.Close();
             //(OLD) load the database
@@ -349,6 +348,7 @@ namespace RelicExam
                     if(chooser != null) chooser.Close();
                     hasMadeChanges = true;
                     unsavedChangesLabel.Visible = true;
+                    saveUploadChangesButton.Enabled = true;
                     //create a new question and parse it from the gui
                     Question newQ = this.parseQuestion(new Question());
                     //add it to the list
@@ -373,6 +373,7 @@ namespace RelicExam
                     if (chooser!=null)chooser.Close();
                     hasMadeChanges = true;
                     unsavedChangesLabel.Visible = true;
+                    saveUploadChangesButton.Enabled = true;
                     //load the question from the question index and parse it from the gui
                     Question test = this.parseQuestion(questionList[questionComboBox.SelectedIndex - 1]);
                     //replace the old question with the new one
@@ -462,6 +463,7 @@ namespace RelicExam
             {
                 hasMadeChanges = true;
                 unsavedChangesLabel.Visible = true;
+                saveUploadChangesButton.Enabled = true;
                 //just remove the question at it's index
                 Question test = questionList[questionComboBox.SelectedIndex - 1];
                 questionList.RemoveAt(questionComboBox.SelectedIndex -1);
@@ -598,58 +600,45 @@ namespace RelicExam
         private void DatabaseManager_FormClosing(object sender, FormClosingEventArgs e)
         {
             //ask if you want to save and upload your chances
-            //do so
+            //do so if so
             //close the form
             if (hasMadeChanges)
             {
                 DialogResult result = MessageBox.Show("You have unsaved changes, would you like to save them?", "Are you Sure", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
-                    return;
+                    //remove lock
+                    CloudStorage dropBoxStorage = new CloudStorage();
+                    var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+                    ICloudStorageAccessToken accessToken = null;
+                    using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                    }
+                    var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+                    dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+                    dropBoxStorage.Close();
+                    //close
+
                 }
                 else
                 {
-                    //save the changes
+                    //save changes
+
+                    //remove lock
+                    CloudStorage dropBoxStorage = new CloudStorage();
+                    var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+                    ICloudStorageAccessToken accessToken = null;
+                    using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                    }
+                    var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+                    dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+                    dropBoxStorage.Close();
+                    //close
 
                 }
-            }
-
-
-
-
-
-
-
-
-
-
-            PleaseWait pw = new PleaseWait();
-            if(close){}
-            else
-            {
-                
-                pw.Show();
-                Application.DoEvents();
-                if (chooser != null) chooser.Close();
-                dropBoxStorage = new CloudStorage();
-                // get the configuration for dropbox
-                var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-                // declare an access token
-                ICloudStorageAccessToken accessToken = null;
-                // load a valid security token from file
-                using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-                {
-                    accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-                }
-                // open the connection 
-                var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-                // get a specific directory in the cloud storage, e.g. /Public 
-                //var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
-                //String srcFile = Environment.ExpandEnvironmentVariables(null);
-                dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
-                //dropBoxStorage.UploadFile(srcFile, questionsFolder);
-                dropBoxStorage.Close();
-                pw.Close();
             }
         }
 
@@ -740,19 +729,6 @@ namespace RelicExam
                 timer1.Enabled = true;
                 timer1.Start();
             }
-        }
-        //gets the index from pictureList of desired picture based on title
-        private int getPicture(string title)
-        {
-            if (title.Equals("NONE")) return 0;
-            for (int i = 0; i < pictureList.Count; i++)
-            {
-                if (title.Equals(pictureList[i].photoFileName))
-                {
-                    return i+1;
-                }
-            }
-            return 0;
         }
         //parses all file paths required upon application load
         public void parseFilePaths()
@@ -887,11 +863,13 @@ namespace RelicExam
                 }
                 //mark unsaved changes
                 unsavedChangesLabel.Visible = true;
+                saveUploadChangesButton.Enabled = true;
                 hasMadeChanges = true;
                 chooser.nameChange = false;
                 this.resetGUI();
             }
         }
+
         private void checkForPictureFileDeletion(Picture pp)
         {
             //let go of the picture!!
@@ -911,6 +889,15 @@ namespace RelicExam
                 //picture is not in use, delete it
                 File.Delete(picturePath + "\\" + pp.photoFileName);
             }
+        }
+
+        private void saveDatabase()
+        {
+            //save the database xml
+
+            //upload any new pictures
+
+            //delete any old pictures
         }
     }
 }

@@ -60,6 +60,7 @@ namespace RelicExam
             this.Hide();
             wait = new PleaseWait();
             wait.Show();
+            Application.DoEvents();
             dataBaseManager = new DatabaseManager(questionList, mapList, catagoryList, pictureList);
             if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
@@ -79,11 +80,13 @@ namespace RelicExam
                     dropBoxStorage.Close();
                     wait.Close();
                     dataBaseManager.ShowDialog();
+                    //if changes were made the database needs to be reloaded
                 }
                 else
                 {
                     wait.Close();
                     dataBaseManager.ShowDialog();
+                    //if changes were made the database needs to be reloaded
                 }
             }
             else
