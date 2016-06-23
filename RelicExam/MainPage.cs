@@ -56,6 +56,8 @@ namespace RelicExam
         //the most secure password checker ever
         private void ServiceModeButton_Click(object sender, EventArgs e)
         {
+            //change this to true to enable dev lock over-ride
+            enterPassword.overrideLockCheckBox.Visible = false;
             enterPassword.ShowDialog();
             this.Hide();
             wait = new PleaseWait();
@@ -80,13 +82,25 @@ namespace RelicExam
                     dropBoxStorage.Close();
                     wait.Close();
                     dataBaseManager.ShowDialog();
-                    //if changes were made the database needs to be reloaded
+                    //pass up all the changes
+                    this.questionList = dataBaseManager.questionList;
+                    this.mapList = dataBaseManager.mapList;
+                    this.catagoryList = dataBaseManager.catagoryList;
+                    this.pictureList = dataBaseManager.pictureList;
+                    //then close the form
+                    dataBaseManager.Close();
                 }
                 else
                 {
                     wait.Close();
                     dataBaseManager.ShowDialog();
-                    //if changes were made the database needs to be reloaded
+                    //pass up all the changes
+                    this.questionList = dataBaseManager.questionList;
+                    this.mapList = dataBaseManager.mapList;
+                    this.catagoryList = dataBaseManager.catagoryList;
+                    this.pictureList = dataBaseManager.pictureList;
+                    //then close the form
+                    dataBaseManager.Close();
                 }
             }
             else
@@ -154,6 +168,21 @@ namespace RelicExam
 
         private void BeginTestButton_Click(object sender, EventArgs e)
         {
+            //check if you have to refresh the database first
+            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
+            hash = MD5.Create();
+            string newHash = this.GetMd5Hash(hash,File.ReadAllText(dataBasePath + "\\tempQuestions.xml"));
+            string oldHash = null;
+            if (File.Exists(questionBaseFullPath))
+            {
+                oldHash = this.GetMd5Hash(hash, File.ReadAllText(questionBaseFullPath));
+            }
+            if (!newHash.Equals(oldHash))
+            {
+                //you need to refresh the database before you can continue
+            }
+
+
             if ((selectNumQuestions.SelectedIndex == -1 || selectTestType.SelectedIndex == -1) || ((2 > selectTestType.SelectedIndex && selectTestType.SelectedIndex > -1) && specifyTypeBox.SelectedIndex == -1))
             {
                 //incorrect options selected
@@ -458,6 +487,7 @@ namespace RelicExam
         //self-explanatory
         private void addPictureIfNotDuplicate(Picture pp)
         {
+            if (pp.photoFileName.Equals("NONE") || pp.photoFileName.Equals("null.jpg")) return;
             //traverse the array, if it does not find another it will not break
             //therefore adding it to the list
             foreach (Picture p in pictureList)

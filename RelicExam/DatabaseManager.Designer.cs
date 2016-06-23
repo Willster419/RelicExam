@@ -68,7 +68,6 @@
             this.removeButton = new System.Windows.Forms.Button();
             this.panel10 = new System.Windows.Forms.Panel();
             this.verifyCode = new System.Windows.Forms.Button();
-            this.uploadButton = new System.Windows.Forms.Button();
             this.panel11 = new System.Windows.Forms.Panel();
             this.addPictureButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -462,17 +461,6 @@
             this.verifyCode.UseVisualStyleBackColor = true;
             this.verifyCode.Click += new System.EventHandler(this.verifyCode_Click);
             // 
-            // uploadButton
-            // 
-            this.uploadButton.Enabled = false;
-            this.uploadButton.Location = new System.Drawing.Point(253, 362);
-            this.uploadButton.Name = "uploadButton";
-            this.uploadButton.Size = new System.Drawing.Size(104, 23);
-            this.uploadButton.TabIndex = 25;
-            this.uploadButton.Text = "Upload to Dropbox";
-            this.uploadButton.UseVisualStyleBackColor = true;
-            this.uploadButton.Click += new System.EventHandler(this.uploadButton_Click);
-            // 
             // panel11
             // 
             this.panel11.Controls.Add(this.addPictureButton);
@@ -569,7 +557,6 @@
             this.Controls.Add(this.panel12);
             this.Controls.Add(this.panel11);
             this.Controls.Add(this.verifyCode);
-            this.Controls.Add(this.uploadButton);
             this.Controls.Add(this.panel10);
             this.Controls.Add(this.panel9);
             this.Controls.Add(this.panel8);
@@ -651,7 +638,6 @@
         private System.Windows.Forms.Button removeButton;
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.Button verifyCode;
-        private System.Windows.Forms.Button uploadButton;
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Button addPictureButton;
         private System.Windows.Forms.Label label2;

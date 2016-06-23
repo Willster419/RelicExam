@@ -24,28 +24,28 @@ namespace RelicExam
 {
     public partial class DatabaseManager : Form
     {
-        public XmlTextWriter questionWriter;
+        //all the stuff we'll need
+        private XmlTextWriter questionWriter;
         private Question tempQuestion;
+        private PleaseWait wait;
+        public List<Question> questionList;
+        public List<Map> mapList;
+        public List<Catagory> catagoryList;
+        public List<Picture> pictureList;
+        private CloudStorage dropBoxStorage;
+        private WebClient client = new WebClient();
+        private PhotoViewer chooser;
+        private Point pictureSpawnPoint;
         private string tempPath;
         private string appPath;
         public string dataBasePath;
-        public string questionPath;
-        public string questionBase;
-        private PleaseWait wait;
-        private List<Question> questionList;
-        private List<Map> mapList;
-        private List<Catagory> catagoryList;
-        private int lastNumber;
-        private bool hasMadeChanges;
-        private CloudStorage dropBoxStorage;
-        private WebClient client = new WebClient();
-        public bool close;
-        private PhotoViewer chooser;
-        private List<Picture> pictureList;
-        private Point pictureSpawnPoint;
         private string picturePath;
-        private bool actuallyLoad;
         private string oldPicName;
+        private string databaseFileName;
+        private bool actuallyLoad;
+        private bool hasMadeChanges;
+        public bool close;
+        private int lastNumber;
         //basic constructor
         public DatabaseManager()
         {
@@ -293,13 +293,12 @@ namespace RelicExam
                 if (tempPictureName == null)
                 {
                     photoComboBox.SelectedIndex = 0;
-                    return;
                 }
-                if (tempPictureName.Equals("NONE") && tempPictureName !=null )
+                else if (tempPictureName.Equals("NONE") && tempPictureName !=null )
                 {
                     photoComboBox.SelectedIndex = 0;
                 }
-                if (tempPictureName.Equals("null.jpg") && tempPictureName != null)
+                else if (tempPictureName.Equals("null.jpg") && tempPictureName != null)
                 {
                     photoComboBox.SelectedIndex = 0;
                 }
@@ -336,12 +335,18 @@ namespace RelicExam
 
             {
                 //ask if the user is sure they would like to create this question
+                //stop the timer so it doesn't screw up the gui
                 timer1.Stop();
                 timer1.Enabled = false;
                 DialogResult result = MessageBox.Show("Are you sure you would like to create this question?", "Are you Sure", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
-                    return;
+                    //delete the picture
+                    File.Delete(chooser.photoNamee);
+                    //remove from memory as well
+                    pictureList.RemoveAt(pictureList.Count - 1);
+                    photoComboBox.Items.RemoveAt(photoComboBox.Items.Count - 1);
+                    this.resetGUI();
                 }
                 else
                 {
@@ -363,10 +368,18 @@ namespace RelicExam
             else
             {
                 //ask if the user is sure they would like to update the selected question
+                //stop the timer so it doesn't screw up the gui
+                timer1.Stop();
+                timer1.Enabled = false;
                 DialogResult result = MessageBox.Show("Are you sure you would like to update this question?", "Are you Sure", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
-                    return;
+                    //delete the picture
+                    File.Delete(chooser.photoNamee);
+                    //remove from memory as well
+                    pictureList.RemoveAt(pictureList.Count - 1);
+                    photoComboBox.Items.RemoveAt(photoComboBox.Items.Count - 1);
+                    this.resetGUI();
                 }
                 else
                 {
@@ -449,6 +462,7 @@ namespace RelicExam
                 return q;
             }
         }
+
         private void removeButton_Click(object sender, EventArgs e)
         {
             //ask if the user is sure they would like to remove this question from the database
@@ -531,7 +545,7 @@ namespace RelicExam
                 return;
             }
             //WORKING DROPBOX CODE FOR UPLOAD FILES
-            string[] fileList = Directory.GetFiles(questionPath);
+            /*string[] fileList = Directory.GetFiles(questionPath);
             string[] pictureLizt = Directory.GetFiles(picturePath);
             wait = new PleaseWait(fileList.Count()+pictureLizt.Count(), 0);
             int prog = 0;
@@ -574,7 +588,7 @@ namespace RelicExam
 
             dropBoxStorage.Close();
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            wait.Close();
+            wait.Close();*/
         }
 
         private void answerCEnable_Click(object sender, EventArgs e)
@@ -602,44 +616,34 @@ namespace RelicExam
             //ask if you want to save and upload your chances
             //do so if so
             //close the form
+            if (chooser != null) chooser.Close();
             if (hasMadeChanges)
             {
                 DialogResult result = MessageBox.Show("You have unsaved changes, would you like to save them?", "Are you Sure", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
-                    //remove lock
-                    CloudStorage dropBoxStorage = new CloudStorage();
-                    var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-                    ICloudStorageAccessToken accessToken = null;
-                    using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-                    {
-                        accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-                    }
-                    var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-                    dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
-                    dropBoxStorage.Close();
                     //close
-
+                    this.Hide();
                 }
                 else
                 {
                     //save changes
-
-                    //remove lock
-                    CloudStorage dropBoxStorage = new CloudStorage();
-                    var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-                    ICloudStorageAccessToken accessToken = null;
-                    using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-                    {
-                        accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-                    }
-                    var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-                    dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
-                    dropBoxStorage.Close();
+                    this.saveDatabase();
                     //close
-
+                    this.Hide();
                 }
             }
+            //still need to remove the lock...
+            CloudStorage dropBoxStorage = new CloudStorage();
+            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            ICloudStorageAccessToken accessToken = null;
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+            }
+            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+            dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+            dropBoxStorage.Close();
         }
 
         private void addPictureButton_Click(object sender, EventArgs e)
@@ -734,12 +738,11 @@ namespace RelicExam
         public void parseFilePaths()
         {
             //parse all file paths
-            appPath = Application.StartupPath;
             tempPath = Path.GetTempPath();
+            appPath = Application.StartupPath;
             dataBasePath = tempPath + "\\relicExamDatabase";
-            questionPath = dataBasePath + "\\questions";
-            questionBase = "questionBase.xml";
             picturePath = dataBasePath + "\\pictures";
+            databaseFileName = "\\questions.xml";
         }
         //gets a string md5 hash checksum of the input string. in this case, the input string is the file
         private string GetMd5Hash(MD5 md5Hash, string input)
@@ -781,6 +784,7 @@ namespace RelicExam
             //don't close
             unsavedChangesLabel.Visible = false;
             hasMadeChanges = false;
+            this.saveDatabase();
         }
         //updates the list of maps to reflect current questin list
         private void updateMapList()
@@ -893,11 +897,70 @@ namespace RelicExam
 
         private void saveDatabase()
         {
+            wait = new PleaseWait();
+            wait.Show();
+            Application.DoEvents();
             //save the database xml
-
+            string actualSaveName = databaseFileName.Substring(1);
+            questionWriter = new XmlTextWriter(dataBasePath + databaseFileName, Encoding.UTF8);
+            questionWriter.Formatting = Formatting.Indented;
+            questionWriter.WriteStartDocument();
+            questionWriter.WriteStartElement(actualSaveName);
+            questionWriter.WriteStartElement("questions");
+            for (int i = 0; i < questionList.Count; i++)
+            {
+                questionWriter.WriteStartElement("question");
+                questionWriter.WriteElementString("title", questionList[i].title);
+                questionWriter.WriteElementString("catagory", questionList[i].cat.getCatagory());
+                questionWriter.WriteElementString("theQuestion", questionList[i].theQuestion);
+                questionWriter.WriteElementString("responseA", questionList[i].responseA);
+                questionWriter.WriteElementString("responseB", questionList[i].responseB);
+                questionWriter.WriteElementString("responseC", questionList[i].responseC);
+                questionWriter.WriteElementString("responseCEnabled", "" + questionList[i].responseCEnabled);
+                questionWriter.WriteElementString("responseD", questionList[i].responseD);
+                questionWriter.WriteElementString("responseDEnabled", "" + questionList[i].responseDEnabled);
+                questionWriter.WriteElementString("answer", questionList[i].answer);
+                questionWriter.WriteElementString("timeToAnswer", "" + questionList[i].timeToAnswer);
+                questionWriter.WriteElementString("explanationOfAnswer", questionList[i].explanationOfAnswer);
+                questionWriter.WriteElementString("map", questionList[i].m.getMap());
+                questionWriter.WriteElementString("picture", questionList[i].p.photoFileName);
+                questionWriter.WriteElementString("pictureName", questionList[i].p.photoTitle);
+                questionWriter.WriteEndElement();
+            }
+            questionWriter.WriteEndElement();
+            questionWriter.WriteEndElement();
+            questionWriter.Close();
+            //upload questions.xml
+            dropBoxStorage = new CloudStorage();
+            // get the configuration for dropbox
+            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            // declare an access token
+            ICloudStorageAccessToken accessToken = null;
+            // load a valid security token from file
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+            }
+            // open the connection 
+            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+            // get a specific directory in the cloud storage, e.g. /Public 
+            var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam/questions");
+            // upload xml database
+            String srcFile = Environment.ExpandEnvironmentVariables(dataBasePath + databaseFileName);
+            dropBoxStorage.UploadFile(srcFile, questionsFolder);
+            //upload all the pictures
+            var questionsFolder2 = dropBoxStorage.GetFolder("/Public/RelicExam/pictures");
+            dropBoxStorage.DeleteFileSystemEntry(questionsFolder2);
+            for (int i = 0; i < pictureList.Count(); i++)
+            {
+                String srcFile2 = Environment.ExpandEnvironmentVariables(picturePath + "\\" + pictureList[i].photoFileName);
+                dropBoxStorage.UploadFile(srcFile2, questionsFolder2);
+            }
+            //close the connection
+            dropBoxStorage.Close();
+            wait.Close();
             //upload any new pictures
-
-            //delete any old pictures
+            //for now, just delete the picture folder and upload all the new ones
         }
     }
 }
