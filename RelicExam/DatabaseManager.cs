@@ -337,6 +337,8 @@ namespace RelicExam
 
             {
                 //ask if the user is sure they would like to create this question
+                timer1.Stop();
+                timer1.Enabled = false;
                 DialogResult result = MessageBox.Show("Are you sure you would like to create this question?", "Are you Sure", MessageBoxButtons.YesNo);
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
@@ -421,8 +423,30 @@ namespace RelicExam
             q.timeToAnswer = int.Parse(timeToAnswerTextBox.Text);
             q.cat.setCatagory(catagoryComboBox.Text);
             q.m.setMap(mapComboBox.Text);
-            q.p.photoFileName = photoComboBox.Text;
-            return q;
+            //go through the picture list to find where
+            //this question's picture is located
+            string[] nameToFind = photoComboBox.Text.Split(new Char[]{'-',' '});
+            string photoTitle = nameToFind[0];
+            if (photoTitle.Equals("NONE"))
+            {
+                //no picture with the question
+                q.p = new Picture();
+                q.p.photoTitle = "NONE";
+                q.p.photoFileName = "NONE";
+                return q;
+            }
+            else
+            {
+                string photoFileName = nameToFind[3];
+                foreach (Picture p in pictureList)
+                {
+                    if (p.photoTitle.Equals(photoTitle) && p.photoFileName.Equals(photoFileName))
+                    {
+                        q.p = p;
+                    }
+                }
+                return q;
+            }
         }
         private void removeButton_Click(object sender, EventArgs e)
         {
@@ -445,6 +469,7 @@ namespace RelicExam
                 this.updateCatagoryList();
                 this.updateMapList();
                 this.updatePictureList();
+                this.checkForPictureFileDeletion(test.p);
                 this.resetGUI();
             }
         }
@@ -633,6 +658,7 @@ namespace RelicExam
             if (chooser != null) chooser.Close();
             pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
             chooser = new PhotoViewer(pictureSpawnPoint,1);
+            chooser.passInPhotoList(pictureList);
             chooser.Location = pictureSpawnPoint;
             string extension;
             string newName;
@@ -662,9 +688,29 @@ namespace RelicExam
                 //add it to the list
                 p.photoTitle = chooser.photoTitle;
                 pictureList.Add(p);
-                //attach it to the selected question
-                questionList[questionComboBox.SelectedIndex - 1].p = p;
-                this.resetGUI();
+                //determine if the user is making a new question
+                //or modifying one
+                //1=add, 2=edit
+                if (chooser.getMode() == 1)
+                {
+                    bool temp = actuallyLoad;
+                    actuallyLoad = false;
+                    //set the selected index of the photoCOmboBox to the new picture
+                    photoComboBox.Items.Add(p);
+                    photoComboBox.SelectedIndex = photoComboBox.Items.Count -1;
+                    actuallyLoad = temp;
+                    //add
+                    //force create the question
+                    this.saveButton_Click(null, null);
+                }
+                else
+                {
+                    //edit
+                    //attach it to the selected question
+                    questionList[questionComboBox.SelectedIndex - 1].p = p;
+                    //reset gui
+                    this.resetGUI();
+                }
             }
         }
 
@@ -684,6 +730,7 @@ namespace RelicExam
                 //do some spawn point stuff
                 pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
                 chooser = new PhotoViewer(pictureSpawnPoint,2);
+                chooser.passInPhotoList(pictureList);
                 chooser.Location = pictureSpawnPoint;
                 //set the picture into the photoviewer
                 chooser.parsePicture(tempPic);
@@ -706,26 +753,6 @@ namespace RelicExam
                 }
             }
             return 0;
-        }
-        //load every picture in the picture database(done?)
-        //load every picture in the folder
-        //for each picture in folder, run through the list and 
-        //count the number of hits it is used using the picture's filePath
-        private void cleanUpPictures()
-        {
-            for (int i = 0; i < pictureList.Count; i++)
-            {
-                int numHits = 0;
-                for (int j = 0; j < questionList.Count; j++)
-                {
-                    if (pictureList[i].photoFileName.Equals(questionList[j].p.photoFileName)) numHits++;
-                }
-                if (numHits == 0)
-                {
-                    File.Delete(pictureList[i].photoFileName);
-                    pictureList.RemoveAt(i);
-                }
-            }
         }
         //parses all file paths required upon application load
         public void parseFilePaths()
@@ -839,7 +866,10 @@ namespace RelicExam
                         duplicate = true;
                     }
                 }
-                if (!duplicate) pictureList.Add(q.p);
+                if (!duplicate && !q.p.photoFileName.Equals("NONE") && !q.p.photoFileName.Equals("null.jpg") && !q.p.photoTitle.Equals("NONE"))
+                {
+                    pictureList.Add(q.p);
+                }
             }
         }
 
@@ -862,6 +892,25 @@ namespace RelicExam
                 this.resetGUI();
             }
         }
-
+        private void checkForPictureFileDeletion(Picture pp)
+        {
+            //let go of the picture!!
+            if (chooser != null) chooser.Close();
+            //run through the pictureList
+            //if no hits then delete the file
+            int numHitz = 0;
+            foreach (Picture p in pictureList)
+            {
+                if (p.photoFileName.Equals(pp.photoFileName))
+                {
+                    numHitz++;
+                }
+            }
+            if (numHitz == 0)
+            {
+                //picture is not in use, delete it
+                File.Delete(picturePath + "\\" + pp.photoFileName);
+            }
+        }
     }
 }

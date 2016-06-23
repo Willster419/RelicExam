@@ -20,21 +20,27 @@ namespace RelicExam
         public string photoNameNoExt;
         public string photoTitle;
         private Point startPoint;
+        private int mode;
+        private List<Picture> pictureList;
+        bool stop;
 
         public PhotoViewer()
         {
             InitializeComponent();
             cancel = true;
             nameChange = false;
+            stop = false;
         }
 
-        public PhotoViewer(Point start, int mode)
+        public PhotoViewer(Point start, int modee)
         {
             InitializeComponent();
             cancel = true;
             nameChange = false;
+            stop = false;
             startPoint = start;
-            this.setMode(mode);
+            mode = modee;
+            this.setMode(modee);
         }
         //sets the pictureViewer to the picture on disk
         //also parses all string paths
@@ -77,14 +83,37 @@ namespace RelicExam
                 //same name as before, also prevents errors with renameing files
                 MessageBox.Show("The name didn't change!!!");
             }
+            else if (this.photoName.Text.Equals("null"))
+            {
+                //reserved
+                MessageBox.Show("That is a reserved name, choose something else :)");
+            }
             else
             {
+                //check for the name already in use
+                foreach (Picture p in pictureList)
+                {
+                    if (p.photoTitle.Equals(this.photoName.Text))
+                    {
+                        //duplicate name detected
+                        MessageBox.Show("Name is already in use");
+                        stop = true;
+                    }
+                }
                 //good to save the picture
-                cancel = false;
-                nameChange = true;
-                photoTitle = photoName.Text;
-                this.Close();
+                if (!stop)
+                {
+                    cancel = false;
+                    nameChange = true;
+                    photoTitle = photoName.Text;
+                    this.Close();
+                }
             }
+        }
+
+        public void passInPhotoList(List<Picture> lp)
+        {
+            pictureList = lp;
         }
 
         private void PhotoViewer_Load(object sender, EventArgs e)
@@ -94,6 +123,7 @@ namespace RelicExam
         //sets the "mode" of the photo viewer
         public void setMode(int m)
         {
+            mode = m;
             if (m == 1)
             {
                 //add mode
@@ -125,5 +155,7 @@ namespace RelicExam
 
             }
         }
+
+        public int getMode() { return mode; }
     }
 }
