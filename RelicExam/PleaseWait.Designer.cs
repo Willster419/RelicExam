@@ -36,7 +36,7 @@
             // databaseLoading
             // 
             this.databaseLoading.AutoSize = true;
-            this.databaseLoading.Location = new System.Drawing.Point(68, 9);
+            this.databaseLoading.Location = new System.Drawing.Point(9, 9);
             this.databaseLoading.Name = "databaseLoading";
             this.databaseLoading.Size = new System.Drawing.Size(134, 13);
             this.databaseLoading.TabIndex = 0;
@@ -57,6 +57,7 @@
             this.loadingUpdate.Size = new System.Drawing.Size(65, 13);
             this.loadingUpdate.TabIndex = 2;
             this.loadingUpdate.Text = "doing stuff...";
+            this.loadingUpdate.Visible = false;
             // 
             // PleaseWait
             // 
@@ -76,8 +77,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Label databaseLoading;
         private System.Windows.Forms.ProgressBar progressBar1;
         public System.Windows.Forms.Label loadingUpdate;
+        public System.Windows.Forms.Label databaseLoading;
     }
 }

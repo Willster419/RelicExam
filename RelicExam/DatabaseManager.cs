@@ -63,67 +63,12 @@ namespace RelicExam
         //called when the form is ready to be shown
         private void DatabaseManager_Load(object sender, EventArgs e)
         {
-            //some boolean logic hack i don't know
-            actuallyLoad = false;
-            hasMadeChanges = false;
-            //display a loading window and load the database
-            wait = new PleaseWait();
-            wait.Show();
+            //get this all to a sperate thread to be done in a worker
+            wait = new PleaseWait(100, 0);
+            this.Hide();
             Application.DoEvents();
-            //parse all file paths
-            this.parseFilePaths();
-            //declare all temp objects
-            tempQuestion = new Question();
-            //check for another user on the system
-            try
-            {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/inUse.txt", tempPath + "\\inUse.txt");
-                MessageBox.Show("Database is currently being edited, try again later");
-                //this.Close();
-                wait.Close();
-                close = true;
-            }
-            catch (WebException)
-            {
-                //if none, you are the user now
-                //make a random file to use a single instance file lock
-                File.WriteAllText(tempPath + "\\inUse.txt", "the service is in use");
-                dropBoxStorage = new CloudStorage();
-                // get the configuration for dropbox
-                var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-                // declare an access token
-                ICloudStorageAccessToken accessToken = null;
-                // load a valid security token from file
-                using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-                {
-                    accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-                }
-                // open the connection 
-                var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-                // get a specific directory in the cloud storage, e.g. /Public 
-                var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
-                //get the file to upload
-                String srcFile = Environment.ExpandEnvironmentVariables(tempPath + "\\inUse.txt");
-                //upload the file and close the connection
-                dropBoxStorage.UploadFile(srcFile, questionsFolder);
-                dropBoxStorage.Close();
-            }
-            if (close)
-            {
-                this.Close();
-                return;
-            }
-            //oh boy, more hacks i put in
-            currentModeLabel.Visible = false;
-            removeButton.Enabled = false;
-            saveUploadChangesButton.Enabled = false;
-            //close this first loading window
-            wait.Close();
-            //(OLD) load the database
-            //don't need to now because the lists are passed in
-            //this.loadDataBase(true);
-            //reset the GUI
-            this.resetGUI();
+            loadingWorker.RunWorkerAsync();
+            wait.ShowDialog();
         }
 
         private void resetGUI()
@@ -536,60 +481,6 @@ namespace RelicExam
             CodeVerify v = new CodeVerify();
             v.ShowDialog();
         }
-        //OLD! DO NOT USE!
-        private void uploadButton_Click(object sender, EventArgs e)
-        {
-            if (!hasMadeChanges)
-            {
-                MessageBox.Show("No changes Made");
-                return;
-            }
-            //WORKING DROPBOX CODE FOR UPLOAD FILES
-            /*string[] fileList = Directory.GetFiles(questionPath);
-            string[] pictureLizt = Directory.GetFiles(picturePath);
-            wait = new PleaseWait(fileList.Count()+pictureLizt.Count(), 0);
-            int prog = 0;
-            wait.Show();
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            dropBoxStorage = new CloudStorage();
-            // get the configuration for dropbox
-            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-            // declare an access token
-            ICloudStorageAccessToken accessToken = null;
-            // load a valid security token from file
-            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-            {
-                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-            }
-            wait.setProgress(prog++);
-            // open the connection 
-            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-            // get a specific directory in the cloud storage, e.g. /Public 
-            var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam/questions");
-            dropBoxStorage.DeleteFileSystemEntry(questionsFolder);
-            wait.setProgress(prog++);
-            
-            for (int i = 0; i < fileList.Count(); i++)
-            {
-                // upload a testfile from temp directory into public folder of DropBox
-                String srcFile = Environment.ExpandEnvironmentVariables(fileList[i]);
-                dropBoxStorage.UploadFile(srcFile, questionsFolder);
-                wait.setProgress(prog++);
-            }
-
-            var questionsFolder2 = dropBoxStorage.GetFolder("/Public/RelicExam/pictures");
-            dropBoxStorage.DeleteFileSystemEntry(questionsFolder2);
-            for (int i = 0; i < pictureLizt.Count(); i++)
-            {
-                String srcFile = Environment.ExpandEnvironmentVariables(pictureLizt[i]);
-                dropBoxStorage.UploadFile(srcFile, questionsFolder2);
-                wait.setProgress(prog++);
-            }
-
-            dropBoxStorage.Close();
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            wait.Close();*/
-        }
 
         private void answerCEnable_Click(object sender, EventArgs e)
         {
@@ -610,12 +501,14 @@ namespace RelicExam
                 answerMarkC.Enabled = false;
             }
         }
-
+        //hook into when the form closes
         private void DatabaseManager_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (close) return;
             //ask if you want to save and upload your chances
             //do so if so
             //close the form
+            
             if (chooser != null) chooser.Close();
             if (hasMadeChanges)
             {
@@ -628,22 +521,19 @@ namespace RelicExam
                 else
                 {
                     //save changes
-                    this.saveDatabase();
+                    wait = new PleaseWait(100, 0);
+                    wait.databaseLoading.Text = "please wait, database saving...";
+                    updateWorker.RunWorkerAsync();
+                    wait.ShowDialog();
                     //close
                     this.Hide();
                 }
             }
             //still need to remove the lock...
-            CloudStorage dropBoxStorage = new CloudStorage();
-            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
-            ICloudStorageAccessToken accessToken = null;
-            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
-            {
-                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
-            }
-            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-            dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
-            dropBoxStorage.Close();
+            wait = new PleaseWait(100, 0);
+            wait.databaseLoading.Text = "please wait, removing single instance lock...";
+            closeWorker.RunWorkerAsync();
+            wait.ShowDialog();
         }
 
         private void addPictureButton_Click(object sender, EventArgs e)
@@ -761,7 +651,7 @@ namespace RelicExam
             // Return the hexadecimal string.
             return sBuilder.ToString();
         }
-
+        //dumps changes to disk and uploads to dropbox
         private void saveUploadChangesButton_Click(object sender, EventArgs e)
         {
             //save and upload the changes
@@ -769,7 +659,11 @@ namespace RelicExam
             //don't close
             unsavedChangesLabel.Visible = false;
             hasMadeChanges = false;
-            this.saveDatabase();
+            //save changes
+            wait = new PleaseWait(100, 0);
+            wait.databaseLoading.Text = "saving database...";
+            updateWorker.RunWorkerAsync();
+            wait.ShowDialog();
         }
         //updates the list of maps to reflect current questin list
         private void updateMapList()
@@ -879,12 +773,10 @@ namespace RelicExam
                 File.Delete(picturePath + "\\" + pp.photoFileName);
             }
         }
-
+        //dumps changes to disk and uploads to dropbox
         private void saveDatabase()
         {
-            wait = new PleaseWait();
-            wait.Show();
-            Application.DoEvents();
+            updateWorker.ReportProgress(1);
             //save the database xml
             string actualSaveName = databaseFileName.Substring(1);
             questionWriter = new XmlTextWriter(dataBasePath + databaseFileName, Encoding.UTF8);
@@ -915,6 +807,7 @@ namespace RelicExam
             questionWriter.WriteEndElement();
             questionWriter.WriteEndElement();
             questionWriter.Close();
+            updateWorker.ReportProgress(20);
             //upload questions.xml
             dropBoxStorage = new CloudStorage();
             // get the configuration for dropbox
@@ -926,71 +819,175 @@ namespace RelicExam
             {
                 accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
             }
+            updateWorker.ReportProgress(30);
             // open the connection 
             var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+            updateWorker.ReportProgress(50);
             // get a specific directory in the cloud storage, e.g. /Public 
             var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam/questions");
+            updateWorker.ReportProgress(60);
             // upload xml database
             String srcFile = Environment.ExpandEnvironmentVariables(dataBasePath + databaseFileName);
             dropBoxStorage.UploadFile(srcFile, questionsFolder);
+            updateWorker.ReportProgress(70);
             //upload all the pictures
             var questionsFolder2 = dropBoxStorage.GetFolder("/Public/RelicExam/pictures");
+            updateWorker.ReportProgress(75);
+            //delete the dropbox folder
             dropBoxStorage.DeleteFileSystemEntry(questionsFolder2);
+            updateWorker.ReportProgress(80);
+            int prog = 80;
+            //upload any new pictures
+            //for now, just delete the picture folder and upload all the new ones
             for (int i = 0; i < pictureList.Count(); i++)
             {
                 String srcFile2 = Environment.ExpandEnvironmentVariables(picturePath + "\\" + pictureList[i].photoFileName);
                 dropBoxStorage.UploadFile(srcFile2, questionsFolder2);
+                prog = prog + 2;
+                updateWorker.ReportProgress(prog);
             }
             //close the connection
             dropBoxStorage.Close();
-            wait.Close();
-            //upload any new pictures
-            //for now, just delete the picture folder and upload all the new ones
+            updateWorker.ReportProgress(95);
+            System.Threading.Thread.Sleep(100);
+            updateWorker.ReportProgress(100);
         }
-
+        //where all the intensive work is done
         private void loadingWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-
+            this.loadForm();
         }
-
+        //updates the waiting window
         private void loadingWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+            wait.setProgress(e.ProgressPercentage);
         }
-
+        //called when the work is complete to close the waiting form
         private void loadingWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            //oh boy, more hacks i put in
+            currentModeLabel.Visible = false;
+            removeButton.Enabled = false;
+            saveUploadChangesButton.Enabled = false;
+            //close the loading window and reset the gui
+            wait.Close();
+            this.resetGUI();
+            if (close) this.Close();
         }
 
         private void updateWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-
+            this.saveDatabase();
         }
 
         private void updateWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+            wait.setProgress(e.ProgressPercentage);
         }
 
         private void updateWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            wait.Close();
         }
 
         private void closeWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-
+            this.removeInstanceLock();
         }
 
         private void closeWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+            wait.setProgress(e.ProgressPercentage);
         }
 
         private void closeWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            wait.Close();
+            this.Hide();
+        }
+        //method for loading the form
+        private void loadForm()
+        {
+            //some boolean logic hack i don't know
+            actuallyLoad = false;
+            hasMadeChanges = false;
+            //parse all file paths
+            this.parseFilePaths();
+            //declare all temp objects
+            tempQuestion = new Question();
+            loadingWorker.ReportProgress(5);
+            //check for another user on the system
+            try
+            {
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/inUse.txt", tempPath + "\\inUse.txt");
+                MessageBox.Show("Database is currently being edited, try again later");
+                close = true;
+                loadingWorker.ReportProgress(15);
+                return;
+            }
+            catch (WebException)
+            {
+                //if none, you are the user now
+                //make a random file to use a single instance file lock
+                File.WriteAllText(tempPath + "\\inUse.txt", "the service is in use");
+                dropBoxStorage = new CloudStorage();
+                loadingWorker.ReportProgress(20);
+                // get the configuration for dropbox
+                var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+                // declare an access token
+                ICloudStorageAccessToken accessToken = null;
+                // load a valid security token from file
+                using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                }
+                loadingWorker.ReportProgress(25);
+                // open the connection 
+                var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+                loadingWorker.ReportProgress(50);
+                // get a specific directory in the cloud storage, e.g. /Public 
+                var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
+                loadingWorker.ReportProgress(75);
+                //get the file to upload
+                String srcFile = Environment.ExpandEnvironmentVariables(tempPath + "\\inUse.txt");
+                //upload the file and close the connection
+                dropBoxStorage.UploadFile(srcFile, questionsFolder);
+                loadingWorker.ReportProgress(90);
+                dropBoxStorage.Close();
+                loadingWorker.ReportProgress(95);
+            }
+            if (close)
+            {
+                this.Close();
+                return;
+            }
+            loadingWorker.ReportProgress(99);
+            System.Threading.Thread.Sleep(100);
+            loadingWorker.ReportProgress(100);
+        }
+        //removes the lock for the single instance of the databaseManger
+        private void removeInstanceLock()
+        {
+            CloudStorage dropBoxStorage = new CloudStorage();
+            closeWorker.ReportProgress(10);
+            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            closeWorker.ReportProgress(20);
+            ICloudStorageAccessToken accessToken = null;
+            closeWorker.ReportProgress(25);
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+                closeWorker.ReportProgress(35);
+            }
+            closeWorker.ReportProgress(40);
+            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+            closeWorker.ReportProgress(60);
+            dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+            closeWorker.ReportProgress(80);
+            dropBoxStorage.Close();
+            closeWorker.ReportProgress(99);
+            System.Threading.Thread.Sleep(100);
+            closeWorker.ReportProgress(100);
         }
     }
 }
