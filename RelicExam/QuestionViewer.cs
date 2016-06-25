@@ -203,7 +203,7 @@ namespace RelicExam
             pictureSpawnPoint = new Point(this.Location.X + this.Width + 5, this.Location.Y);
             foto = new PhotoViewer(pictureSpawnPoint,3);
             foto.Location = pictureSpawnPoint;
-            if (loadedQuestion.p.photoFileName.Equals("null.jpg"))
+            if (loadedQuestion.p.photoFileName.Equals("null.jpg") || loadedQuestion.p.photoFileName.Equals("NONE"))
             {
                 //no picture to display
             }

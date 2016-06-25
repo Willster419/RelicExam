@@ -42,7 +42,7 @@ namespace RelicExam
         public string questionBase;
         private string picturePath;
         private WebClient client;
-        private string version = "Beta3";
+        private string version = "Beta4";
         private PleaseWait wait;
         private CodeVerify cv;
         private PleaseWait pw;
@@ -112,6 +112,7 @@ namespace RelicExam
         //called when the application has finished system loading
         private void MainPage_Load(object sender, EventArgs e)
         {
+            this.Text = "Reic Exam V " + version;
             pw = new PleaseWait(100, 0);
             //this.loadLiterallyEverything(); OLD single thread version
             //pw.Show();
@@ -513,9 +514,17 @@ namespace RelicExam
             int tempProg = 50;
             foreach (Question q in questionList)
             {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + q.p.photoFileName, picturePath + "\\" + q.p.photoFileName);
-                tempProg = tempProg + 2;
-                mainPageDatabaseLoader.ReportProgress(tempProg);
+                if (q.p.photoFileName.Equals("NONE") || q.p.photoFileName.Equals("null.jpg"))
+                {
+                    tempProg = tempProg + 2;
+                    mainPageDatabaseLoader.ReportProgress(tempProg);
+                }
+                else
+                {
+                    client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + q.p.photoFileName, picturePath + "\\" + q.p.photoFileName);
+                    tempProg = tempProg + 2;
+                    mainPageDatabaseLoader.ReportProgress(tempProg);
+                }
             }
             mainPageDatabaseLoader.ReportProgress(90);
         }
