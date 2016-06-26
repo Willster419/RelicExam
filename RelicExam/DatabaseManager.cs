@@ -45,6 +45,7 @@ namespace RelicExam
         private bool actuallyLoad;
         private bool hasMadeChanges;
         public bool close;
+        public bool discardedChanges;
         private int lastNumber;
         private ArrayList completePictureList;
         private ArrayList localPictureList;
@@ -532,12 +533,14 @@ namespace RelicExam
                 if (result == System.Windows.Forms.DialogResult.No)
                 {
                     //close
+                    discardedChanges = true;
                     this.Hide();
                 }
                 else
                 {
                     timer1.Stop();
                     timer1.Enabled = false;
+                    discardedChanges = false;
                     //save changes
                     wait = new PleaseWait(100, 0);
                     wait.databaseLoading.Text = "please wait, database saving...";
@@ -903,6 +906,7 @@ namespace RelicExam
         private void updateWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             wait.Close();
+            this.resetGUI();
         }
 
         private void closeWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -927,6 +931,7 @@ namespace RelicExam
             //some boolean logic hack i don't know
             actuallyLoad = false;
             hasMadeChanges = false;
+            discardedChanges = false;
             //parse all file paths
             this.parseFilePaths();
             //declare all temp objects
@@ -1140,6 +1145,7 @@ namespace RelicExam
                 dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/pictures/" + p.photoFileName);
             }
             dropBoxStorage.Close();
+            removedPictures = new List<Picture>();
         }
     }
 }

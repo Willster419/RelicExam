@@ -80,28 +80,35 @@ namespace RelicExam
                     var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
                     dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
                     dropBoxStorage.Close();
-                    wait.Close();
-                    dataBaseManager.ShowDialog();
-                    //pass up all the changes
-                    this.questionList = dataBaseManager.questionList;
-                    this.mapList = dataBaseManager.mapList;
-                    this.catagoryList = dataBaseManager.catagoryList;
-                    this.pictureList = dataBaseManager.pictureList;
-                    //then close the form
-                    dataBaseManager.Close();
+                    
                 }
                 else
                 {
-                    wait.Close();
-                    dataBaseManager.ShowDialog();
-                    //pass up all the changes
+                    
+                }
+                wait.Close();
+                dataBaseManager.ShowDialog();
+                //pass up all the changes IF THERE ARE CHANGES
+                if (dataBaseManager.discardedChanges)
+                {
+                    //put the origional lists back
+                    dataBaseManager.questionList = this.questionList;
+                    dataBaseManager.mapList = this.mapList;
+                    dataBaseManager.catagoryList = this.catagoryList;
+                    dataBaseManager.pictureList = this.pictureList;
+                }
+                else
+                {
+                    //update these lists
                     this.questionList = dataBaseManager.questionList;
                     this.mapList = dataBaseManager.mapList;
                     this.catagoryList = dataBaseManager.catagoryList;
                     this.pictureList = dataBaseManager.pictureList;
-                    //then close the form
-                    dataBaseManager.Close();
                 }
+                //then close the form
+                dataBaseManager.Close();
+                dataBaseManager.Dispose();
+                Application.Restart();
             }
             else
             {
@@ -321,6 +328,23 @@ namespace RelicExam
             //(old) close the waiting window cause loading is done
             //wait.Close();
             mainPageDatabaseLoader.ReportProgress(40);
+            //check if this is a new version or first time loading
+            if (!File.Exists(dataBasePath + "\\testFile.txt"))
+            {
+                //first time load or new version first time load
+                //delete the entire database, download the new one
+                try
+                {
+                    Directory.Delete(dataBasePath, true);
+                }
+                catch (IOException)
+                {
+                    System.Threading.Thread.Sleep(100);
+                    Application.Restart();
+                }
+                Directory.CreateDirectory(dataBasePath);
+                File.WriteAllText(dataBasePath + "\\testFile.txt", "not the first time lol");
+            }
             //determine if the database has been updated since last use
             client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
             hash = MD5.Create();

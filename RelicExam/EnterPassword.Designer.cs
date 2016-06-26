@@ -95,6 +95,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "EnterPassword";
             this.Text = "EnterPassword";
+            this.Load += new System.EventHandler(this.EnterPassword_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -30,5 +30,10 @@ namespace RelicExam
         {
             this.Hide();
         }
+
+        private void EnterPassword_Load(object sender, EventArgs e)
+        {
+            passwordTextBox.Text = "";
+        }
     }
 }
