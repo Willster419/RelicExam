@@ -57,7 +57,7 @@ namespace RelicExam
         private void ServiceModeButton_Click(object sender, EventArgs e)
         {
             //change this to true to enable dev lock over-ride
-            enterPassword.overrideLockCheckBox.Visible = false;
+            enterPassword.overrideLockCheckBox.Visible = true;
             enterPassword.ShowDialog();
             this.Hide();
             wait = new PleaseWait();
@@ -501,7 +501,15 @@ namespace RelicExam
         private void refreshDatabase_Click(object sender, EventArgs e)
         {
             //delete the entire database, download the new one
-            Directory.Delete(dataBasePath,true);
+            try
+            {
+                Directory.Delete(dataBasePath, true);
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Failed to delete folder because of some bullshit io error. please try again");
+                return;
+            }
             this.MainPage_Load(null, null);
         }
         //re-downloads all the pictures

@@ -46,6 +46,12 @@ namespace RelicExam
         private bool hasMadeChanges;
         public bool close;
         private int lastNumber;
+        private ArrayList completePictureList;
+        private ArrayList localPictureList;
+        private ArrayList remotePictureList;
+        private ArrayList listToUpload;
+        private ArrayList listToDownload;
+        private List<Picture> removedPictures;
         //basic constructor
         public DatabaseManager()
         {
@@ -332,6 +338,8 @@ namespace RelicExam
                     hasMadeChanges = true;
                     unsavedChangesLabel.Visible = true;
                     saveUploadChangesButton.Enabled = true;
+                    Question whatTheActualFuck = questionList[questionComboBox.SelectedIndex - 1];
+                    Picture fuckThis = whatTheActualFuck.p;
                     //load the question from the question index and parse it from the gui
                     Question test = this.parseQuestion(questionList[questionComboBox.SelectedIndex - 1]);
                     //replace the old question with the new one
@@ -340,6 +348,7 @@ namespace RelicExam
                     this.updateCatagoryList();
                     this.updateMapList();
                     this.updatePictureList();
+                    this.checkForPictureFileDeletion(fuckThis);
                     //reset the GUI
                     this.resetGUI();
                 }
@@ -384,7 +393,13 @@ namespace RelicExam
             q.m.setMap(mapComboBox.Text);
             //go through the picture list to find where
             //this question's picture is located
-            string[] nameToFind = photoComboBox.Text.Split(new Char[]{'-',' '});
+            string trimmed = photoComboBox.Text;
+            trimmed = trimmed.Trim();
+            string[] nameToFind = trimmed.Split(new Char[]{'-'});
+            for (int i = 0; i < nameToFind.Length; i++)
+            {
+                nameToFind[i] = nameToFind[i].Trim();
+            }
             string photoTitle = nameToFind[0];
             if (photoTitle.Equals("NONE"))
             {
@@ -396,7 +411,7 @@ namespace RelicExam
             }
             else
             {
-                string photoFileName = nameToFind[3];
+                string photoFileName = nameToFind[1];
                 foreach (Picture p in pictureList)
                 {
                     if (p.photoTitle.Equals(photoTitle) && p.photoFileName.Equals(photoFileName))
@@ -425,6 +440,7 @@ namespace RelicExam
                 saveUploadChangesButton.Enabled = true;
                 //just remove the question at it's index
                 Question test = questionList[questionComboBox.SelectedIndex - 1];
+                //removedPictures.Add(test.p);
                 questionList.RemoveAt(questionComboBox.SelectedIndex -1);
                 //update the lists and reset the gui
                 this.updateCatagoryList();
@@ -520,6 +536,8 @@ namespace RelicExam
                 }
                 else
                 {
+                    timer1.Stop();
+                    timer1.Enabled = false;
                     //save changes
                     wait = new PleaseWait(100, 0);
                     wait.databaseLoading.Text = "please wait, database saving...";
@@ -552,9 +570,13 @@ namespace RelicExam
             }
             else
             {
-                string[] list = Directory.GetFiles(picturePath);
+                int i = 0;
                 extension = Path.GetExtension(openFileDialog1.FileName);
-                newName = picturePath + "\\picture" + list.Length + extension;
+                while (File.Exists(picturePath + "\\picture" + i + extension))
+                {
+                    i++;
+                }
+                newName = picturePath + "\\picture" + i + extension;
                 File.Copy(openFileDialog1.FileName, newName);
                 p = new Picture();
                 p.photoFileName = Path.GetFileName(newName);
@@ -657,6 +679,8 @@ namespace RelicExam
             //save and upload the changes
             //requires loading dialog
             //don't close
+            timer1.Stop();
+            timer1.Enabled = false;
             unsavedChangesLabel.Visible = false;
             hasMadeChanges = false;
             //save changes
@@ -757,6 +781,7 @@ namespace RelicExam
         {
             //let go of the picture!!
             if (chooser != null) chooser.Close();
+            if (pp.photoFileName.Equals("NONE") || pp.photoFileName.Equals("null.jpg")) return;
             //run through the pictureList
             //if no hits then delete the file
             int numHitz = 0;
@@ -770,7 +795,7 @@ namespace RelicExam
             if (numHitz == 0)
             {
                 //picture is not in use, delete it
-                File.Delete(picturePath + "\\" + pp.photoFileName);
+                removedPictures.Add(pp);
             }
         }
         //dumps changes to disk and uploads to dropbox
@@ -830,22 +855,12 @@ namespace RelicExam
             String srcFile = Environment.ExpandEnvironmentVariables(dataBasePath + databaseFileName);
             dropBoxStorage.UploadFile(srcFile, questionsFolder);
             updateWorker.ReportProgress(70);
+            //delete unused pictures
+            this.deleteUnusedPictures();
             //upload all the pictures
-            var questionsFolder2 = dropBoxStorage.GetFolder("/Public/RelicExam/pictures");
+            //use cool algorithims here to determine if pictures need to be up or downloaded
+            this.syncPictures();
             updateWorker.ReportProgress(75);
-            //delete the dropbox folder
-            dropBoxStorage.DeleteFileSystemEntry(questionsFolder2);
-            updateWorker.ReportProgress(80);
-            int prog = 80;
-            //upload any new pictures
-            //for now, just delete the picture folder and upload all the new ones
-            for (int i = 0; i < pictureList.Count(); i++)
-            {
-                String srcFile2 = Environment.ExpandEnvironmentVariables(picturePath + "\\" + pictureList[i].photoFileName);
-                dropBoxStorage.UploadFile(srcFile2, questionsFolder2);
-                prog = prog + 2;
-                updateWorker.ReportProgress(prog);
-            }
             //close the connection
             dropBoxStorage.Close();
             updateWorker.ReportProgress(95);
@@ -908,6 +923,7 @@ namespace RelicExam
         //method for loading the form
         private void loadForm()
         {
+            removedPictures = new List<Picture>();
             //some boolean logic hack i don't know
             actuallyLoad = false;
             hasMadeChanges = false;
@@ -988,6 +1004,142 @@ namespace RelicExam
             closeWorker.ReportProgress(99);
             System.Threading.Thread.Sleep(100);
             closeWorker.ReportProgress(100);
+        }
+        //creates a non-duplicate list of all pictures in use in the application
+        //then uploads or downloads to make both sides have the latest changes
+        private void syncPictures()
+        {
+            //create all lists 
+            completePictureList = new ArrayList();
+            localPictureList = new ArrayList();
+            remotePictureList = new ArrayList();
+            listToDownload = new ArrayList();
+            listToUpload = new ArrayList();
+
+            //add to list of remote pictures
+            dropBoxStorage = new CloudStorage();
+            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            ICloudStorageAccessToken accessToken = null;
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+            }
+            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken); 
+            ICloudDirectoryEntry pictureFolder = dropBoxStorage.GetFolder("/Public/RelicExam/pictures");
+            foreach (ICloudFileSystemEntry entry in pictureFolder)
+            {
+                if (entry is ICloudDirectoryEntry)
+                {
+                    //directory
+                }
+                else
+                {
+                    //file
+                    string theEntry = entry.Name;
+                    remotePictureList.Add(theEntry);
+                }
+            }
+            dropBoxStorage.Close();
+            //add to list of local pictures
+            foreach (Picture p in pictureList)
+            {
+                localPictureList.Add(p.photoFileName);
+            }
+            //merge the lists
+            foreach (string s in localPictureList)
+            {
+                this.addPictureNameIfNotDuplicate(s);
+            }
+            foreach (string s in remotePictureList)
+            {
+                this.addPictureNameIfNotDuplicate(s);
+            }
+            //we now have a complete list of all pictures
+            //check for uploads and downloads
+            foreach (string s in completePictureList)
+            {
+                this.createDownloadQueue(s);
+                this.createUploadQueue(s);
+            }
+            //then eithor upload of download
+            foreach (string s in listToDownload)
+            {
+                //download
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + s,picturePath + "\\" + s);
+            }
+            //prepare upload first - save time
+            CloudStorage dropBoxStorage2 = new CloudStorage();
+            var dropBoxConfig2 = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            ICloudStorageAccessToken accessToken2 = null;
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken2 = dropBoxStorage2.DeserializeSecurityToken(fs);
+            }
+            var storageToken2 = dropBoxStorage2.Open(dropBoxConfig2, accessToken2);
+            var picturesFolder2 = dropBoxStorage2.GetFolder("/Public/RelicExam/pictures");
+            foreach (string s in listToUpload)
+            {
+                //upload
+                String srcFile2 = Environment.ExpandEnvironmentVariables(picturePath + "\\" + s);
+                dropBoxStorage2.UploadFile(srcFile2, picturesFolder2);
+            }
+            dropBoxStorage.Close();
+        }
+
+        private void addPictureNameIfNotDuplicate(string fileName)
+        {
+            bool duplicate = false;
+            foreach (string s in completePictureList)
+            {
+                if (s.Equals(fileName)) duplicate = true;
+            }
+            if (!duplicate) completePictureList.Add(fileName);
+        }
+
+        private void createUploadQueue(string s)
+        {
+            bool located = false;
+            foreach (string ss in remotePictureList)
+            {
+                if (ss.Equals(s)) located = true;
+            }
+            //can't find it on server means it needs to be uploaded
+            if (!located) listToUpload.Add(s);
+        }
+
+        private void createDownloadQueue(string s)
+        {
+            bool located = false;
+            foreach (string ss in localPictureList)
+            {
+                if (ss.Equals(s)) located = true;
+            }
+            //can't find it localy means it needs to be downloaded
+            if (!located) listToDownload.Add(s);
+        }
+
+        private void testSync_Click(object sender, EventArgs e)
+        {
+            this.syncPictures();
+        }
+
+        private void deleteUnusedPictures()
+        {
+            //delete locally and remotely
+            CloudStorage dropBoxStorage = new CloudStorage();
+            var dropBoxConfig = CloudStorage.GetCloudConfigurationEasy(nSupportedCloudConfigurations.DropBox);
+            ICloudStorageAccessToken accessToken = null;
+            using (FileStream fs = File.Open(appPath + "\\key.txt", FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
+            }
+            var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
+            foreach (Picture p in removedPictures)
+            {
+                if (File.Exists(picturePath + "\\" + p.photoFileName)) File.Delete(picturePath + "\\" + p.photoFileName);
+                dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/pictures/" + p.photoFileName);
+            }
+            dropBoxStorage.Close();
         }
     }
 }

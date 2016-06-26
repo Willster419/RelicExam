@@ -72,6 +72,14 @@ namespace RelicExam
             //accept
             //check for a valid name
             //update it
+            bool invalidName = false;
+            char[] charName = this.photoName.Text.ToCharArray();
+            string reservedChars = "-";
+            char[] reservedChar = reservedChars.ToCharArray();
+            foreach (char c in charName)
+            {
+                if (c.Equals(reservedChar[0])) invalidName = true;
+            }
             if(this.photoName.Text == null || this.photoName.Text.Equals(""))
             {
                 //invalid name
@@ -87,6 +95,10 @@ namespace RelicExam
             {
                 //reserved
                 MessageBox.Show("That is a reserved name, choose something else :)");
+            }
+            else if (invalidName)
+            {
+                MessageBox.Show("'-' is a reserved character, and cannot be used for a name");
             }
             else
             {

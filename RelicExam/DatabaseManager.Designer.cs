@@ -50,21 +50,21 @@
             this.timeToAnswerTextBox = new System.Windows.Forms.TextBox();
             this.timeToAnswerLabel = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.catagoryComboBox = new System.Windows.Forms.ComboBox();
+            this.catagoryLabel = new System.Windows.Forms.Label();
             this.mapChoiceLabel = new System.Windows.Forms.Label();
             this.mapComboBox = new System.Windows.Forms.ComboBox();
             this.saveButton = new System.Windows.Forms.Button();
             this.resetForm = new System.Windows.Forms.Button();
-            this.catagoryComboBox = new System.Windows.Forms.ComboBox();
-            this.catagoryLabel = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.expTextBox = new System.Windows.Forms.RichTextBox();
             this.panel7 = new System.Windows.Forms.Panel();
             this.theQuestionTitle = new System.Windows.Forms.TextBox();
             this.questionTitle = new System.Windows.Forms.Label();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.removeButton = new System.Windows.Forms.Button();
             this.currentModeLabel = new System.Windows.Forms.Label();
             this.currentModeHeader = new System.Windows.Forms.Label();
-            this.removeButton = new System.Windows.Forms.Button();
             this.verifyCode = new System.Windows.Forms.Button();
             this.panel11 = new System.Windows.Forms.Panel();
             this.addPictureButton = new System.Windows.Forms.Button();
@@ -78,6 +78,7 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.updateWorker = new System.ComponentModel.BackgroundWorker();
             this.closeWorker = new System.ComponentModel.BackgroundWorker();
+            this.testSync = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -295,6 +296,23 @@
             this.panel5.Size = new System.Drawing.Size(180, 61);
             this.panel5.TabIndex = 9;
             // 
+            // catagoryComboBox
+            // 
+            this.catagoryComboBox.FormattingEnabled = true;
+            this.catagoryComboBox.Location = new System.Drawing.Point(76, 30);
+            this.catagoryComboBox.Name = "catagoryComboBox";
+            this.catagoryComboBox.Size = new System.Drawing.Size(100, 21);
+            this.catagoryComboBox.TabIndex = 15;
+            // 
+            // catagoryLabel
+            // 
+            this.catagoryLabel.AutoSize = true;
+            this.catagoryLabel.Location = new System.Drawing.Point(3, 33);
+            this.catagoryLabel.Name = "catagoryLabel";
+            this.catagoryLabel.Size = new System.Drawing.Size(70, 13);
+            this.catagoryLabel.TabIndex = 15;
+            this.catagoryLabel.Text = "is of catagory";
+            // 
             // mapChoiceLabel
             // 
             this.mapChoiceLabel.AutoSize = true;
@@ -333,23 +351,6 @@
             this.resetForm.Text = "reset GUI";
             this.resetForm.UseVisualStyleBackColor = true;
             this.resetForm.Click += new System.EventHandler(this.resetForm_Click);
-            // 
-            // catagoryComboBox
-            // 
-            this.catagoryComboBox.FormattingEnabled = true;
-            this.catagoryComboBox.Location = new System.Drawing.Point(76, 30);
-            this.catagoryComboBox.Name = "catagoryComboBox";
-            this.catagoryComboBox.Size = new System.Drawing.Size(100, 21);
-            this.catagoryComboBox.TabIndex = 15;
-            // 
-            // catagoryLabel
-            // 
-            this.catagoryLabel.AutoSize = true;
-            this.catagoryLabel.Location = new System.Drawing.Point(3, 33);
-            this.catagoryLabel.Name = "catagoryLabel";
-            this.catagoryLabel.Size = new System.Drawing.Size(70, 13);
-            this.catagoryLabel.TabIndex = 15;
-            this.catagoryLabel.Text = "is of catagory";
             // 
             // panel6
             // 
@@ -404,6 +405,16 @@
             this.panel9.Size = new System.Drawing.Size(151, 51);
             this.panel9.TabIndex = 22;
             // 
+            // removeButton
+            // 
+            this.removeButton.Location = new System.Drawing.Point(97, 27);
+            this.removeButton.Name = "removeButton";
+            this.removeButton.Size = new System.Drawing.Size(51, 23);
+            this.removeButton.TabIndex = 18;
+            this.removeButton.Text = "remove";
+            this.removeButton.UseVisualStyleBackColor = true;
+            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
+            // 
             // currentModeLabel
             // 
             this.currentModeLabel.AutoSize = true;
@@ -424,16 +435,6 @@
             this.currentModeHeader.Size = new System.Drawing.Size(72, 13);
             this.currentModeHeader.TabIndex = 0;
             this.currentModeHeader.Text = "current mode:";
-            // 
-            // removeButton
-            // 
-            this.removeButton.Location = new System.Drawing.Point(97, 27);
-            this.removeButton.Name = "removeButton";
-            this.removeButton.Size = new System.Drawing.Size(51, 23);
-            this.removeButton.TabIndex = 18;
-            this.removeButton.Text = "remove";
-            this.removeButton.UseVisualStyleBackColor = true;
-            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
             // 
             // verifyCode
             // 
@@ -549,11 +550,23 @@
             this.closeWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.closeWorker_ProgressChanged);
             this.closeWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.closeWorker_RunWorkerCompleted);
             // 
+            // testSync
+            // 
+            this.testSync.Enabled = false;
+            this.testSync.Location = new System.Drawing.Point(12, 397);
+            this.testSync.Name = "testSync";
+            this.testSync.Size = new System.Drawing.Size(75, 23);
+            this.testSync.TabIndex = 29;
+            this.testSync.Text = "test sync";
+            this.testSync.UseVisualStyleBackColor = true;
+            this.testSync.Click += new System.EventHandler(this.testSync_Click);
+            // 
             // DatabaseManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(469, 429);
+            this.Controls.Add(this.testSync);
             this.Controls.Add(this.panel12);
             this.Controls.Add(this.panel11);
             this.Controls.Add(this.verifyCode);
@@ -643,5 +656,6 @@
         private System.Windows.Forms.Timer timer1;
         private System.ComponentModel.BackgroundWorker updateWorker;
         private System.ComponentModel.BackgroundWorker closeWorker;
+        private System.Windows.Forms.Button testSync;
     }
 }
