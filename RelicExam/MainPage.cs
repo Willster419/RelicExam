@@ -42,7 +42,7 @@ namespace RelicExam
         public string questionBase;
         private string picturePath;
         private WebClient client;
-        private string version = "Beta4";
+        private string version = "Beta5";
         private PleaseWait wait;
         private CodeVerify cv;
         private PleaseWait pw;
