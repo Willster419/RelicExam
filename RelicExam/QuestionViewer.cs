@@ -99,24 +99,30 @@ namespace RelicExam
             else if (catagory != null)
             {
                 //filtering of type catagory
-                for (int i = 0; i < questionList.Count; i++)
+                int catTotal = questionList.Count;
+                List<Question> filteredList = new List<Question>();
+                for (int i = 0; i < catTotal; i++)
                 {
-                    if (!catagory.Equals(questionList[i].cat.getCatagory()))
+                    if (catagory.Equals(questionList[i].cat.getCatagory()))
                     {
-                        questionList.RemoveAt(i);
+                        filteredList.Add(questionList[i]);
                     }
                 }
+                questionList = filteredList;
             }
             else
             {
                 //filtering of type map
-                for (int i = 0; i < questionList.Count; i++)
+                int mapTotal = questionList.Count;
+                List<Question> filteredList = new List<Question>();
+                for (int i = 0; i < mapTotal; i++)
                 {
-                    if (!map.Equals(questionList[i].m.getMap()))
+                    if (map.Equals(questionList[i].m.getMap()))
                     {
-                        questionList.RemoveAt(i);
+                        filteredList.Add(questionList[i]);
                     }
                 }
+                questionList = filteredList;
             }
             //let user know if number of askable questions < questions in database
             if (questionList.Count < numQuestions)
