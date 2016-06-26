@@ -35,6 +35,10 @@ namespace RelicExam
         private List<Map> mapList;
         private List<Catagory> catagoryList;
         private List<Picture> pictureList;
+        private List<Question> tempQuestionList;
+        private List<Map> tempMapList;
+        private List<Catagory> tempCatagoryList;
+        private List<Picture> tempPictureList;
         private string tempPath;
         private string appPath;
         public string dataBasePath;
@@ -48,14 +52,23 @@ namespace RelicExam
         private PleaseWait pw;
         private MD5 hash;
         private Question tempQuestion;
+        private bool exit;
 
         public MainPage()
         {
             InitializeComponent();
+            exit = false;
         }
         //the most secure password checker ever
         private void ServiceModeButton_Click(object sender, EventArgs e)
         {
+            //save the current database in memory
+            tempCatagoryList = this.copyCatagoryList(catagoryList);
+            tempMapList = this.copyMapList(mapList);
+            tempQuestionList = this.copyQuestionList(questionList);
+            tempPictureList = this.copyPictureList(pictureList);
+            //remake the password form
+            enterPassword = new EnterPassword("relic1");
             //change this to true to enable dev lock over-ride
             enterPassword.overrideLockCheckBox.Visible = true;
             enterPassword.ShowDialog();
@@ -64,6 +77,7 @@ namespace RelicExam
             wait.Show();
             Application.DoEvents();
             dataBaseManager = new DatabaseManager(questionList, mapList, catagoryList, pictureList);
+            //redundant lol
             if (enterPassword.passwordTextBox.Text.Equals("relic1"))
             {
                 //correct password
@@ -92,28 +106,31 @@ namespace RelicExam
                 if (dataBaseManager.discardedChanges)
                 {
                     //put the origional lists back
-                    dataBaseManager.questionList = this.questionList;
-                    dataBaseManager.mapList = this.mapList;
-                    dataBaseManager.catagoryList = this.catagoryList;
-                    dataBaseManager.pictureList = this.pictureList;
+                    this.questionList = this.copyQuestionList(tempQuestionList);
+                    this.mapList = this.copyMapList(tempMapList);
+                    this.catagoryList = this.copyCatagoryList(tempCatagoryList);
+                    this.pictureList = this.copyPictureList(tempPictureList);
                 }
                 else
                 {
                     //update these lists
-                    this.questionList = dataBaseManager.questionList;
-                    this.mapList = dataBaseManager.mapList;
-                    this.catagoryList = dataBaseManager.catagoryList;
-                    this.pictureList = dataBaseManager.pictureList;
+                    this.questionList = this.copyQuestionList(dataBaseManager.questionList);
+                    this.mapList = this.copyMapList(dataBaseManager.mapList);
+                    this.catagoryList = this.copyCatagoryList(dataBaseManager.catagoryList);
+                    this.pictureList = this.copyPictureList(dataBaseManager.pictureList);
                 }
                 //then close the form
                 dataBaseManager.Close();
                 dataBaseManager.Dispose();
-                Application.Restart();
+                //this is cancer. do not use
+                //Application.Restart();
             }
             else
             {
-                //incorrect password
+                //closed on incorrect password
+                if (wait != null) wait.Close();
             }
+            enterPassword.Close();
             this.Show();
         }
         //called when the application has finished system loading
@@ -176,6 +193,7 @@ namespace RelicExam
 
         private void BeginTestButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
             //check if you have to refresh the database first
             client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
             hash = MD5.Create();
@@ -219,10 +237,12 @@ namespace RelicExam
                 questionViewer.ShowDialog();
             }
             else { }
+            this.Show();
         }
 
         private void verifyCodeButton_Click(object sender, EventArgs e)
         {
+            enterPassword = new EnterPassword("relic1");
             enterPassword.overrideLockCheckBox.Visible = false;
             enterPassword.ShowDialog();
             this.Hide();
@@ -236,6 +256,7 @@ namespace RelicExam
                 //incorrect password
             }
             enterPassword.overrideLockCheckBox.Visible = true;
+            enterPassword.Close();
             this.Show();
         }
 
@@ -251,8 +272,15 @@ namespace RelicExam
         //runs when the work is complete
         private void mainPageDatabaseLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            pw.Hide();
-            this.Show();
+            if (exit)
+            {
+                this.Close();
+            }
+            else
+            {
+                pw.Hide();
+                this.Show();
+            }
         }
         //self explanatory
         private void loadLiterallyEverything()
@@ -267,7 +295,6 @@ namespace RelicExam
             //new up required objects
             client = new WebClient();
             dataBaseManager = new DatabaseManager();
-            enterPassword = new EnterPassword();
             questionList = new List<Question>();
             mapList = new List<Map>();
             catagoryList = new List<Catagory>();
@@ -307,7 +334,9 @@ namespace RelicExam
                 DialogResult res = MessageBox.Show("New version found. Update now?", "Update", MessageBoxButtons.YesNo);
                 if (res == DialogResult.No)
                 {
-                    this.Close();
+                    //close the form
+                    exit = true;
+                    return;
                 }
                 else
                 {
@@ -490,6 +519,8 @@ namespace RelicExam
         //self-explanatory
         private void addMapIfNotDuplicate(Map mm)
         {
+            //first check for a NONE map
+            if (mm.getMap().Equals("NONE")) return;
             //traverse the array, if it does not find another it will not break
             //therefore adding it to the list
             foreach (Map m in mapList)
@@ -559,6 +590,74 @@ namespace RelicExam
                 }
             }
             mainPageDatabaseLoader.ReportProgress(90);
+        }
+        //copies every object to another list
+        private List<Question> copyQuestionList(List<Question> l)
+        {
+            List<Question> newList = new List<Question>();
+            for (int i = 0; i < l.Count; i++)
+            {
+                Question temp = new Question();
+                Catagory tempCat = new Catagory();
+                Map tempMap = new Map();
+                Picture tempPic = new Picture();
+                temp.title = l[i].title;
+                tempCat.setCatagory(l[i].cat.getCatagory());
+                temp.cat = tempCat;
+                temp.theQuestion = l[i].theQuestion;
+                temp.responseA = l[i].responseA;
+                temp.responseB = l[i].responseB;
+                temp.responseC = l[i].responseC;
+                temp.responseCEnabled = l[i].responseCEnabled;
+                temp.responseD = l[i].responseD;
+                temp.responseDEnabled = l[i].responseDEnabled;
+                temp.answer = l[i].answer;
+                temp.timeToAnswer = l[i].timeToAnswer;
+                temp.explanationOfAnswer = l[i].explanationOfAnswer;
+                tempMap.setMap(l[i].m.getMap());
+                temp.m = tempMap;
+                tempPic.photoFileName = l[i].p.photoFileName;
+                tempPic.photoTitle = l[i].p.photoTitle;
+                temp.p = tempPic;
+                newList.Add(temp);
+            }
+            return newList;
+        }
+
+        private List<Catagory> copyCatagoryList(List<Catagory> l)
+        {
+            List<Catagory> newList = new List<Catagory>();
+            for (int i = 0; i < l.Count; i++)
+            {
+                Catagory temp = new Catagory();
+                temp.setCatagory(l[i].getCatagory());
+                newList.Add(temp);
+            }
+            return newList;
+        }
+
+        private List<Map> copyMapList(List<Map> l)
+        {
+            List<Map> newList = new List<Map>();
+            for (int i = 0; i < l.Count; i++)
+            {
+                Map temp = new Map(l[i].getMap());
+                newList.Add(temp);
+            }
+            return newList;
+        }
+
+        private List<Picture> copyPictureList(List<Picture> l)
+        {
+            List<Picture> newList = new List<Picture>();
+            for (int i = 0; i < l.Count; i++)
+            {
+                Picture temp = new Picture();
+                temp.photoFileName = l[i].photoFileName;
+                temp.photoTitle = l[i].photoTitle;
+                newList.Add(temp);
+            }
+            return newList;
         }
     }
 }

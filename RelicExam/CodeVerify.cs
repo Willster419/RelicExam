@@ -30,6 +30,7 @@ namespace RelicExam
                 string[] s = codeTextBox.Text.Split(delimiter);
                 code = int.Parse(s[0]);
                 expectedOutput = int.Parse(s[1]);
+                expectedOutputTextBox.Text = "" + expectedOutput;
                 output = code / 420;
                 double doubleOutput = Math.Sqrt(output);
                 output = (int)doubleOutput;

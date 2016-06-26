@@ -9,20 +9,20 @@ namespace RelicExam
     public class Question
     {
         //all parameters we will need in this class
-        public string title;
-        public Catagory cat;
-        public string theQuestion;
-        public string responseA;
-        public string responseB;
-        public string responseC;
-        public bool responseCEnabled;
-        public string responseD;
-        public bool responseDEnabled;
-        public string answer;
-        public int timeToAnswer;
-        public string explanationOfAnswer;
-        public Map m;
-        public Picture p;
+        public string title{get; set;}
+        public Catagory cat{get; set;}
+        public string theQuestion{get; set;}
+        public string responseA{get; set;}
+        public string responseB{get; set;}
+        public string responseC{get; set;}
+        public bool responseCEnabled{get; set;}
+        public string responseD{get; set;}
+        public bool responseDEnabled{get; set;}
+        public string answer{get; set;}
+        public int timeToAnswer{get; set;}
+        public string explanationOfAnswer{get; set;}
+        public Map m{get; set;}
+        public Picture p{get; set;}
         public Question(){
             cat = new Catagory();
             m = new Map();
