@@ -22,7 +22,7 @@ using System.Web;
 using System.Security.Cryptography;
 
 
-namespace RelicExam
+namespace WoTExam
 {
     public partial class MainPage : Form
     {
@@ -92,7 +92,7 @@ namespace RelicExam
                         accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
                     }
                     var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
-                    dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+                    dropBoxStorage.DeleteFileSystemEntry("/Public/WoTExam/inUse.txt");
                     dropBoxStorage.Close();
                     
                 }
@@ -195,7 +195,7 @@ namespace RelicExam
         {
             this.Hide();
             //check if you have to refresh the database first
-            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
+            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
             hash = MD5.Create();
             string newHash = this.GetMd5Hash(hash,File.ReadAllText(dataBasePath + "\\tempQuestions.xml"));
             string oldHash = null;
@@ -308,11 +308,11 @@ namespace RelicExam
             //Application.DoEvents();
             mainPageDatabaseLoader.ReportProgress(10);
             //check if dependencies are downloaded
-            if (!File.Exists(appPath + "\\AppLimit.CloudComputing.SharpBox.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/AppLimit.CloudComputing.SharpBox.dll", appPath + "\\AppLimit.CloudComputing.SharpBox.dll");
+            if (!File.Exists(appPath + "\\AppLimit.CloudComputing.SharpBox.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/AppLimit.CloudComputing.SharpBox.dll", appPath + "\\AppLimit.CloudComputing.SharpBox.dll");
             mainPageDatabaseLoader.ReportProgress(20);
-            if (!File.Exists(appPath + "\\key.txt")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/key.txt", appPath + "\\key.txt");
+            if (!File.Exists(appPath + "\\key.txt")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/key.txt", appPath + "\\key.txt");
             mainPageDatabaseLoader.ReportProgress(30);
-            if (!File.Exists(appPath + "\\Newtonsoft.Json.Net40.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Newtonsoft.Json.Net40.dll", appPath + "\\Newtonsoft.Json.Net40.dll");
+            if (!File.Exists(appPath + "\\Newtonsoft.Json.Net40.dll")) client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/Newtonsoft.Json.Net40.dll", appPath + "\\Newtonsoft.Json.Net40.dll");
             mainPageDatabaseLoader.ReportProgress(40);
             //check for blank database
             if (!Directory.Exists(dataBasePath)) Directory.CreateDirectory(dataBasePath);
@@ -320,7 +320,7 @@ namespace RelicExam
             if (File.Exists(dataBasePath + "\\version.txt")) File.Delete(dataBasePath + "\\version.txt");
             try
             {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/version.txt", dataBasePath + "\\version.txt");
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/version.txt", dataBasePath + "\\version.txt");
             }
             catch (WebException)
             {
@@ -342,7 +342,7 @@ namespace RelicExam
                 {
                     try
                     {
-                        client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/RelicExam.exe", appPath + "\\RelicExam_V" + tempVersion + ".exe");
+                        client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/WoTExam.exe", appPath + "\\RelicExam_V" + tempVersion + ".exe");
                     }
                     catch (WebException)
                     {
@@ -375,7 +375,7 @@ namespace RelicExam
                 File.WriteAllText(dataBasePath + "\\testFile.txt", "not the first time lol");
             }
             //determine if the database has been updated since last use
-            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
+            client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/Questions/questions.xml", dataBasePath + "\\tempQuestions.xml");
             hash = MD5.Create();
             string newHash = this.GetMd5Hash(hash,File.ReadAllText(dataBasePath + "\\tempQuestions.xml"));
             string oldHash = null;
@@ -506,7 +506,7 @@ namespace RelicExam
             if (File.Exists(questionBaseFullPath)) File.Delete(questionBaseFullPath);
             try
             {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/Questions/questions.xml", questionBaseFullPath);
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/Questions/questions.xml", questionBaseFullPath);
             }
             catch (WebException)
             {
@@ -584,7 +584,7 @@ namespace RelicExam
                 }
                 else
                 {
-                    client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + q.p.photoFileName, picturePath + "\\" + q.p.photoFileName);
+                    client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/pictures/" + q.p.photoFileName, picturePath + "\\" + q.p.photoFileName);
                     tempProg = tempProg + 2;
                     mainPageDatabaseLoader.ReportProgress(tempProg);
                 }

@@ -1,4 +1,4 @@
-﻿namespace RelicExam
+﻿namespace WoTExam
 {
     partial class PleaseWait
     {

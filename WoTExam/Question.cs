@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RelicExam
+namespace WoTExam
 {
     public class Question
     {

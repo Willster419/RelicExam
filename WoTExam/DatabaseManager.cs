@@ -20,7 +20,7 @@ using AppLimit.CloudComputing.SharpBox.StorageProvider.DropBox;
 using System.Web;
 using System.Security.Cryptography;
 
-namespace RelicExam
+namespace WoTExam
 {
     public partial class DatabaseManager : Form
     {
@@ -852,7 +852,7 @@ namespace RelicExam
             var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
             updateWorker.ReportProgress(50);
             // get a specific directory in the cloud storage, e.g. /Public 
-            var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam/questions");
+            var questionsFolder = dropBoxStorage.GetFolder("/Public/WoTExam/questions");
             updateWorker.ReportProgress(60);
             // upload xml database
             String srcFile = Environment.ExpandEnvironmentVariables(dataBasePath + databaseFileName);
@@ -940,7 +940,7 @@ namespace RelicExam
             //check for another user on the system
             try
             {
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/inUse.txt", tempPath + "\\inUse.txt");
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/inUse.txt", tempPath + "\\inUse.txt");
                 MessageBox.Show("Database is currently being edited, try again later");
                 close = true;
                 loadingWorker.ReportProgress(15);
@@ -967,7 +967,7 @@ namespace RelicExam
                 var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
                 loadingWorker.ReportProgress(50);
                 // get a specific directory in the cloud storage, e.g. /Public 
-                var questionsFolder = dropBoxStorage.GetFolder("/Public/RelicExam");
+                var questionsFolder = dropBoxStorage.GetFolder("/Public/WoTExam");
                 loadingWorker.ReportProgress(75);
                 //get the file to upload
                 String srcFile = Environment.ExpandEnvironmentVariables(tempPath + "\\inUse.txt");
@@ -1003,7 +1003,7 @@ namespace RelicExam
             closeWorker.ReportProgress(40);
             var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken);
             closeWorker.ReportProgress(60);
-            dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/inUse.txt");
+            dropBoxStorage.DeleteFileSystemEntry("/Public/WoTExam/inUse.txt");
             closeWorker.ReportProgress(80);
             dropBoxStorage.Close();
             closeWorker.ReportProgress(99);
@@ -1030,7 +1030,7 @@ namespace RelicExam
                 accessToken = dropBoxStorage.DeserializeSecurityToken(fs);
             }
             var storageToken = dropBoxStorage.Open(dropBoxConfig, accessToken); 
-            ICloudDirectoryEntry pictureFolder = dropBoxStorage.GetFolder("/Public/RelicExam/pictures");
+            ICloudDirectoryEntry pictureFolder = dropBoxStorage.GetFolder("/Public/WoTExam/pictures");
             foreach (ICloudFileSystemEntry entry in pictureFolder)
             {
                 if (entry is ICloudDirectoryEntry)
@@ -1070,7 +1070,7 @@ namespace RelicExam
             foreach (string s in listToDownload)
             {
                 //download
-                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/RelicExam/pictures/" + s,picturePath + "\\" + s);
+                client.DownloadFile("https://dl.dropboxusercontent.com/u/44191620/WoTExam/pictures/" + s,picturePath + "\\" + s);
             }
             //prepare upload first - save time
             CloudStorage dropBoxStorage2 = new CloudStorage();
@@ -1081,7 +1081,7 @@ namespace RelicExam
                 accessToken2 = dropBoxStorage2.DeserializeSecurityToken(fs);
             }
             var storageToken2 = dropBoxStorage2.Open(dropBoxConfig2, accessToken2);
-            var picturesFolder2 = dropBoxStorage2.GetFolder("/Public/RelicExam/pictures");
+            var picturesFolder2 = dropBoxStorage2.GetFolder("/Public/WoTExam/pictures");
             foreach (string s in listToUpload)
             {
                 //upload
@@ -1142,7 +1142,7 @@ namespace RelicExam
             foreach (Picture p in removedPictures)
             {
                 if (File.Exists(picturePath + "\\" + p.photoFileName)) File.Delete(picturePath + "\\" + p.photoFileName);
-                dropBoxStorage.DeleteFileSystemEntry("/Public/RelicExam/pictures/" + p.photoFileName);
+                dropBoxStorage.DeleteFileSystemEntry("/Public/WoTExam/pictures/" + p.photoFileName);
             }
             dropBoxStorage.Close();
             removedPictures = new List<Picture>();

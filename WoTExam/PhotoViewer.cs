@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 
-namespace RelicExam
+namespace WoTExam
 {
     public partial class PhotoViewer : Form
     {

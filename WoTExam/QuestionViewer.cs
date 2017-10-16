@@ -10,7 +10,7 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 
-namespace RelicExam
+namespace WoTExam
 {
     public partial class QuestionViewer : Form
     {
