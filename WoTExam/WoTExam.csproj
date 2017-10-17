@@ -8,12 +8,27 @@
     <ProjectGuid>{86645B3A-DEB7-4893-9F1D-ADC7E13A5857}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RelicExam</RootNamespace>
-    <AssemblyName>RelicExam</AssemblyName>
+    <RootNamespace>WoTExam</RootNamespace>
+    <AssemblyName>WoTExam</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -36,28 +51,16 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AppLimit.CloudComputing.SharpBox, Version=1.2.0.542, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AppLimit.CloudComputing.SharpBox.1.2.0.542\lib\net40-full\AppLimit.CloudComputing.SharpBox.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AppLimit.CloudComputing.SharpBox.ExperimentalProvider, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AppLimit.CloudComputing.SharpBox.1.2.0.542\lib\net40-full\AppLimit.CloudComputing.SharpBox.ExperimentalProvider.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AppLimit.CloudComputing.SharpBox.MockProvider, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AppLimit.CloudComputing.SharpBox.1.2.0.542\lib\net40-full\AppLimit.CloudComputing.SharpBox.MockProvider.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="DropBoxTokenIssuer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AppLimit.CloudComputing.SharpBox.1.2.0.542\lib\net40-full\DropBoxTokenIssuer.exe</HintPath>
-      <ExecutableExtension>.exe</ExecutableExtension>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json.Net40, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AppLimit.CloudComputing.SharpBox.1.2.0.542\lib\net40-full\Newtonsoft.Json.Net40.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
@@ -71,18 +74,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Catagory.cs" />
+    <Compile Include="Answer.cs" />
+    <Compile Include="Clan.cs" />
     <Compile Include="CodeVerify.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CodeVerify.Designer.cs">
       <DependentUpon>CodeVerify.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DatabaseManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DatabaseManager.Designer.cs">
-      <DependentUpon>DatabaseManager.cs</DependentUpon>
     </Compile>
     <Compile Include="EnterPassword.cs">
       <SubType>Form</SubType>
@@ -96,19 +94,11 @@
     <Compile Include="MainPage.Designer.cs">
       <DependentUpon>MainPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Map.cs" />
-    <Compile Include="PhotoViewer.cs">
+    <Compile Include="LoadingWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PhotoViewer.Designer.cs">
-      <DependentUpon>PhotoViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Picture.cs" />
-    <Compile Include="PleaseWait.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PleaseWait.Designer.cs">
-      <DependentUpon>PleaseWait.cs</DependentUpon>
+    <Compile Include="LoadingWindow.Designer.cs">
+      <DependentUpon>LoadingWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,11 +115,15 @@
     <Compile Include="Results.Designer.cs">
       <DependentUpon>Results.cs</DependentUpon>
     </Compile>
+    <Compile Include="Updater.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updater.Designer.cs">
+      <DependentUpon>Updater.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utils.cs" />
     <EmbeddedResource Include="CodeVerify.resx">
       <DependentUpon>CodeVerify.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DatabaseManager.resx">
-      <DependentUpon>DatabaseManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EnterPassword.resx">
       <DependentUpon>EnterPassword.cs</DependentUpon>
@@ -137,11 +131,8 @@
     <EmbeddedResource Include="MainPage.resx">
       <DependentUpon>MainPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PhotoViewer.resx">
-      <DependentUpon>PhotoViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PleaseWait.resx">
-      <DependentUpon>PleaseWait.cs</DependentUpon>
+    <EmbeddedResource Include="LoadingWindow.resx">
+      <DependentUpon>LoadingWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -159,8 +150,11 @@
     <EmbeddedResource Include="Results.resx">
       <DependentUpon>Results.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Updater.resx">
+      <DependentUpon>Updater.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -170,6 +164,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LoadingImage.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RelicExam.Properties {
+namespace WoTExam.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

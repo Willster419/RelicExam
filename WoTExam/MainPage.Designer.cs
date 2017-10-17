@@ -28,57 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ServiceModeButton = new System.Windows.Forms.Button();
-            this.relicExamWelcome = new System.Windows.Forms.Label();
-            this.selectTestType = new System.Windows.Forms.ComboBox();
+            this.EditQuestions = new System.Windows.Forms.Button();
             this.BeginTestButton = new System.Windows.Forms.Button();
-            this.selectNumQuestions = new System.Windows.Forms.ComboBox();
+            this.NumQuestions = new System.Windows.Forms.ComboBox();
             this.numQuestionsLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.specifyTypeBox = new System.Windows.Forms.ComboBox();
-            this.verifyCodeButton = new System.Windows.Forms.Button();
+            this.ClanList = new System.Windows.Forms.ComboBox();
+            this.VerifyCode = new System.Windows.Forms.Button();
             this.mainPageDatabaseLoader = new System.ComponentModel.BackgroundWorker();
-            this.refreshDatabase = new System.Windows.Forms.Button();
+            this.ClanMessageHeader = new System.Windows.Forms.Label();
+            this.ClanMessage = new System.Windows.Forms.RichTextBox();
+            this.Categories = new System.Windows.Forms.CheckedListBox();
             this.SuspendLayout();
             // 
-            // ServiceModeButton
+            // EditQuestions
             // 
-            this.ServiceModeButton.Location = new System.Drawing.Point(12, 130);
-            this.ServiceModeButton.Name = "ServiceModeButton";
-            this.ServiceModeButton.Size = new System.Drawing.Size(101, 23);
-            this.ServiceModeButton.TabIndex = 0;
-            this.ServiceModeButton.Text = "Service Questions";
-            this.ServiceModeButton.UseVisualStyleBackColor = true;
-            this.ServiceModeButton.Click += new System.EventHandler(this.ServiceModeButton_Click);
-            // 
-            // relicExamWelcome
-            // 
-            this.relicExamWelcome.AutoSize = true;
-            this.relicExamWelcome.Location = new System.Drawing.Point(12, 9);
-            this.relicExamWelcome.Name = "relicExamWelcome";
-            this.relicExamWelcome.Size = new System.Drawing.Size(258, 13);
-            this.relicExamWelcome.TabIndex = 1;
-            this.relicExamWelcome.Text = "Welcome to the Relic Exam Application! Best of luck!";
-            // 
-            // selectTestType
-            // 
-            this.selectTestType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.selectTestType.FormattingEnabled = true;
-            this.selectTestType.Items.AddRange(new object[] {
-            "Map",
-            "Catagory",
-            "Random (All)"});
-            this.selectTestType.Location = new System.Drawing.Point(56, 53);
-            this.selectTestType.Name = "selectTestType";
-            this.selectTestType.Size = new System.Drawing.Size(121, 21);
-            this.selectTestType.TabIndex = 2;
-            this.selectTestType.SelectedIndexChanged += new System.EventHandler(this.selectTestType_SelectedIndexChanged);
+            this.EditQuestions.Location = new System.Drawing.Point(210, 250);
+            this.EditQuestions.Name = "EditQuestions";
+            this.EditQuestions.Size = new System.Drawing.Size(101, 23);
+            this.EditQuestions.TabIndex = 0;
+            this.EditQuestions.Text = "Edit Questions";
+            this.EditQuestions.UseVisualStyleBackColor = true;
+            this.EditQuestions.Click += new System.EventHandler(this.EditQuestions_Click);
             // 
             // BeginTestButton
             // 
-            this.BeginTestButton.Location = new System.Drawing.Point(249, 94);
+            this.BeginTestButton.Location = new System.Drawing.Point(236, 4);
             this.BeginTestButton.Name = "BeginTestButton";
             this.BeginTestButton.Size = new System.Drawing.Size(75, 23);
             this.BeginTestButton.TabIndex = 3;
@@ -86,24 +62,24 @@
             this.BeginTestButton.UseVisualStyleBackColor = true;
             this.BeginTestButton.Click += new System.EventHandler(this.BeginTestButton_Click);
             // 
-            // selectNumQuestions
+            // NumQuestions
             // 
-            this.selectNumQuestions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.selectNumQuestions.FormattingEnabled = true;
-            this.selectNumQuestions.Items.AddRange(new object[] {
+            this.NumQuestions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.NumQuestions.FormattingEnabled = true;
+            this.NumQuestions.Items.AddRange(new object[] {
             "10",
             "20",
             "25",
             "50"});
-            this.selectNumQuestions.Location = new System.Drawing.Point(227, 53);
-            this.selectNumQuestions.Name = "selectNumQuestions";
-            this.selectNumQuestions.Size = new System.Drawing.Size(45, 21);
-            this.selectNumQuestions.TabIndex = 4;
+            this.NumQuestions.Location = new System.Drawing.Point(185, 6);
+            this.NumQuestions.Name = "NumQuestions";
+            this.NumQuestions.Size = new System.Drawing.Size(45, 21);
+            this.NumQuestions.TabIndex = 4;
             // 
             // numQuestionsLabel
             // 
             this.numQuestionsLabel.AutoSize = true;
-            this.numQuestionsLabel.Location = new System.Drawing.Point(278, 56);
+            this.numQuestionsLabel.Location = new System.Drawing.Point(126, 9);
             this.numQuestionsLabel.Name = "numQuestionsLabel";
             this.numQuestionsLabel.Size = new System.Drawing.Size(54, 13);
             this.numQuestionsLabel.TabIndex = 5;
@@ -112,86 +88,87 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 53);
+            this.label1.Location = new System.Drawing.Point(9, 38);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 6;
-            this.label1.Text = "Take a";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(183, 56);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "quiz of";
+            this.label1.Text = "Categories";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 97);
+            this.label3.Location = new System.Drawing.Point(9, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(69, 13);
+            this.label3.Size = new System.Drawing.Size(28, 13);
             this.label3.TabIndex = 8;
-            this.label3.Text = "Specify Type";
+            this.label3.Text = "Clan";
             // 
-            // specifyTypeBox
+            // ClanList
             // 
-            this.specifyTypeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.specifyTypeBox.FormattingEnabled = true;
-            this.specifyTypeBox.Location = new System.Drawing.Point(122, 94);
-            this.specifyTypeBox.Name = "specifyTypeBox";
-            this.specifyTypeBox.Size = new System.Drawing.Size(121, 21);
-            this.specifyTypeBox.TabIndex = 9;
+            this.ClanList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ClanList.FormattingEnabled = true;
+            this.ClanList.Location = new System.Drawing.Point(43, 6);
+            this.ClanList.Name = "ClanList";
+            this.ClanList.Size = new System.Drawing.Size(77, 21);
+            this.ClanList.TabIndex = 9;
+            this.ClanList.SelectedIndexChanged += new System.EventHandler(this.ClanList_SelectedIndexChanged);
             // 
-            // verifyCodeButton
+            // VerifyCode
             // 
-            this.verifyCodeButton.Location = new System.Drawing.Point(119, 130);
-            this.verifyCodeButton.Name = "verifyCodeButton";
-            this.verifyCodeButton.Size = new System.Drawing.Size(79, 23);
-            this.verifyCodeButton.TabIndex = 10;
-            this.verifyCodeButton.Text = "Verify Code";
-            this.verifyCodeButton.UseVisualStyleBackColor = true;
-            this.verifyCodeButton.Click += new System.EventHandler(this.verifyCodeButton_Click);
+            this.VerifyCode.Location = new System.Drawing.Point(125, 250);
+            this.VerifyCode.Name = "VerifyCode";
+            this.VerifyCode.Size = new System.Drawing.Size(79, 23);
+            this.VerifyCode.TabIndex = 10;
+            this.VerifyCode.Text = "Verify Code";
+            this.VerifyCode.UseVisualStyleBackColor = true;
+            this.VerifyCode.Click += new System.EventHandler(this.VerifyCode_Click);
             // 
-            // mainPageDatabaseLoader
+            // ClanMessageHeader
             // 
-            this.mainPageDatabaseLoader.WorkerReportsProgress = true;
-            this.mainPageDatabaseLoader.DoWork += new System.ComponentModel.DoWorkEventHandler(this.mainPageDatabaseLoader_DoWork);
-            this.mainPageDatabaseLoader.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.mainPageDatabaseLoader_ProgressChanged);
-            this.mainPageDatabaseLoader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.mainPageDatabaseLoader_RunWorkerCompleted);
+            this.ClanMessageHeader.AutoSize = true;
+            this.ClanMessageHeader.Location = new System.Drawing.Point(12, 151);
+            this.ClanMessageHeader.Name = "ClanMessageHeader";
+            this.ClanMessageHeader.Size = new System.Drawing.Size(74, 13);
+            this.ClanMessageHeader.TabIndex = 11;
+            this.ClanMessageHeader.Text = "Clan Message";
             // 
-            // refreshDatabase
+            // ClanMessage
             // 
-            this.refreshDatabase.Location = new System.Drawing.Point(204, 130);
-            this.refreshDatabase.Name = "refreshDatabase";
-            this.refreshDatabase.Size = new System.Drawing.Size(120, 23);
-            this.refreshDatabase.TabIndex = 11;
-            this.refreshDatabase.Text = "Refresh Database";
-            this.refreshDatabase.UseVisualStyleBackColor = true;
-            this.refreshDatabase.Click += new System.EventHandler(this.refreshDatabase_Click);
+            this.ClanMessage.Location = new System.Drawing.Point(11, 167);
+            this.ClanMessage.Name = "ClanMessage";
+            this.ClanMessage.ReadOnly = true;
+            this.ClanMessage.Size = new System.Drawing.Size(300, 77);
+            this.ClanMessage.TabIndex = 12;
+            this.ClanMessage.Text = "";
+            // 
+            // Categories
+            // 
+            this.Categories.FormattingEnabled = true;
+            this.Categories.Location = new System.Drawing.Point(11, 54);
+            this.Categories.Name = "Categories";
+            this.Categories.Size = new System.Drawing.Size(300, 94);
+            this.Categories.TabIndex = 13;
             // 
             // MainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(351, 160);
-            this.Controls.Add(this.refreshDatabase);
-            this.Controls.Add(this.verifyCodeButton);
-            this.Controls.Add(this.specifyTypeBox);
+            this.ClientSize = new System.Drawing.Size(323, 285);
+            this.Controls.Add(this.Categories);
+            this.Controls.Add(this.ClanMessage);
+            this.Controls.Add(this.ClanMessageHeader);
+            this.Controls.Add(this.VerifyCode);
+            this.Controls.Add(this.ClanList);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numQuestionsLabel);
-            this.Controls.Add(this.selectNumQuestions);
+            this.Controls.Add(this.NumQuestions);
             this.Controls.Add(this.BeginTestButton);
-            this.Controls.Add(this.selectTestType);
-            this.Controls.Add(this.relicExamWelcome);
-            this.Controls.Add(this.ServiceModeButton);
+            this.Controls.Add(this.EditQuestions);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "MainPage";
-            this.Text = "Relic Exam V";
+            this.Text = "WoT Exam ";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainPage_FormClosing);
             this.Load += new System.EventHandler(this.MainPage_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -200,19 +177,18 @@
 
         #endregion
 
-        private System.Windows.Forms.Button ServiceModeButton;
-        private System.Windows.Forms.Label relicExamWelcome;
-        private System.Windows.Forms.ComboBox selectTestType;
+        private System.Windows.Forms.Button EditQuestions;
         private System.Windows.Forms.Button BeginTestButton;
-        private System.Windows.Forms.ComboBox selectNumQuestions;
+        private System.Windows.Forms.ComboBox NumQuestions;
         private System.Windows.Forms.Label numQuestionsLabel;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox specifyTypeBox;
-        private System.Windows.Forms.Button verifyCodeButton;
+        private System.Windows.Forms.ComboBox ClanList;
+        private System.Windows.Forms.Button VerifyCode;
         private System.ComponentModel.BackgroundWorker mainPageDatabaseLoader;
-        private System.Windows.Forms.Button refreshDatabase;
+        private System.Windows.Forms.Label ClanMessageHeader;
+        private System.Windows.Forms.RichTextBox ClanMessage;
+        private System.Windows.Forms.CheckedListBox Categories;
     }
 }
 

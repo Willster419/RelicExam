@@ -9,28 +9,23 @@ namespace WoTExam
     public class Question
     {
         //all parameters we will need in this class
-        public string title{get; set;}
-        public Catagory cat{get; set;}
-        public string theQuestion{get; set;}
-        public string responseA{get; set;}
-        public string responseB{get; set;}
-        public string responseC{get; set;}
-        public bool responseCEnabled{get; set;}
-        public string responseD{get; set;}
-        public bool responseDEnabled{get; set;}
-        public string answer{get; set;}
-        public int timeToAnswer{get; set;}
-        public string explanationOfAnswer{get; set;}
-        public Map m{get; set;}
-        public Picture p{get; set;}
-        public Question(){
-            cat = new Catagory();
-            m = new Map();
-            p = new Picture();
+        public string Version { get; set; }
+        public string LastUpdated { get; set; }
+        public string UpdateNote { get; set; }
+        public string Title{get; set;}
+        public string Category{get; set;}
+        public string Text{get; set;}
+        public int TimeToAnswer{get; set;}
+        public string Picture{get; set;}
+        public string Explanation { get; set; }
+        public List<Answer> Answers = new List<Answer>();
+        public Question()
+        {
+            Picture = "";
         }
         public override string ToString()
         {
-            return title + " - " + theQuestion;
+            return Title + " - " + Text;
         }
     }
 }
