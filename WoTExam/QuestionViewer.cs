@@ -121,6 +121,7 @@ namespace WoTExam
                 PictureViewer.Visible = true;
                 PictureViewer.LoadAsync(Questions[QuestionCounter].Picture);
             }
+            Utils.Shuffle(Questions[QuestionCounter].Answers);
             foreach (Answer ans in Questions[QuestionCounter].Answers)
             {
                 RadioButton rb = new RadioButton()
@@ -163,6 +164,13 @@ namespace WoTExam
                 y += 3;
             }
             return y;
+        }
+
+        private void QuestionViewer_SizeChanged(object sender, EventArgs e)
+        {
+            //TODO: change the size on the control
+            //TODO: change the control to use split container things
+            //https://stackoverflow.com/questions/30862072/dynamically-resizing-controls-on-windows-forms
         }
     }
 }

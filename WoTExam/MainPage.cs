@@ -30,18 +30,13 @@ namespace WoTExam
         {
             return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString().IndexOf('.') + 1);
         }
-        //  interpret the created CiInfo buildTag as an "us-US" or a "de-DE" timeformat and return it as a local time- and dateformat string
-        public static string CompileTime()
-        {
-            return "null";
-        }
         //called when the application has finished system loading
         private void MainPage_Load(object sender, EventArgs e)
         {
             //start log entries
             Utils.AppendToLog("|--------------------------------------------------------------------------------------------------------------------------|");
             Utils.AppendToLog("|WotExam " + ManagerVersion());
-            Utils.AppendToLog(string.Format("|Built on {0}", CompileTime()));
+            Utils.AppendToLog(string.Format("|Built on {0}", CiInfo.BuildTag));
             Utils.AppendToLog("|Running on " + System.Environment.OSVersion.ToString());
             //check for updates
             InfoXML = XDocument.Load(Path.Combine(Application.StartupPath, "info.xml"));
@@ -79,6 +74,21 @@ namespace WoTExam
         {
             if (SelectedClan == null)
                 return;
+            if (NumQuestions.SelectedIndex == -1)
+                return;
+            List<Question> possibleQuestions = new List<Question>();
+            //parse the questions into a new list to give to the viewer
+            //first make a list of all questions based on selected cateogry
+            foreach (Object o in Categories.SelectedItems)
+            {
+                string cat = (string)o;
+                foreach (Question q in Questions)
+                {
+                    if (cat.Equals(q.Category) && !possibleQuestions.Contains(q))
+                        possibleQuestions.Add(q);
+                }
+            }
+            Utils.Shuffle(possibleQuestions);
             using (QuestionViewer qv = new QuestionViewer() { Questions = this.Questions})
             {
                 qv.ShowDialog();

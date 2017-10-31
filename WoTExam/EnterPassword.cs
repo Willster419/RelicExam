@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace WoTExam
@@ -27,7 +21,6 @@ namespace WoTExam
                 else
                     this.Close();
             }
-            
         }
 
         private void EnterPassword_Load(object sender, EventArgs e)

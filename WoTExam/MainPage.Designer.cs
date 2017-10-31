@@ -143,6 +143,7 @@
             // 
             // Categories
             // 
+            this.Categories.CheckOnClick = true;
             this.Categories.FormattingEnabled = true;
             this.Categories.Location = new System.Drawing.Point(11, 54);
             this.Categories.Name = "Categories";

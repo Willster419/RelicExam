@@ -60,6 +60,9 @@
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>WoTExam.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -75,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Answer.cs" />
+    <Compile Include="CiInfo.cs" />
     <Compile Include="Clan.cs" />
     <Compile Include="CodeVerify.cs">
       <SubType>Form</SubType>
@@ -181,6 +185,19 @@
     <None Include="Resources\LoadingImage.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>echo /// https://stackoverflow.com/questions/4450231/can-i-make-a-constant-from-a-compile-time-env-variable-in-csharp/4453285 &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo namespace WoTExam &gt; "$(ProjectDir)\CiInfo.cs"
+echo { &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo     ///^&lt;summary^&gt;Info about the continuous integration server build that produced this binary.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo     public static class CiInfo &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo     { &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo         ///^&lt;summary^&gt;String of the build number and build date/time, and other useful info.^&lt;/summary^&gt; &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo         public const string BuildTag = "%25DATE%25 %25TIME%25"; &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo     } &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+echo } &gt;&gt; "$(ProjectDir)\CiInfo.cs"
+</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

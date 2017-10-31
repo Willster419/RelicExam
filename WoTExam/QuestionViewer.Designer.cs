@@ -181,6 +181,7 @@
             this.Text = "QuestionViewer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.QuestionViewer_FormClosing);
             this.Load += new System.EventHandler(this.QuestionViewer_Load);
+            this.SizeChanged += new System.EventHandler(this.QuestionViewer_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.PictureViewer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
